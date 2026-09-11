@@ -41,7 +41,8 @@ Pré-requisitos (uma vez): `cd tools && npm install`. O resto já vem no macOS (
    ```bash
    node tools/run-page.mjs "http://localhost:8833/tools/capture.html?slug=<pasta>"
    ```
-7. Commit e push na `main`. O Pages publica em ~1 minuto.
+7. **QR code para apresentações** (PNG em alta): `node tools/qr-png.mjs <pasta>` → `<pasta>/qr.png`.
+8. Commit e push na `main`. O Pages publica em ~1 minuto.
 
 ## O que o `prepare-glb.mjs` corrige
 

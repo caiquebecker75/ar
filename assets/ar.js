@@ -29,7 +29,7 @@ mv.addEventListener('progress', (e) => {
   const p = e.detail.totalProgress;
   $('.progress i').style.width = `${Math.round(p * 100)}%`;
   if (p >= 1) $('.progress').classList.add('done');
-  if (!ready) ctaLabel.textContent = `Carregando ${Math.round(p * 100)}%`;
+  if (isMobile && !ready) ctaLabel.textContent = `Carregando ${Math.round(p * 100)}%`;
 });
 mv.addEventListener('error', () => show('erro'));
 
