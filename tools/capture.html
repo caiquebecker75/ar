@@ -1,0 +1,85 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Poster + og:image</title>
+<!--
+  Gera <pasta>/poster.webp (imagem enquanto o 3D carrega) e <pasta>/og.jpg
+  (miniatura do link no WhatsApp) a partir do display.glb e dos textos da página.
+  http://localhost:8833/tools/capture.html?slug=<pasta-do-display>[&orbit=28deg%2078deg%20auto]
+-->
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Lexend:wght@200;300;600&display=swap" rel="stylesheet">
+<script type="module" src="/vendor/model-viewer.min.js"></script>
+<style>
+  body { margin: 0; font: 13px/1.5 ui-monospace, monospace; background: #ddd; }
+  model-viewer { width: 720px; height: 900px; background: transparent; }
+  pre { padding: 12px; }
+</style>
+<pre id="log">capturando…</pre>
+<script type="module">
+const P = new URLSearchParams(location.search);
+const slug = P.get('slug');
+const log = (m) => { document.getElementById('log').textContent += '\n' + m; };
+const save = async (path, blob) => (await fetch(`/__save?path=${encodeURIComponent(`${slug}/${path}`)}`, { method: 'POST', body: blob })).text();
+
+try {
+  // textos da própria página do display
+  const page = new DOMParser().parseFromString(await (await fetch(`/${slug}/index.html`)).text(), 'text/html');
+  const mvPage = page.querySelector('model-viewer');
+  const eyebrow = page.querySelector('.eyebrow').textContent.trim();
+  const [t1, t2] = [page.querySelector('h1').childNodes[0].textContent.trim(), page.querySelector('h1 b').textContent.trim()];
+
+  await customElements.whenDefined('model-viewer');
+  const mv = document.createElement('model-viewer');
+  for (const a of ['environment-image', 'exposure', 'shadow-intensity', 'shadow-softness']) mv.setAttribute(a, mvPage.getAttribute(a));
+  mv.setAttribute('camera-orbit', P.get('orbit') || mvPage.getAttribute('camera-orbit'));
+  mv.setAttribute('interaction-prompt', 'none');
+  mv.setAttribute('loading', 'eager'); // carrega mesmo com a aba em segundo plano
+  mv.src = `/${slug}/display.glb`;
+  document.body.prepend(mv);
+  await new Promise((r) => mv.addEventListener('load', r, { once: true }));
+  await new Promise((r) => setTimeout(r, 1500));
+
+  const poster = await mv.toBlob({ mimeType: 'image/webp', qualityArgument: 0.85, idealAspect: false });
+  log('poster.webp: ' + await save('poster.webp', poster));
+
+  // ---------- og:image 1200x630 ----------
+  await Promise.all(['30px Anton', '200 88px Lexend', '600 88px Lexend', '300 26px Lexend'].map((f) => document.fonts.load(f)));
+  const img = await createImageBitmap(await mv.toBlob({ mimeType: 'image/png', idealAspect: false }));
+  const c = Object.assign(document.createElement('canvas'), { width: 1200, height: 630 });
+  const x = c.getContext('2d');
+  x.fillStyle = '#F3F4EE'; x.fillRect(0, 0, 1200, 630);
+  const glow = x.createRadialGradient(900, 360, 20, 900, 360, 330);
+  glow.addColorStop(0, 'rgba(255,255,255,1)'); glow.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = glow; x.fillRect(560, 0, 640, 630);
+  const h = 600, w = (img.width / img.height) * h;
+  x.drawImage(img, 900 - w / 2, 630 - h + 6, w, h);
+
+  x.textBaseline = 'alphabetic';
+  x.font = '30px Anton'; x.letterSpacing = '1.5px';
+  x.fillStyle = '#0E1110'; x.fillText('75', 72, 92);
+  x.fillStyle = '#A6D934'; x.fillText('LAB', 72 + x.measureText('75').width + 2, 92);
+
+  x.fillStyle = '#A6D934'; x.fillRect(72, 184, 30, 3);
+  x.font = '22px Anton'; x.letterSpacing = '4px'; x.fillStyle = '#0E1110';
+  x.fillText(eyebrow.toUpperCase(), 116, 194);
+
+  x.letterSpacing = '-1px';
+  x.font = '200 88px Lexend'; x.fillText(t1.toUpperCase(), 66, 290);
+  x.font = '600 88px Lexend'; x.fillText(t2.toUpperCase(), 66, 376);
+
+  x.font = '300 26px Lexend'; x.letterSpacing = '0px'; x.fillStyle = '#54594E';
+  x.fillText('Veja em realidade aumentada,', 72, 440);
+  x.fillText('em tamanho real, no seu espaço.', 72, 476);
+
+  x.font = '21px Anton'; x.letterSpacing = '2.5px';
+  const label = 'TOQUE PARA VER EM AR', lw = x.measureText(label).width + 56;
+  x.fillStyle = '#C0EE4E'; x.beginPath(); x.roundRect(72, 520, lw, 58, 29); x.fill();
+  x.fillStyle = '#0E1110'; x.fillText(label, 100, 557);
+
+  const og = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.86));
+  log('og.jpg: ' + await save('og.jpg', og));
+  document.body.append(c);
+  log('PRONTO');
+} catch (e) {
+  log('ERRO: ' + (e.stack || e));
+}
+</script>

@@ -1,0 +1,47 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>GLB → USDZ (Quick Look)</title>
+<!--
+  Gera o display.usdz (AR do iPhone) a partir do display.glb já preparado.
+  Abrir com o servidor local: http://localhost:8833/tools/usdz.html?slug=<pasta-do-display>
+  O arquivo é gravado em <pasta>/display.usdz pelo POST /__save do tools/serve.py.
+-->
+<script type="importmap">
+{ "imports": {
+  "three": "/tools/node_modules/three/build/three.module.js",
+  "three/addons/": "/tools/node_modules/three/examples/jsm/"
+} }
+</script>
+<pre id="log" style="font:13px/1.5 ui-monospace,monospace;padding:16px">convertendo…</pre>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
+
+const slug = new URLSearchParams(location.search).get('slug');
+const out = document.getElementById('log');
+const log = (m) => { out.textContent += '\n' + m; };
+
+try {
+  const gltf = await new GLTFLoader().loadAsync(`/${slug}/display.glb`);
+  const scene = gltf.scene;
+
+  // O Quick Look não desenha o verso das faces: o prepare-glb.mjs já transformou as
+  // faces "de dois lados" em geometria real. Se sobrou alguma, avisa.
+  let doubles = 0;
+  scene.traverse((o) => { if (o.isMesh && o.material.side === THREE.DoubleSide) doubles++; });
+  log(doubles ? `ATENÇÃO: ${doubles} malhas ainda "double sided" — rode o prepare-glb.mjs` : 'faces de dois lados: ok');
+
+  const buffer = await new USDZExporter().parseAsync(scene, {
+    quickLookCompatible: true,
+    maxTextureSize: 2048,
+    includeAnchoringProperties: true,
+    ar: { anchoring: { type: 'plane' }, planeAnchoring: { alignment: 'horizontal' } },
+  });
+  const res = await fetch(`/__save?path=${encodeURIComponent(slug)}/display.usdz`, { method: 'POST', body: buffer });
+  log(await res.text());
+  log('PRONTO');
+} catch (e) {
+  log('ERRO: ' + (e.stack || e));
+}
+</script>

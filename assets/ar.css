@@ -1,0 +1,158 @@
+/* AR 75 LAB — página de visualização de display em realidade aumentada */
+:root {
+  --lime: #C0EE4E; --lime-d: #A6D934; --lime-s: #EAFBC0;
+  --ink: #0E1110; --ink2: #54594E; --ink3: #9AA08F; --rule: #E3E7DA;
+  --paper: #F3F4EE; --card: #FFFFFF;
+  --pad: clamp(18px, 5vw, 40px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: var(--paper); color: var(--ink);
+  font-family: 'Lexend', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+}
+[hidden] { display: none !important; }
+button { font: inherit; color: inherit; cursor: pointer; }
+
+/* ---------- estrutura (celular: uma tela, sem rolagem) ---------- */
+.app {
+  height: 100vh; height: 100svh;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-areas: "top" "intro" "stage" "dock";
+}
+.top { grid-area: top; display: flex; align-items: center; justify-content: space-between; padding: 16px var(--pad) 0; }
+.intro { grid-area: intro; padding: 14px var(--pad) 0; }
+.stage { grid-area: stage; position: relative; min-height: 0; }
+.dock { grid-area: dock; padding: 10px var(--pad) calc(16px + var(--safe-b)); }
+.foot { display: none; }
+
+/* ---------- marca e títulos ---------- */
+.brand { font-family: 'Anton', 'Impact', sans-serif; font-size: 16px; letter-spacing: 1.4px; }
+.brand em { font-style: normal; color: var(--lime-d); }
+.tag {
+  font-family: 'Anton', 'Impact', sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  background: var(--ink); color: var(--lime); padding: 6px 11px 5px; border-radius: 20px;
+  display: inline-flex; align-items: center; gap: 7px;
+}
+.tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--lime); animation: blink 1.6s ease-in-out infinite; }
+@keyframes blink { 50% { opacity: .25; } }
+.eyebrow {
+  font-family: 'Anton', 'Impact', sans-serif; font-size: 12px; letter-spacing: 2.6px; text-transform: uppercase;
+  display: flex; align-items: center; gap: 10px;
+}
+.eyebrow::before { content: ""; width: 22px; height: 2px; background: var(--lime-d); }
+h1 {
+  font-weight: 200; text-transform: uppercase; letter-spacing: -.5px;
+  font-size: clamp(34px, 10vw, 72px); line-height: .92; margin-top: 8px;
+}
+h1 b { font-weight: 600; display: block; }
+.dims { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.dims span {
+  font-size: 11.5px; font-weight: 300; color: var(--ink2);
+  background: var(--card); border: 1px solid var(--rule); border-radius: 20px; padding: 5px 10px;
+}
+.dims b { font-family: 'Anton', 'Impact', sans-serif; font-weight: 400; letter-spacing: .8px; color: var(--ink); margin-left: 3px; }
+
+/* ---------- visualizador 3D ---------- */
+.stage::before { /* luz suave no "chão" */
+  content: ""; position: absolute; inset: 18% 8% 2%;
+  background: radial-gradient(closest-side, #fff 0%, rgba(255,255,255,0) 100%);
+  pointer-events: none;
+}
+model-viewer {
+  position: relative; width: 100%; height: 100%;
+  background: transparent; --poster-color: transparent;
+}
+.progress { position: absolute; left: var(--pad); right: var(--pad); bottom: 6px; height: 3px; border-radius: 3px; background: var(--rule); overflow: hidden; transition: opacity .4s; }
+.progress i { display: block; height: 100%; width: 0; background: var(--lime-d); transition: width .25s; }
+.progress.done { opacity: 0; }
+.drag {
+  position: absolute; right: var(--pad); top: 6px; font-size: 11px; font-weight: 300; color: var(--ink3);
+  display: flex; align-items: center; gap: 6px; pointer-events: none;
+}
+.drag svg { width: 15px; height: 15px; }
+.ar-prompt {
+  position: absolute; left: 50%; bottom: 14%; transform: translateX(-50%);
+  background: rgba(14,17,16,.82); color: #fff; font-size: 14px; font-weight: 300; text-align: center;
+  padding: 12px 18px; border-radius: 14px; width: max-content; max-width: 86vw;
+}
+.ar-prompt b { color: var(--lime); font-weight: 500; }
+
+/* ---------- ações ---------- */
+.cta {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px;
+  background: var(--lime); color: var(--ink); border: 0; border-radius: 16px; padding: 18px 20px;
+  font-family: 'Anton', 'Impact', sans-serif; font-size: 19px; letter-spacing: 1.6px; text-transform: uppercase;
+  box-shadow: 0 12px 28px -14px rgba(110, 150, 20, .9);
+  transition: transform .15s, background .2s;
+}
+.cta:active { transform: scale(.98); }
+.cta svg { width: 26px; height: 26px; flex: none; }
+.cta[disabled] { background: var(--rule); color: var(--ink3); box-shadow: none; cursor: progress; }
+.hint { font-size: 12.5px; font-weight: 300; line-height: 1.45; color: var(--ink2); text-align: center; margin-top: 10px; }
+.hint b { font-weight: 500; color: var(--ink); }
+.note {
+  background: var(--card); border: 1px solid var(--rule); border-radius: 16px; padding: 16px;
+  font-size: 13.5px; font-weight: 300; line-height: 1.5; color: var(--ink2);
+}
+.note strong { display: block; font-family: 'Anton', 'Impact', sans-serif; font-weight: 400; font-size: 14px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink); margin-bottom: 4px; }
+.note b { font-weight: 500; color: var(--ink); }
+.ghost {
+  margin-top: 12px; width: 100%; background: var(--ink); color: var(--lime); border: 0; border-radius: 12px; padding: 13px;
+  font-family: 'Anton', 'Impact', sans-serif; font-size: 14px; letter-spacing: 1.4px; text-transform: uppercase;
+}
+
+/* ---------- QR (computador) ---------- */
+.qrcard { display: flex; gap: 18px; align-items: center; background: var(--card); border: 1px solid var(--rule); border-radius: 18px; padding: 16px; }
+.qr { width: 132px; height: 132px; flex: none; padding: 8px; background: #fff; border-radius: 10px; box-shadow: inset 0 0 0 1px var(--rule); }
+.qr svg { display: block; width: 100%; height: 100%; }
+.qrcard strong { display: block; font-family: 'Anton', 'Impact', sans-serif; font-weight: 400; font-size: 18px; letter-spacing: 1.4px; text-transform: uppercase; }
+.qrcard p { font-size: 13px; font-weight: 300; line-height: 1.5; color: var(--ink2); margin-top: 6px; }
+.steps { list-style: none; margin-top: 18px; display: grid; gap: 10px; }
+.steps li { display: flex; gap: 12px; align-items: baseline; font-size: 13.5px; font-weight: 300; color: var(--ink2); line-height: 1.45; }
+.steps li span { font-family: 'Anton', 'Impact', sans-serif; font-size: 13px; letter-spacing: 1px; color: var(--ink); background: var(--lime); border-radius: 50%; width: 24px; height: 24px; flex: none; display: grid; place-items: center; }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + var(--safe-b)); transform: translate(-50%, 20px); opacity: 0;
+  background: var(--ink); color: #fff; font-size: 13px; padding: 12px 16px; border-radius: 12px; max-width: 90vw;
+  transition: .3s; pointer-events: none; z-index: 10;
+}
+.toast.on { transform: translate(-50%, 0); opacity: 1; }
+
+@media (max-width: 400px) {
+  .dims { gap: 5px; }
+  .dims span { font-size: 11px; padding: 5px 8px; }
+}
+
+/* ---------- celular deitado ---------- */
+@media (orientation: landscape) and (max-height: 520px) {
+  .app { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); grid-template-rows: auto auto 1fr; grid-template-areas: "stage top" "stage intro" "stage dock"; }
+  .dock { align-self: end; }
+  h1 { font-size: 34px; }
+  .drag { display: none; }
+}
+
+/* ---------- computador ---------- */
+@media (min-width: 900px) {
+  .is-desktop body { overflow: auto; }
+  .is-desktop .app {
+    grid-template-columns: minmax(0, 1.35fr) minmax(380px, 1fr);
+    grid-template-rows: auto auto 1fr auto;
+    grid-template-areas: "stage top" "stage intro" "stage dock" "stage foot";
+    max-width: 1500px; margin: 0 auto;
+  }
+  .is-desktop .top { padding-top: 36px; }
+  .is-desktop .intro { padding-top: 40px; }
+  .is-desktop h1 { font-size: clamp(48px, 5.2vw, 84px); }
+  .is-desktop .dock { align-self: start; padding-top: 36px; }
+  .is-desktop .foot { display: block; grid-area: foot; padding: 0 var(--pad) 32px; font-size: 11.5px; font-weight: 300; color: var(--ink3); }
+  .is-desktop .stage::before { inset: 20% 12% 4%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tag::before { animation: none; }
+}

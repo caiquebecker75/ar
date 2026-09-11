@@ -1,0 +1,15 @@
+{
+  "name": "ar-75lab-tools",
+  "private": true,
+  "type": "module",
+  "description": "Pipeline para preparar os modelos .glb/.usdz das páginas de AR da 75 LAB",
+  "dependencies": {
+    "@gltf-transform/core": "^4.5.0",
+    "@gltf-transform/extensions": "^4.5.0",
+    "@gltf-transform/functions": "^4.5.0",
+    "@google/model-viewer": "^4.3.1",
+    "puppeteer-core": "^24.43.1",
+    "qrcode-generator": "^1.5.2",
+    "sharp": "^0.35.4"
+  }
+}
