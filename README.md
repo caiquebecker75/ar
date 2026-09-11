@@ -15,7 +15,7 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 
 | Pasta | Cliente | Medidas (A × L × P) |
 |---|---|---|
-| `famosa-display-maromba/` | Agrícola Famosa, Display Maromba | 135 × 104 × 40 cm |
+| `famosa-display-maromba/` | Agrícola Famosa, Display Maromba (v2, 11/09/2026) | 137 × 109 × 40 cm |
 
 ## Como publicar um display novo
 
@@ -44,10 +44,14 @@ Pré-requisitos (uma vez): `cd tools && npm install`. O resto já vem no macOS (
 7. **QR code para apresentações** (PNG em alta): `node tools/qr-png.mjs <pasta>` → `<pasta>/qr.png`.
 8. Commit e push na `main`. O Pages publica em ~1 minuto.
 
+**Atualizando um display que já existe:** repita os passos 2, 4 e 6 e suba o `?v=N` de `display.glb`,
+`display.usdz`, `poster.webp` e `og.jpg` no `index.html` — sem isso, celulares que já abriram o link
+continuam vendo o modelo antigo por um tempo (cache).
+
 ## O que o `prepare-glb.mjs` corrige
 
 - Aplica as transformações dos objetos na geometria (escala negativa do Blender vira geometria espelhada correta).
 - "Assa" as transformações de textura (`KHR_texture_transform`) nas UVs, porque o Quick Look interpreta errado.
-- Transforma faces de dois lados em geometria real, com o verso recuado 1 mm. O Quick Look não desenha o verso das faces, e lado de fora e lado de dentro coincidentes brigam entre si.
+- Transforma faces de dois lados em geometria real, com o verso recuado 1 mm. O Quick Look não desenha o verso das faces, e lado de fora e lado de dentro coincidentes brigam entre si. Malhas fechadas e opacas (ex.: melões) ficam sem verso, porque o lado de dentro nunca aparece.
 - Separa a imagem usada como cor e como mapa técnico ao mesmo tempo.
 - Põe a origem no centro da base (o display nasce apoiado no chão) e reduz as texturas para JPEG ≤ 2048 px.

@@ -10,7 +10,8 @@
 //    diferente da cor, ela ganha um conjunto de UV próprio.
 // 3. Gira (opcional) para a frente do display ficar em +Z e põe a origem no
 //    centro da base: em AR o modelo nasce apoiado no chão, de frente para quem olha.
-// 4. Transforma faces "de dois lados" em geometria real (verso recuado 1 mm).
+// 4. Transforma faces "de dois lados" em geometria real (verso recuado 1 mm), menos
+//    nas malhas fechadas, que nunca mostram o lado de dentro.
 // 5. Reduz as texturas (máx. 2048 px; faixas muito largas até 4096) e converte para JPEG.
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
@@ -207,9 +208,39 @@ const dims = { largura_m: +(max[0] - min[0]).toFixed(3), altura_m: +(max[1] - mi
 // lado de dentro preto da caixa no mesmo plano). O verso é duplicado com a ordem invertida
 // e recuado 1 mm para trás da própria face — assim ganha sempre a face virada para quem olha.
 const VERSO_OFFSET = 0.001;
+// Malha fechada com as faces para fora (ex.: os melões) nunca mostra o lado de dentro:
+// não precisa de verso, e poupa metade dos triângulos dela.
+function closedOutward(prim) {
+  const pos = prim.getAttribute('POSITION').getArray(), idx = prim.getIndices().getArray();
+  const ids = new Map(), weld = new Uint32Array(pos.length / 3);
+  for (let i = 0; i < weld.length; i++) {
+    const k = `${Math.round(pos[i * 3] * 1e5)},${Math.round(pos[i * 3 + 1] * 1e5)},${Math.round(pos[i * 3 + 2] * 1e5)}`;
+    if (!ids.has(k)) ids.set(k, ids.size);
+    weld[i] = ids.get(k);
+  }
+  const edges = new Map();
+  let volume = 0;
+  for (let t = 0; t < idx.length; t += 3) {
+    const v = [idx[t], idx[t + 1], idx[t + 2]];
+    for (let e = 0; e < 3; e++) {
+      const a = weld[v[e]], b = weld[v[(e + 1) % 3]];
+      if (a === b) continue;
+      const k = a < b ? `${a}_${b}` : `${b}_${a}`;
+      edges.set(k, (edges.get(k) || 0) + 1);
+    }
+    const [p, q, r] = v.map((i) => [pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]]);
+    volume += p[0] * (q[1] * r[2] - q[2] * r[1]) - p[1] * (q[0] * r[2] - q[2] * r[0]) + p[2] * (q[0] * r[1] - q[1] * r[0]);
+  }
+  for (const c of edges.values()) if (c !== 2) return false;
+  return volume > 0;
+}
 const doubleSided = root.listMaterials().filter((m) => m.getDoubleSided());
+const versoStats = { comVerso: 0, fechadas: 0 };
 for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) {
   if (!doubleSided.includes(prim.getMaterial()) || !prim.getAttribute('NORMAL') || !prim.getIndices()) continue;
+  // transparente precisa do verso mesmo fechada: o lado de trás aparece através dela
+  if (prim.getMaterial().getAlphaMode() === 'OPAQUE' && closedOutward(prim)) { versoStats.fechadas++; continue; }
+  versoStats.comVerso++;
   const n = prim.getAttribute('NORMAL').getArray(), count = n.length / 3;
   for (const sem of prim.listSemantics()) {
     const acc = prim.getAttribute(sem), a = acc.getArray(), dup = new a.constructor(a.length * 2);
@@ -262,4 +293,5 @@ for (const t of root.listTextures()) {
   const m = await sharp(t.getImage()).metadata();
   texs.push(`${t.getName()} ${m.width}x${m.height} ${(t.getImage().byteLength / 1024).toFixed(0)}KB ${t.getMimeType()}`);
 }
-console.log(JSON.stringify({ saida: output, tamanho_mb: +(statSync(output).size / 1048576).toFixed(2), dims, texturas: texs }, null, 2));
+const triangulos = root.listMeshes().flatMap((m) => m.listPrimitives()).reduce((s, p) => s + p.getIndices().getCount() / 3, 0);
+console.log(JSON.stringify({ saida: output, tamanho_mb: +(statSync(output).size / 1048576).toFixed(2), dims, triangulos, verso: versoStats, texturas: texs }, null, 2));
