@@ -15,7 +15,8 @@
 // 5. Reduz as texturas (máx. 2048 px; faixas muito largas até 4096) e converte para JPEG.
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { prune, dedup, getBounds } from '@gltf-transform/functions';
+import { prune, dedup, getBounds, weldPrimitive, simplifyPrimitive } from '@gltf-transform/functions';
+import { MeshoptSimplifier } from 'meshoptimizer';
 import sharp from 'sharp';
 import { statSync } from 'node:fs';
 
@@ -26,6 +27,7 @@ const flag = (name, def) => {
 };
 const ROTATE_Y = flag('rotate-y', 0);
 const MAX_TEX = flag('max-texture', 2048);
+const MAX_TRI = flag('max-tri', 4000);
 if (!input || !output) {
   console.error('uso: node tools/prepare-glb.mjs <entrada.glb> <saida.glb> [--rotate-y=graus] [--max-texture=2048]');
   process.exit(1);
@@ -193,6 +195,23 @@ for (const [mat, plan] of plans) {
 const stillUsed = root.listMaterials().some((m) => SLOTS.some((s) => m[`get${s}TextureInfo`]()?.getExtension('KHR_texture_transform')));
 if (!stillUsed) root.listExtensionsUsed().filter((e) => e.extensionName === 'KHR_texture_transform').forEach((e) => e.dispose());
 
+// só as malhas novas: as antigas ainda estão no documento até o prune
+const bakedMeshes = () => baked.map((n) => n.getMesh());
+
+// Malhas densas demais (ex.: melões de 18 mil triângulos cada) caem para ~MAX_TRI.
+// Erro máximo de 0,5% do tamanho da própria malha: num melão de 15 cm, menos de 1 mm.
+await MeshoptSimplifier.ready;
+const simplificacao = { malhas: 0, antes: 0, depois: 0 };
+for (const mesh of bakedMeshes()) for (const prim of mesh.listPrimitives()) {
+  const tri = prim.getIndices() ? prim.getIndices().getCount() / 3 : 0;
+  if (tri <= MAX_TRI) continue;
+  weldPrimitive(prim);
+  simplifyPrimitive(prim, { simplifier: MeshoptSimplifier, ratio: MAX_TRI / tri, error: 0.005 });
+  simplificacao.malhas++;
+  simplificacao.antes += tri;
+  simplificacao.depois += prim.getIndices().getCount() / 3;
+}
+
 // origem no centro da base (medidas reais, antes do verso de 1 mm)
 const { min, max } = getBounds(scene);
 const off = [-(min[0] + max[0]) / 2, -min[1], -(min[2] + max[2]) / 2];
@@ -236,7 +255,7 @@ function closedOutward(prim) {
 }
 const doubleSided = root.listMaterials().filter((m) => m.getDoubleSided());
 const versoStats = { comVerso: 0, fechadas: 0 };
-for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) {
+for (const mesh of bakedMeshes()) for (const prim of mesh.listPrimitives()) {
   if (!doubleSided.includes(prim.getMaterial()) || !prim.getAttribute('NORMAL') || !prim.getIndices()) continue;
   // transparente precisa do verso mesmo fechada: o lado de trás aparece através dela
   if (prim.getMaterial().getAlphaMode() === 'OPAQUE' && closedOutward(prim)) { versoStats.fechadas++; continue; }
@@ -294,4 +313,4 @@ for (const t of root.listTextures()) {
   texs.push(`${t.getName()} ${m.width}x${m.height} ${(t.getImage().byteLength / 1024).toFixed(0)}KB ${t.getMimeType()}`);
 }
 const triangulos = root.listMeshes().flatMap((m) => m.listPrimitives()).reduce((s, p) => s + p.getIndices().getCount() / 3, 0);
-console.log(JSON.stringify({ saida: output, tamanho_mb: +(statSync(output).size / 1048576).toFixed(2), dims, triangulos, verso: versoStats, texturas: texs }, null, 2));
+console.log(JSON.stringify({ saida: output, tamanho_mb: +(statSync(output).size / 1048576).toFixed(2), dims, triangulos, simplificacao, verso: versoStats, texturas: texs }, null, 2));
