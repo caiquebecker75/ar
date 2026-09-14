@@ -18,12 +18,14 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { USDZExporter } from 'three/addons/exporters/USDZExporter.js';
 
-const slug = new URLSearchParams(location.search).get('slug');
+const params = new URLSearchParams(location.search);
+const slug = params.get('slug');
+const file = params.get('file') || 'display'; // ex.: &file=imersivo → imersivo.glb → imersivo.usdz
 const out = document.getElementById('log');
 const log = (m) => { out.textContent += '\n' + m; };
 
 try {
-  const gltf = await new GLTFLoader().loadAsync(`/${slug}/display.glb`);
+  const gltf = await new GLTFLoader().loadAsync(`/${slug}/${file}.glb`);
   const scene = gltf.scene;
 
   // O Quick Look não desenha o verso das faces: o prepare-glb.mjs já transformou as
@@ -38,7 +40,7 @@ try {
     includeAnchoringProperties: true,
     ar: { anchoring: { type: 'plane' }, planeAnchoring: { alignment: 'horizontal' } },
   });
-  const res = await fetch(`/__save?path=${encodeURIComponent(slug)}/display.usdz`, { method: 'POST', body: buffer });
+  const res = await fetch(`/__save?path=${encodeURIComponent(slug)}/${file}.usdz`, { method: 'POST', body: buffer });
   log(await res.text());
   log('PRONTO');
 } catch (e) {

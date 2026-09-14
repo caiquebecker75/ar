@@ -64,8 +64,18 @@ O stand da NGV veio do Blender com ~2,7 milhões de triângulos e 170 MB. O que 
      --max-texture=2048 --max-texture-data=1024 --max-tri=1500 --simplify-error=0.02
    ```
    `--max-texture-data` reduz só normal/rugosidade/metal (a arte das paredes continua em 2048).
-3. A página tem o seletor **Tamanho real / Maquete** (`data-ar-scale="fixed|auto"`, script na própria página):
-   40 m² nem sempre cabe na sala, e na maquete a pinça diminui o stand.
+3. **Escala livre** (`ar-scale="auto"`): abre em tamanho real e a pinça diminui o stand (com `fixed`
+   o Quick Look deixa pinçar mas volta sozinho para 100%).
+4. **Modo imersivo** (o lugar real some, fica só o stand): versão com piso e cúpula virtuais em volta,
+   faces para dentro e cor só emissiva. O stand recua para a pessoa começar de frente para a entrada.
+   ```bash
+   node tools/imersivo-glb.mjs <pasta>/display.glb <pasta>/imersivo.glb   # --raio=15 --recuo=auto
+   node tools/run-page.mjs "http://localhost:8833/tools/usdz.html?slug=<pasta>&file=imersivo"
+   python3 tools/usdz-compact.py <pasta>/imersivo.usdz && usdchecker --arkit <pasta>/imersivo.usdz
+   ```
+   O botão "Modo imersivo" (script na própria página) abre direto o AR nativo com escala travada:
+   iPhone por `<a rel="ar" href="imersivo.usdz#allowsContentScaling=0">`, Android por intent do
+   Scene Viewer com `resizable=false` e `disable_occlusion=true`.
 
 ## O que o `prepare-glb.mjs` corrige
 
