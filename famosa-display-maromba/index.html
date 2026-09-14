@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Display Maromba M · Agrícola Famosa | AR 75 LAB</title>
-<meta name="description" content="Veja o Display Maromba M da Agrícola Famosa em realidade aumentada, em tamanho real, no seu espaço.">
+<title>Display Maromba · Agrícola Famosa | AR 75 LAB</title>
+<meta name="description" content="Veja o Display Maromba da Agrícola Famosa, nos tamanhos M e P, em realidade aumentada e em tamanho real, no seu espaço.">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#F3F4EE">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://projetos.75lab.com.br/ar/famosa-display-maromba/">
-<meta property="og:title" content="Display Maromba M · Agrícola Famosa">
-<meta property="og:description" content="Toque para ver o display em realidade aumentada, em tamanho real, no seu espaço.">
-<meta property="og:image" content="https://projetos.75lab.com.br/ar/famosa-display-maromba/og.jpg?v=3">
+<meta property="og:title" content="Display Maromba M e P · Agrícola Famosa">
+<meta property="og:description" content="Escolha o tamanho e toque para ver o display em realidade aumentada, em tamanho real, no seu espaço.">
+<meta property="og:image" content="https://projetos.75lab.com.br/ar/famosa-display-maromba/og.jpg?v=4">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -19,11 +19,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Lexend:wght@200;300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/ar.css?v=2">
+<link rel="stylesheet" href="../assets/ar.css?v=3">
 <script>(function(){if(location.protocol==='http:'&&!/^(localhost|127\.)/.test(location.hostname))location.replace('https://'+location.host+location.pathname+location.search+location.hash);var u=navigator.userAgent,m=/Android|iPhone|iPad|iPod/i.test(u)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);document.documentElement.classList.add(m?'is-mobile':'is-desktop')})()</script>
 <script type="module" src="../vendor/model-viewer.min.js"></script>
 <script defer src="../vendor/qrcode.min.js"></script>
-<script type="module" src="../assets/ar.js"></script>
+<script type="module" src="../assets/ar.js?v=3"></script>
+<!-- modelos desta página: o primeiro é o que abre sem ?modelo= -->
+<script type="application/json" id="modelos">
+[
+  { "id": "m", "nome": "M", "alt": "Display Maromba M da Agrícola Famosa em 3D",
+    "src": "display.glb?v=2", "ios": "display.usdz?v=2", "poster": "poster.webp?v=3" },
+  { "id": "p", "nome": "P", "alt": "Display Maromba P da Agrícola Famosa em 3D",
+    "src": "../famosa-display-maromba-p/display.glb", "ios": "../famosa-display-maromba-p/display.usdz",
+    "poster": "../famosa-display-maromba-p/poster.webp" }
+]
+</script>
 </head>
 <body>
 <main class="app">
@@ -34,19 +44,22 @@
 
   <section class="intro">
     <div class="eyebrow">Agrícola Famosa</div>
-    <h1>Display <b>Maromba M</b></h1>
-    <div class="dims" aria-label="Medidas">
-      <span>Altura<b>137 cm</b></span><span>Largura<b>109 cm</b></span><span>Profundidade<b>40 cm</b></span>
+    <h1>Display <b>Maromba</b></h1>
+    <div class="modelos" role="group" aria-label="Escolha o tamanho do display">
+      <button type="button" data-modelo="m" aria-pressed="true" class="on">
+        <img src="poster.webp?v=3" alt="" width="40" height="50">
+        <span><b>Maromba M</b><small>137 × 109 × 40 cm</small></span>
+      </button>
+      <button type="button" data-modelo="p" aria-pressed="false">
+        <img src="../famosa-display-maromba-p/poster.webp" alt="" width="40" height="50">
+        <span><b>Maromba P</b><small>137 × 58 × 40 cm</small></span>
+      </button>
     </div>
-    <nav class="tamanhos" aria-label="Tamanho do display">
-      <span>Tamanho</span><a class="on" href="./" aria-current="page">M</a><a href="../famosa-display-maromba-p/">P</a>
-    </nav>
   </section>
 
   <section class="stage">
     <model-viewer
-      src="display.glb?v=2" ios-src="display.usdz?v=2" poster="poster.webp?v=3"
-      alt="Display Maromba M da Agrícola Famosa em 3D"
+      alt="Display Maromba da Agrícola Famosa em 3D"
       ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor" xr-environment
       camera-controls auto-rotate auto-rotate-delay="2500" rotation-per-second="14deg"
       camera-orbit="28deg 78deg auto" min-camera-orbit="auto 25deg auto" max-camera-orbit="auto 92deg auto"
@@ -82,11 +95,11 @@
         <div class="qr" id="qr"></div>
         <div>
           <strong>Veja no seu espaço</strong>
-          <p>Aponte a câmera do celular para o código e toque em <b>Ver no meu espaço</b>.</p>
+          <p>Aponte a câmera do celular para o código e toque em <b>Ver no meu espaço</b>. O código abre no tamanho escolhido.</p>
         </div>
       </div>
       <ol class="steps">
-        <li><span>1</span>Abra o link no celular, iPhone ou Android.</li>
+        <li><span>1</span>Escolha o tamanho e abra o link no celular, iPhone ou Android.</li>
         <li><span>2</span>Aponte para o chão e mova o aparelho devagar.</li>
         <li><span>3</span>O display aparece em tamanho real: ande ao redor e veja de todos os lados.</li>
       </ol>
