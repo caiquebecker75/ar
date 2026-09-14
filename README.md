@@ -72,16 +72,15 @@ O stand da NGV veio do Blender com ~2,7 milhões de triângulos e 170 MB. O que 
    `--max-texture-data` reduz só normal/rugosidade/metal (a arte das paredes continua em 2048).
 3. **Escala livre** (`ar-scale="auto"`): abre em tamanho real e a pinça diminui o stand (com `fixed`
    o Quick Look deixa pinçar mas volta sozinho para 100%).
-4. **Modo imersivo** (o lugar real some, fica só o stand): versão com piso e cúpula virtuais em volta,
-   faces para dentro e cor só emissiva. O stand recua para a pessoa começar de frente para a entrada.
-   ```bash
-   node tools/imersivo-glb.mjs <pasta>/display.glb <pasta>/imersivo.glb   # --raio=15 --recuo=auto
-   node tools/run-page.mjs "http://localhost:8833/tools/usdz.html?slug=<pasta>&file=imersivo"
-   python3 tools/usdz-compact.py <pasta>/imersivo.usdz && usdchecker --arkit <pasta>/imersivo.usdz
-   ```
-   O botão "Modo imersivo" (script na própria página) abre direto o AR nativo com escala travada:
-   iPhone por `<a rel="ar" href="imersivo.usdz#allowsContentScaling=0">`, Android por intent do
-   Scene Viewer com `resizable=false` e `disable_occlusion=true`.
+4. **Modo imersivo** (só o render, sem nada do lugar real): `<pasta>/imersivo.html`, 3D em tela cheia
+   com three.js (vendorizado em `vendor/three/`), sem câmera. Olha em volta pelo giroscópio do celular
+   (no iPhone a permissão é pedida no toque de "Entrar"), anda com o controle na tela (W A S D no
+   computador), colide com o stand por raios curtos. Usa o mesmo `display.glb` da página de AR (cache).
+
+   **Não tente fazer imersão dentro do AR do iPhone.** Em iPhone com LiDAR, o AR Quick Look recorta
+   o modelo com a geometria real (paredes, portas, pessoas) e não há parâmetro para desligar. Uma cúpula
+   virtual em volta do stand não resolve: as paredes reais estão mais perto que ela e aparecem por cima.
+   O parâmetro `&file=` do `usdz.html` ficou dessa tentativa (converte `<file>.glb` → `<file>.usdz`).
 
 ## O que o `prepare-glb.mjs` corrige
 

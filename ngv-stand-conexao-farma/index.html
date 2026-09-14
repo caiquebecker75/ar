@@ -21,8 +21,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Lexend:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/ar.css?v=3">
 <style>
-  /* modo imersivo: botão secundário abaixo do principal */
-  .imersivo { margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  /* modo imersivo: link secundário abaixo do botão principal */
+  .imersivo { margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; }
   .imersivo svg { width: 20px; height: 20px; flex: none; }
   .imersivo-nota { font-size: 12px; font-weight: 300; line-height: 1.4; color: var(--ink3); text-align: center; margin-top: 6px; }
 </style>
@@ -70,13 +70,11 @@
         <span>Ver no meu espaço</span>
       </button>
       <p class="hint">Abre em <b>tamanho real</b>. Faça <b>pinça</b> para diminuir e ver o stand como maquete.</p>
-      <div id="imersao" hidden>
-        <button class="ghost imersivo" id="imersivo" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
-          <span>Modo imersivo</span>
-        </button>
-        <p class="imersivo-nota">O lugar real some: só você e o stand, em tamanho real.</p>
-      </div>
+      <a class="ghost imersivo" href="imersivo.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>Modo imersivo</span>
+      </a>
+      <p class="imersivo-nota">Sem câmera: só o stand em 3D, sem a sala em volta.</p>
     </div>
 
     <div id="panel-noar" hidden>
@@ -85,6 +83,7 @@
         Para entrar no stand em realidade aumentada, abra este link no <b>Safari</b> (iPhone) ou no <b>Chrome</b> (Android).
       </div>
       <button class="ghost" id="copy" type="button">Copiar link</button>
+      <a class="ghost imersivo" href="imersivo.html"><span>Modo imersivo</span></a>
     </div>
 
     <div id="panel-desktop" hidden>
@@ -98,9 +97,12 @@
       <ol class="steps">
         <li><span>1</span>Abra o link no celular, iPhone ou Android. O arquivo é grande: prefira Wi-Fi.</li>
         <li><span>2</span>Ver no meu espaço: o stand aparece em tamanho real no chão. Com pinça, diminua para ver como maquete.</li>
-        <li><span>3</span>Modo imersivo: o lugar real some e fica só o stand em volta de você. Caminhe para dentro.</li>
-        <li><span>4</span>Em tamanho real o stand ocupa 40 m²: para caminhar, use um espaço aberto.</li>
+        <li><span>3</span>Modo imersivo: só o stand em 3D, sem a sala. Mova o celular para olhar e ande com o controle na tela.</li>
       </ol>
+      <a class="ghost imersivo" href="imersivo.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>Abrir o modo imersivo aqui</span>
+      </a>
     </div>
 
     <div id="panel-erro" hidden>
@@ -111,45 +113,5 @@
   <footer class="foot">Projeto 75 LAB para NGV Ecossistema · Conexão Farma 2027 · Visualização em realidade aumentada</footer>
 </main>
 <div class="toast" role="status" aria-live="polite"></div>
-<script>
-  // Modo imersivo: abre direto no AR nativo o imersivo.usdz/.glb (stand dentro de piso e cúpula
-  // virtuais, faces para dentro). Escala travada: a imersão só funciona em tamanho real.
-  (() => {
-    const ua = navigator.userAgent;
-    const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    const isAndroid = /Android/i.test(ua);
-    const quickLook = isIOS && document.createElement('a').relList.supports('ar');
-    if (!quickLook && !isAndroid) return;
-    document.querySelector('#imersao').hidden = false;
-
-    const aqui = location.href.split('#')[0];
-    if (location.hash === '#sem-ar') {
-      history.replaceState(null, '', aqui);
-      const t = document.querySelector('.toast');
-      t.textContent = 'Este aparelho não abriu o modo imersivo. Ele precisa do Google Play Services para AR.';
-      t.classList.add('on');
-      setTimeout(() => t.classList.remove('on'), 5000);
-    }
-
-    document.querySelector('#imersivo').addEventListener('click', () => {
-      if (quickLook) {
-        const a = document.createElement('a');
-        a.rel = 'ar';
-        a.href = new URL('imersivo.usdz?v=1#allowsContentScaling=0', aqui).href;
-        a.appendChild(document.createElement('img'));
-        a.click();
-        return;
-      }
-      const params = new URLSearchParams({
-        file: new URL('imersivo.glb?v=1', aqui).href,
-        mode: 'ar_preferred',
-        resizable: 'false',
-        disable_occlusion: 'true', // objetos reais não "furam" o ambiente virtual
-        title: 'Stand NGV · modo imersivo',
-      });
-      location.href = `intent://arvr.google.com/scene-viewer/1.0?${params}#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(aqui + '#sem-ar')};end;`;
-    });
-  })();
-</script>
 </body>
 </html>
