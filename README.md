@@ -18,6 +18,12 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `famosa-display-maromba/` | Agrícola Famosa, Display Maromba M | 137 × 109 × 40 cm |
 | `famosa-display-maromba-p/` | Agrícola Famosa, Display Maromba P | 137 × 58 × 40 cm |
 | `ngv-stand-conexao-farma/` | NGV Ecossistema, stand Conexão Farma 2027 (Abradilan) | 3 × 8 × 5 m (ambiente inteiro) |
+| `savencia-clipstrip-frescatino/` | Savencia, Clip Strip Frescatino | 70 × 10 × 6 cm |
+
+> **Arquivo do Modo (.lxo), como o clip strip da Savencia:** o Blender não abre `.lxo`. A geometria foi lida
+> direto do arquivo (formato IFF parecido com o LWO: `PNTS`, `POLS`, `PTAG`, `VMAP/VMAD`), com o Z invertido,
+> e montada no Blender por script. Cuidado: a cena pode trazer malhas escondidas de outros projetos
+> (canal `visible` = `allOff`), e texturas com projeção cúbica ignoram o UV (refazer como projeção planar).
 
 ## Como publicar um display novo
 
