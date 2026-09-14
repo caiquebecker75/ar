@@ -19,6 +19,14 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `famosa-display-maromba-p/` | Agrícola Famosa, Display Maromba P | 137 × 58 × 40 cm |
 | `ngv-stand-conexao-farma/` | NGV Ecossistema, stand Conexão Farma 2027 (Abradilan) | 3 × 8 × 5 m (ambiente inteiro) |
 | `savencia-clipstrip-frescatino/` | Savencia, Clip Strip Frescatino | 70 × 10 × 6 cm |
+| `codice-displays/` | Códice, oito displays numa página (`?modelo=essencial`, `sense`, `media`, `ilha`, `painel`, `vitrine`, `categoria`, `multiuso`) | medidas de referência, de 195 × 74 × 52 cm a 202 × 104 × 55 cm |
+
+> **Códice:** não havia arquivo 3D dos displays. Os modelos foram montados em three.js a partir dos renders
+> do deck comercial, com as texturas desenhadas em canvas (logotipo, painel perfurado, tela do pacote Media).
+> Para refazer: `tools/codice/build.html` grava `.work/codice/raw-<id>.glb` → `prepare-glb.mjs` para
+> `codice-displays/<id>.glb` → `tools/usdz.html?slug=codice-displays&file=<id>` + `usdz-compact.py` →
+> `tools/codice/shots.html` (posters) → `tools/codice/og.html` (miniatura; o `capture.html` com oito modelos
+> fica ilegível). As medidas são de referência, não de fabricação.
 
 > **Arquivo do Modo (.lxo), como o clip strip da Savencia:** o Blender não abre `.lxo`. A geometria foi lida
 > direto do arquivo (formato IFF parecido com o LWO: `PNTS`, `POLS`, `PTAG`, `VMAP/VMAD`), com o Z invertido,

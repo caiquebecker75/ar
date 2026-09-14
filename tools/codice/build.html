@@ -1,0 +1,380 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Códice · gerador dos displays 3D</title>
+<!--
+  Gera os displays da Códice em .glb (metros, frente em +Z, base em y=0).
+  http://localhost:8833/tools/codice/build.html[?so=essencial]
+  Grava .work/codice/raw-<id>.glb pelo POST /__save do tools/serve.py.
+-->
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;800&display=swap" rel="stylesheet">
+<script type="importmap">
+{ "imports": {
+  "three": "/tools/node_modules/three/build/three.module.js",
+  "three/addons/": "/tools/node_modules/three/examples/jsm/"
+} }
+</script>
+<pre id="log" style="font:13px/1.5 ui-monospace,monospace;padding:16px">gerando…</pre>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+
+const out = document.getElementById('log');
+const log = (m) => { out.textContent += '\n' + m; };
+const so = new URLSearchParams(location.search).get('so');
+
+try {
+await document.fonts.load('800 100px "Exo 2"');
+const loadImg = (src) => new Promise((ok, err) => { const i = new Image(); i.onload = () => ok(i); i.onerror = err; i.src = src; });
+const LOGO = await loadImg('logo-branco.png');
+const SYM = await loadImg('simbolo-branco.png');
+
+/* ---------------- materiais ---------------- */
+const std = (name, color, metalness, roughness, extra = {}) =>
+  new THREE.MeshStandardMaterial({ name, color, metalness, roughness, ...extra });
+const M = {
+  metal: std('metal', '#B4BBC6', 0.55, 0.4),
+  dark: std('estrutura', '#5E6673', 0.5, 0.48),
+  shelf: std('prateleira', '#CDD3DC', 0.35, 0.45),
+  navy: std('navy', '#061B49', 0.05, 0.6),
+  blue: std('trilho', '#2F73FF', 0.05, 0.35),
+  white: std('produto-branco', '#F3F5F9', 0, 0.5),
+  sky: std('produto-azul', '#C9DBFF', 0, 0.5),
+  aqua: std('produto-agua', '#A5ECE5', 0, 0.5),
+  ink: std('produto-marinho', '#233A74', 0, 0.45),
+  gray: std('produto-cinza', '#8D95A2', 0, 0.5),
+  black: std('preto', '#0A0E18', 0.2, 0.35),
+  glass: std('vidro', '#E6F1F8', 0, 0.06, { transparent: true, opacity: 0.2 }),
+  led: std('led', '#1DD4C8', 0, 0.4, { emissive: new THREE.Color('#1DD4C8'), emissiveIntensity: 1 }),
+};
+
+/* ---------------- texturas desenhadas ---------------- */
+function canvas(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; }
+function texMat(name, c, emissive = false) {
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  const m = std(name, '#ffffff', 0.05, 0.55, { map: t });
+  if (emissive) { m.emissive = new THREE.Color('#ffffff'); m.emissiveMap = t; m.emissiveIntensity = 0.85; }
+  return m;
+}
+const cache = new Map();
+function once(key, fn) { if (!cache.has(key)) cache.set(key, fn()); return cache.get(key); }
+function gradLine(x, y, w, h, g) { const gr = g.createLinearGradient(x, 0, x + w, 0); gr.addColorStop(0, '#1DD4C8'); gr.addColorStop(1, '#2F73FF'); g.fillStyle = gr; g.fillRect(x, y, w, h); }
+
+// testeira: marinho com o logotipo Códice
+function headerMat(aspect) {
+  return once('header' + aspect.toFixed(2), () => {
+    const W = 1024, H = Math.round(W / aspect), [c, g] = canvas(W, H);
+    g.fillStyle = '#061B49'; g.fillRect(0, 0, W, H);
+    gradLine(0, H - Math.round(H * 0.07), W, Math.round(H * 0.07), g);
+    const lh = H * 0.56, lw = lh * LOGO.width / LOGO.height;
+    const s = Math.min(1, (W * 0.8) / lw);
+    g.drawImage(LOGO, (W - lw * s) / 2, (H * 0.93 - lh * s) / 2, lw * s, lh * s);
+    return texMat('testeira', c);
+  });
+}
+// banner lateral: marinho com o símbolo e "sua marca aqui"
+function wingMat(aspect) {
+  return once('wing' + aspect.toFixed(2), () => {
+    const H = 1024, W = Math.round(H * aspect), [c, g] = canvas(W, H);
+    g.fillStyle = '#061B49'; g.fillRect(0, 0, W, H);
+    const sw = W * 0.46, sh = sw * SYM.height / SYM.width;
+    g.drawImage(SYM, (W - sw) / 2, H * 0.12, sw, sh);
+    g.fillStyle = '#fff'; g.textAlign = 'center'; g.font = `800 ${Math.round(W * 0.15)}px "Exo 2"`;
+    ['SUA', 'MARCA', 'AQUI'].forEach((t, i) => g.fillText(t, W / 2, H * 0.56 + i * W * 0.17));
+    gradLine(W * 0.3, H * 0.9, W * 0.4, H * 0.012, g);
+    return texMat('banner', c);
+  });
+}
+// faixa de base: "sua marca aqui" em linha
+function baseMat(aspect) {
+  return once('base' + aspect.toFixed(2), () => {
+    const W = 1024, H = Math.round(W / aspect), [c, g] = canvas(W, H);
+    g.fillStyle = '#061B49'; g.fillRect(0, 0, W, H);
+    gradLine(0, 0, W, Math.max(4, H * 0.05), g);
+    g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.font = `800 ${Math.round(H * 0.34)}px "Exo 2"`; g.fillText('SUA MARCA AQUI', W / 2, H * 0.55);
+    return texMat('faixa', c);
+  });
+}
+function kickMat(aspect) {
+  return once('kick' + aspect.toFixed(2), () => {
+    const W = 1024, H = Math.max(32, Math.round(W / aspect)), [c, g] = canvas(W, H);
+    g.fillStyle = '#0A2360'; g.fillRect(0, 0, W, H); gradLine(0, 0, W, Math.max(3, H * 0.08), g);
+    return texMat('rodape', c);
+  });
+}
+// painel perfurado e painel canaletado
+function perfMat(w, h) {
+  return once(`perf${w}x${h}`, () => {
+    const W = 1024, H = Math.round(W * h / w), [c, g] = canvas(W, H);
+    g.fillStyle = '#BCC3CD'; g.fillRect(0, 0, W, H);
+    const step = W / (w / 0.025), r = step * 0.17;
+    g.fillStyle = '#7F8896';
+    for (let y = step / 2; y < H; y += step) for (let x = step / 2; x < W; x += step) { g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); }
+    return std('perfurado', '#ffffff', 0.45, 0.5, { map: Object.assign(new THREE.CanvasTexture(c), { colorSpace: THREE.SRGBColorSpace }) });
+  });
+}
+function slatMat(w, h) {
+  return once(`slat${w}x${h}`, () => {
+    const W = 1024, H = Math.round(W * h / w), [c, g] = canvas(W, H);
+    g.fillStyle = '#C2C8D1'; g.fillRect(0, 0, W, H);
+    const step = W / (w / 0.075);
+    for (let y = step * 0.5; y < H; y += step) { g.fillStyle = '#8A93A0'; g.fillRect(0, y, W, step * 0.16); g.fillStyle = '#DCE1E8'; g.fillRect(0, y + step * 0.16, W, step * 0.05); }
+    return std('canaletado', '#ffffff', 0.45, 0.5, { map: Object.assign(new THREE.CanvasTexture(c), { colorSpace: THREE.SRGBColorSpace }) });
+  });
+}
+// tela do pacote Media
+function screenMat() {
+  return once('screen', () => {
+    const W = 1024, H = 576, [c, g] = canvas(W, H);
+    const gr = g.createLinearGradient(0, 0, W, H); gr.addColorStop(0, '#061B49'); gr.addColorStop(0.62, '#0B4F86'); gr.addColorStop(1, '#1DD4C8');
+    g.fillStyle = gr; g.fillRect(0, 0, W, H);
+    const lh = 60, lw = lh * LOGO.width / LOGO.height; g.drawImage(LOGO, 56, 46, lw, lh);
+    g.fillStyle = '#fff'; g.font = '800 112px "Exo 2"'; g.fillText('OFERTA', 56, 300); g.fillText('DA SEMANA', 56, 410);
+    g.fillStyle = '#1DD4C8'; g.font = '700 40px "Exo 2"'; g.fillText('Sua marca aqui', 60, 488);
+    return texMat('tela', c, true);
+  });
+}
+// plaqueta de QR (pacote Essencial)
+function qrMat() {
+  return once('qr', () => {
+    const W = 256, [c, g] = canvas(W, W);
+    g.fillStyle = '#fff'; g.fillRect(0, 0, W, W);
+    const n = 21, cell = (W - 36) / n, x0 = 18; let s = 7;
+    const rnd = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+    g.fillStyle = '#061B49';
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+      const inF = (a, b) => a >= b && a < b + 7;
+      if ((inF(x, 0) && inF(y, 0)) || (inF(x, 14) && inF(y, 0)) || (inF(x, 0) && inF(y, 14))) continue;
+      if (rnd() > 0.52) g.fillRect(x0 + x * cell, x0 + y * cell, cell + 0.5, cell + 0.5);
+    }
+    for (const [fx, fy] of [[0, 0], [14, 0], [0, 14]]) {
+      g.fillRect(x0 + fx * cell, x0 + fy * cell, cell * 7, cell * 7);
+      g.fillStyle = '#fff'; g.fillRect(x0 + (fx + 1) * cell, x0 + (fy + 1) * cell, cell * 5, cell * 5);
+      g.fillStyle = '#061B49'; g.fillRect(x0 + (fx + 2) * cell, x0 + (fy + 2) * cell, cell * 3, cell * 3);
+    }
+    return texMat('qr', c);
+  });
+}
+
+/* ---------------- peças ---------------- */
+let root;
+function add(geo, mat, x, y, z, ry = 0, rx = 0) {
+  const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, 0); root.add(m); return m;
+}
+const box = (w, h, d, x, y, z, mat) => add(new THREE.BoxGeometry(w, h, d), mat, x, y, z);
+const plane = (w, h, x, y, z, mat, ry = 0) => add(new THREE.PlaneGeometry(w, h), mat, x, y, z, ry);
+const cyl = (r, h, x, y, z, mat, seg = 16, rx = 0) => add(new THREE.CylinderGeometry(r, r, h, seg), mat, x, y, z, 0, rx);
+
+function feet(W, D) { for (const sx of [-1, 1]) for (const sz of [-1, 1]) cyl(0.022, 0.04, sx * (W / 2 - 0.05), 0.02, sz * (D / 2 - 0.05), M.dark, 14); }
+function plinth(W, D, both = false, h = 0.12) {
+  box(W, h, D, 0, 0.04 + h / 2, 0, M.metal);
+  plane(W - 0.02, h - 0.02, 0, 0.04 + h / 2, D / 2 + 0.001, kickMat((W - 0.02) / (h - 0.02)));
+  if (both) plane(W - 0.02, h - 0.02, 0, 0.04 + h / 2, -D / 2 - 0.001, kickMat((W - 0.02) / (h - 0.02)), Math.PI);
+  return 0.04 + h;
+}
+function uprights(W, z, top) { for (const s of [-1, 1]) box(0.04, top - 0.16, 0.04, s * (W / 2 - 0.02), 0.16 + (top - 0.16) / 2, z, M.dark); }
+function back(W, y0, y1, z, face = 'perf', both = false) {
+  const w = W - 0.08, h = y1 - y0, mat = face === 'slat' ? slatMat(w, h) : perfMat(w, h);
+  box(w, h, 0.018, 0, (y0 + y1) / 2, z, M.metal);
+  plane(w, h, 0, (y0 + y1) / 2, z + 0.0095, mat);
+  if (both) plane(w, h, 0, (y0 + y1) / 2, z - 0.0095, mat, Math.PI);
+}
+// prateleira que sai do painel (dir = +1 para frente, -1 para trás)
+function shelf(W, y, zPanel, depth, dir = 1, { rail = true, lip = false, glass = false } = {}) {
+  const w = W - 0.1, zc = zPanel + dir * (0.01 + depth / 2);
+  box(w, 0.018, depth, 0, y, zc, glass ? M.glass : M.shelf);
+  const zf = zPanel + dir * (0.01 + depth);
+  if (rail) box(w, 0.045, 0.012, 0, y + 0.004, zf + dir * 0.006, M.blue);
+  if (lip) box(w, 0.06, 0.006, 0, y + 0.035, zf, M.glass);
+  for (const s of [-1, 1]) box(0.012, 0.05, depth - 0.02, s * (w / 2 - 0.01), y - 0.03, zc, M.dark);
+  return { top: y + 0.009, zc, zf };
+}
+function header(W, y, z, both = false, h = 0.3) {
+  box(W, h, 0.06, 0, y, z, M.navy);
+  const mat = headerMat((W - 0.02) / (h - 0.02));
+  plane(W - 0.02, h - 0.02, 0, y, z + 0.031, mat);
+  if (both) plane(W - 0.02, h - 0.02, 0, y, z - 0.031, mat, Math.PI);
+}
+// banner lateral perpendicular à frente
+function wing(x, y, z, h, d, side) {
+  box(0.02, h, d, x, y, z, M.navy);
+  plane(d - 0.02, h - 0.02, x + side * 0.011, y, z, wingMat((d - 0.02) / (h - 0.02)), side * Math.PI / 2);
+}
+// produtos: caixas ou frascos numa prateleira
+const PAL = [[M.white, M.white, M.sky], [M.aqua, M.aqua, M.white], [M.ink, M.sky, M.sky], [M.white, M.gray, M.aqua]];
+function fill(W, top, zc, depth, row, { kind = 'box', hMin = 0.16, hMax = 0.24, pw = 0.12, dir = 1, gap = 0.022 } = {}) {
+  const usable = W - 0.16, n = Math.max(1, Math.floor((usable + gap) / (pw + gap))), total = n * pw + (n - 1) * gap;
+  const pal = PAL[row % PAL.length];
+  for (let i = 0; i < n; i++) {
+    const x = -total / 2 + pw / 2 + i * (pw + gap), h = hMin + ((i * 37 + row * 11) % 7) / 6 * (hMax - hMin);
+    const mat = pal[Math.floor(i / Math.ceil(n / 3)) % pal.length];
+    if (kind === 'box') box(pw, h, Math.min(depth - 0.06, 0.2), x, top + h / 2, zc + dir * 0.01, mat);
+    else for (const dz of [-0.07, 0.07]) cyl(pw / 2, h, x, top + h / 2, zc + dz * dir, mat, 14);
+  }
+}
+
+/* ---------------- os formatos ---------------- */
+function ponta({ qr = false, sensor = false, media = false } = {}) {
+  const W = 1.0, D = 0.55, zP = -D / 2 + 0.03, TOP = 2.02;
+  feet(W, D); const b = plinth(W, D);
+  box(W - 0.04, 0.02, D - 0.04, 0, b + 0.01, 0, M.shelf);
+  box(W - 0.04, 0.045, 0.012, 0, b + 0.012, D / 2 - 0.02, M.blue);
+  uprights(W, zP, TOP); back(W, b + 0.02, 1.72, zP);
+  fill(W, b + 0.02, zP + 0.25, 0.46, 0, { hMin: 0.2, hMax: 0.28, pw: 0.13 });
+  const ys = media ? [0.56, 0.93] : [0.56, 0.93, 1.3];
+  ys.forEach((y, k) => { const s = shelf(W, y, zP, 0.42); fill(W, s.top, s.zc, 0.42, k + 1, { hMin: 0.15, hMax: 0.24, pw: 0.12 }); });
+  header(W, TOP - 0.16, zP + 0.04);
+  wing(-(W / 2 + 0.011), 1.42, zP + 0.16, 0.62, 0.28, -1);
+  wing(W / 2 + 0.011, 1.42, zP + 0.16, 0.62, 0.28, 1);
+  if (qr) { box(0.1, 0.1, 0.006, W / 2 - 0.1, 1.23, zP + 0.035, M.navy); plane(0.088, 0.088, W / 2 - 0.1, 1.23, zP + 0.0385, qrMat()); }
+  if (sensor) {
+    const y = TOP - 0.34, z = zP + 0.075;
+    box(0.2, 0.05, 0.05, 0, y, z, M.navy);
+    cyl(0.014, 0.012, -0.05, y, z + 0.026, M.led, 20, Math.PI / 2);
+    cyl(0.014, 0.012, 0.05, y, z + 0.026, M.led, 20, Math.PI / 2);
+    box(0.06, 0.008, 0.004, 0, y, z + 0.026, M.black);
+  }
+  if (media) {
+    const y = 1.45, z = zP + 0.035;
+    box(0.72, 0.43, 0.04, 0, y, z + 0.02, M.black);
+    plane(0.68, 0.39, 0, y, z + 0.041, screenMat());
+    box(W - 0.04, 0.012, 0.012, 0, TOP - 0.315, zP + 0.08, M.led);
+  }
+}
+function ilha() {
+  const W = 1.2, D = 0.96, TOP = 1.9;
+  feet(W, D); const b = plinth(W, D, true);
+  box(W - 0.04, 0.02, D - 0.04, 0, b + 0.01, 0, M.shelf);
+  for (const s of [-1, 1]) box(W - 0.04, 0.045, 0.012, 0, b + 0.012, s * (D / 2 - 0.02), M.blue);
+  uprights(W, 0, TOP); back(W, b + 0.02, TOP - 0.3, 0, 'perf', true);
+  for (const dir of [1, -1]) {
+    fill(W, b + 0.02, dir * 0.24, 0.44, 3, { hMin: 0.2, hMax: 0.26, pw: 0.13, dir });
+    [0.55, 0.9, 1.25].forEach((y, k) => { const s = shelf(W, y, 0, 0.42, dir); fill(W, s.top, s.zc, 0.42, k + (dir > 0 ? 0 : 1), { hMin: 0.15, hMax: 0.23, dir }); });
+  }
+  header(W, TOP - 0.15, 0, true);
+}
+function painel() {
+  const W = 1.2, D = 0.42, zP = -D / 2 + 0.03, TOP = 1.95;
+  feet(W, D); const b = plinth(W, D);
+  box(W - 0.04, 0.02, D - 0.04, 0, b + 0.01, 0, M.shelf);
+  box(W - 0.04, 0.045, 0.012, 0, b + 0.012, D / 2 - 0.02, M.blue);
+  uprights(W, zP, TOP); back(W, b + 0.02, 1.64, zP, 'slat');
+  const s = shelf(W, 0.52, zP, 0.34); fill(W, s.top, s.zc, 0.34, 1, { hMin: 0.14, hMax: 0.2, pw: 0.11 });
+  fill(W, b + 0.02, zP + 0.2, 0.34, 2, { hMin: 0.18, hMax: 0.24, pw: 0.13 });
+  const cols = [-0.42, -0.21, 0, 0.21, 0.42], rows = [0.86, 1.14, 1.42], pals = [M.white, M.sky, M.aqua, M.ink];
+  rows.forEach((y, r) => cols.forEach((x, c) => {
+    cyl(0.004, 0.2, x, y, zP + 0.11, M.dark, 8, Math.PI / 2);
+    box(0.1, 0.15, 0.025, x, y - 0.09, zP + 0.16, pals[(r + c) % pals.length]);
+  }));
+  header(W, TOP - 0.16, zP + 0.04);
+  wing(-(W / 2 + 0.011), 1.2, zP + 0.14, 0.7, 0.24, -1);
+}
+function vitrine() {
+  const W = 1.2, D = 0.52, TOP = 1.92, zB = -D / 2 + 0.02;
+  feet(W, D); const b = plinth(W, D);
+  const y0 = b, y1 = 1.66, h = y1 - y0;
+  for (const s of [-1, 1]) box(0.03, h, D - 0.02, s * (W / 2 - 0.015), (y0 + y1) / 2, 0, M.metal);
+  box(W, 0.03, D - 0.02, 0, y1 - 0.015, 0, M.metal); box(W, 0.03, D - 0.02, 0, y0 + 0.015, 0, M.metal);
+  back(W + 0.02, y0 + 0.03, y1 - 0.03, zB);
+  [0.62, 0.98, 1.34].forEach((y, k) => {
+    box(W - 0.08, 0.012, D - 0.1, 0, y, 0, M.glass);
+    const top = y + 0.006;
+    for (let i = 0; i < 5; i++) {
+      const x = -0.4 + i * 0.2, tall = (i + k) % 2 === 0;
+      if (tall) cyl(0.035, 0.24, x, top + 0.12, -0.02, [M.ink, M.black, M.ink][k], 18);
+      else box(0.1, 0.16, 0.1, x, top + 0.08, -0.02, [M.white, M.sky, M.aqua][k]);
+    }
+  });
+  for (let i = 0; i < 4; i++) { const x = -0.42 + i * 0.28; box(0.12, 0.2, 0.12, x, y0 + 0.13, -0.02, [M.white, M.sky, M.white, M.aqua][i]); }
+  const dw = (W - 0.06) / 2, zD = D / 2 - 0.01;
+  for (const s of [-1, 1]) {
+    const cx = s * dw / 2;
+    box(dw - 0.03, h - 0.08, 0.008, cx, (y0 + y1) / 2, zD, M.glass);
+    for (const e of [-1, 1]) box(0.02, h - 0.06, 0.02, cx + e * (dw / 2 - 0.01), (y0 + y1) / 2, zD, M.metal);
+    for (const e of [-1, 1]) box(dw, 0.02, 0.02, cx, (y0 + y1) / 2 + e * (h / 2 - 0.04), zD, M.metal);
+    cyl(0.008, 0.22, cx - s * (dw / 2 - 0.05), (y0 + y1) / 2, zD + 0.025, M.dark, 12);
+  }
+  box(W, TOP - y1 + 0.01, 0.06, 0, (y1 + TOP) / 2, zB + 0.1, M.navy);
+  plane(W - 0.02, TOP - y1 - 0.02, 0, (y1 + TOP) / 2, zB + 0.131, headerMat((W - 0.02) / (TOP - y1 - 0.02)));
+  wing(W / 2 + 0.011, 1.12, 0.02, 0.8, 0.3, 1);
+}
+function categoria() {
+  const W = 1.0, D = 0.46, zP = -D / 2 + 0.03, TOP = 2.0;
+  feet(W, D);
+  box(W, 0.36, D, 0, 0.04 + 0.18, 0, M.metal);
+  plane(W - 0.02, 0.32, 0, 0.22, D / 2 + 0.001, baseMat((W - 0.02) / 0.32));
+  const b = 0.4;
+  uprights(W, zP, TOP); back(W, b, 1.72, zP);
+  [0.44, 0.76, 1.08, 1.4].forEach((y, k) => {
+    const s = shelf(W, y, zP, 0.36, 1, { rail: false, lip: true });
+    const n = 9, pw = 0.05;
+    for (let i = 0; i < n; i++) {
+      const x = -0.4 + i * 0.1, hh = 0.12 + ((i * 3 + k) % 4) * 0.02, mat = [M.white, M.sky, M.aqua, M.ink, M.white][(i + k) % 5];
+      for (const dz of [-0.08, 0.04]) (i + k) % 3 === 0 ? box(pw + 0.02, hh, 0.05, x, s.top + hh / 2, s.zc + dz, mat) : cyl(pw / 2, hh, x, s.top + hh / 2, s.zc + dz, mat, 14);
+    }
+  });
+  header(W, TOP - 0.15, zP + 0.04);
+}
+function multiuso() {
+  const W = 0.72, D = 0.5, zP = -D / 2 + 0.03, TOP = 1.95;
+  feet(W, D); const b = plinth(W, D, false, 0.08);
+  box(W, 0.66, D - 0.02, 0, b + 0.33, 0, M.metal);
+  for (let i = 0; i < 3; i++) {
+    const y = b + 0.11 + i * 0.215;
+    box(W - 0.06, 0.19, 0.02, 0, y, D / 2 - 0.01, M.shelf);
+    box(0.24, 0.018, 0.02, 0, y + 0.04, D / 2 + 0.012, M.dark);
+  }
+  uprights(W, zP, TOP); back(W, b + 0.66, 1.66, zP);
+  [0.98, 1.3].forEach((y) => {
+    const s = shelf(W, y, zP, 0.4, 1, { rail: true });
+    for (const x of [-0.16, 0.16]) {
+      box(0.28, 0.14, 0.004, x, s.top + 0.07, s.zf - 0.01, M.glass);
+      box(0.004, 0.14, 0.36, x - 0.14, s.top + 0.07, s.zc, M.glass); box(0.004, 0.14, 0.36, x + 0.14, s.top + 0.07, s.zc, M.glass);
+      for (let j = 0; j < 3; j++) box(0.07, 0.09, 0.07, x - 0.08 + j * 0.08, s.top + 0.045, s.zc - 0.04, [M.sky, M.white, M.aqua][(j + (x > 0 ? 1 : 0)) % 3]);
+    }
+  });
+  box(W - 0.06, 0.02, D - 0.1, 0, b + 0.67, 0, M.shelf);
+  header(W, TOP - 0.15, zP + 0.04);
+  wing(-(W / 2 + 0.011), 1.2, zP + 0.14, 0.72, 0.26, -1);
+}
+
+/* ---------------- junta por material e exporta ---------------- */
+function mergeByMaterial(group) {
+  group.updateMatrixWorld(true);
+  const by = new Map();
+  group.traverse((o) => {
+    if (!o.isMesh) return;
+    let g = o.geometry.clone(); g.applyMatrix4(o.matrixWorld);
+    if (g.index) g = g.toNonIndexed();
+    for (const k of Object.keys(g.attributes)) if (!['position', 'normal', 'uv'].includes(k)) g.deleteAttribute(k);
+    g.clearGroups();
+    if (!by.has(o.material)) by.set(o.material, []);
+    by.get(o.material).push(g);
+  });
+  const outGroup = new THREE.Group();
+  for (const [mat, gs] of by) { const m = new THREE.Mesh(mergeGeometries(gs, false), mat); m.name = mat.name; outGroup.add(m); }
+  return outGroup;
+}
+
+const MODELS = {
+  essencial: () => ponta({ qr: true }),
+  sense: () => ponta({ qr: true, sensor: true }),
+  media: () => ponta({ qr: true, sensor: true, media: true }),
+  ilha, painel, vitrine, categoria, multiuso,
+};
+const exporter = new GLTFExporter();
+for (const [id, build] of Object.entries(MODELS)) {
+  if (so && so !== id) continue;
+  root = new THREE.Group(); build();
+  const scene = new THREE.Scene(); const merged = mergeByMaterial(root); merged.name = 'codice-' + id; scene.add(merged);
+  const box3 = new THREE.Box3().setFromObject(merged), size = box3.getSize(new THREE.Vector3());
+  const glb = await exporter.parseAsync(scene, { binary: true });
+  const res = await fetch(`/__save?path=${encodeURIComponent(`.work/codice/raw-${id}.glb`)}`, { method: 'POST', body: glb });
+  log(`${id}: ${merged.children.length} malhas, ${(size.y * 100).toFixed(0)} × ${(size.x * 100).toFixed(0)} × ${(size.z * 100).toFixed(0)} cm · ${await res.text()}`);
+}
+log('PRONTO');
+} catch (e) {
+  log('ERRO: ' + (e.stack || e));
+}
+</script>

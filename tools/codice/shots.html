@@ -1,0 +1,44 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Códice · posters e prévias</title>
+<!--
+  Renderiza cada display preparado no model-viewer (o mesmo visualizador da página e do deck).
+  Grava codice-displays/<id>-poster.webp e a folha de conferência .work/codice/prev-sheet.png.
+  http://localhost:8833/tools/codice/shots.html[?orbit=28deg%2078deg%20auto][&nome=prev-sheet]
+-->
+<script type="module" src="/vendor/model-viewer.min.js"></script>
+<style>
+  body { margin: 0; font: 13px/1.5 ui-monospace, monospace; background: #ddd; }
+  model-viewer { width: 720px; height: 900px; background: transparent; }
+</style>
+<pre id="log">capturando…</pre>
+<script type="module">
+const P = new URLSearchParams(location.search);
+const IDS = ['essencial', 'sense', 'media', 'ilha', 'painel', 'vitrine', 'categoria', 'multiuso'];
+const orbit = P.get('orbit') || '28deg 78deg auto';
+const nome = P.get('nome') || 'prev-sheet';
+const posters = !P.get('orbit');
+const log = (m) => { document.getElementById('log').textContent += '\n' + m; };
+const save = async (path, blob) => (await fetch(`/__save?path=${encodeURIComponent(path)}`, { method: 'POST', body: blob })).text();
+try {
+  await customElements.whenDefined('model-viewer');
+  const imgs = [];
+  for (const id of IDS) {
+    const mv = document.createElement('model-viewer');
+    Object.entries({ 'environment-image': 'neutral', exposure: '1.05', 'shadow-intensity': '1.1', 'shadow-softness': '0.9',
+      'camera-orbit': orbit, 'interaction-prompt': 'none', loading: 'eager' }).forEach(([k, v]) => mv.setAttribute(k, v));
+    mv.src = `/codice-displays/${id}.glb`;
+    document.body.prepend(mv);
+    await new Promise((r) => mv.addEventListener('load', r, { once: true }));
+    await new Promise((r) => setTimeout(r, 1500));
+    if (posters) log(`${id}: ` + await save(`codice-displays/${id}-poster.webp`, await mv.toBlob({ mimeType: 'image/webp', qualityArgument: 0.85, idealAspect: false })));
+    imgs.push(await createImageBitmap(await mv.toBlob({ mimeType: 'image/png', idealAspect: false })));
+    mv.remove();
+  }
+  const w = 360, h = 450, c = Object.assign(document.createElement('canvas'), { width: w * 4, height: h * 2 });
+  const x = c.getContext('2d'); x.fillStyle = '#F5F7FA'; x.fillRect(0, 0, c.width, c.height);
+  imgs.forEach((im, i) => { x.drawImage(im, (i % 4) * w, Math.floor(i / 4) * h, w, h); x.fillStyle = '#061B49'; x.font = '600 18px sans-serif'; x.fillText(IDS[i], (i % 4) * w + 12, Math.floor(i / 4) * h + 26); });
+  log(await save(`.work/codice/${nome}.png`, await new Promise((r) => c.toBlob(r, 'image/png'))));
+  log('PRONTO');
+} catch (e) { log('ERRO: ' + (e.stack || e)); }
+</script>
