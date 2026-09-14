@@ -28,6 +28,9 @@ const flag = (name, def) => {
 const ROTATE_Y = flag('rotate-y', 0);
 const MAX_TEX = flag('max-texture', 2048);
 const MAX_TRI = flag('max-tri', 4000);
+// cenas grandes (ex.: stand inteiro): mapas técnicos (normal, rugosidade) menores que a cor
+const MAX_TEX_DATA = flag('max-texture-data', MAX_TEX);
+const SIMPLIFY_ERROR = flag('simplify-error', 0.005);
 if (!input || !output) {
   console.error('uso: node tools/prepare-glb.mjs <entrada.glb> <saida.glb> [--rotate-y=graus] [--max-texture=2048]');
   process.exit(1);
@@ -206,7 +209,7 @@ for (const mesh of bakedMeshes()) for (const prim of mesh.listPrimitives()) {
   const tri = prim.getIndices() ? prim.getIndices().getCount() / 3 : 0;
   if (tri <= MAX_TRI) continue;
   weldPrimitive(prim);
-  simplifyPrimitive(prim, { simplifier: MeshoptSimplifier, ratio: MAX_TRI / tri, error: 0.005 });
+  simplifyPrimitive(prim, { simplifier: MeshoptSimplifier, ratio: MAX_TRI / tri, error: SIMPLIFY_ERROR });
   simplificacao.malhas++;
   simplificacao.antes += tri;
   simplificacao.depois += prim.getIndices().getCount() / 3;
@@ -296,7 +299,9 @@ for (const tex of root.listTextures()) {
   const img = tex.getImage();
   const meta = await sharp(img).metadata();
   const long = Math.max(meta.width, meta.height), short = Math.min(meta.width, meta.height);
-  const limit = long / short >= 6 ? MAX_TEX * 2 : MAX_TEX;
+  const soDados = !root.listMaterials().some((m) => COLOR_SLOTS.some((s) => m[`get${s}Texture`]() === tex));
+  const base = soDados ? MAX_TEX_DATA : MAX_TEX;
+  const limit = long / short >= 6 ? base * 2 : base;
   if (long <= limit && tex.getMimeType() === 'image/jpeg') continue;
   const k = Math.min(1, limit / long);
   const buf = await sharp(img).resize(Math.round(meta.width * k), Math.round(meta.height * k))

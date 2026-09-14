@@ -17,6 +17,7 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 |---|---|---|
 | `famosa-display-maromba/` | Agrícola Famosa, Display Maromba M | 137 × 109 × 40 cm |
 | `famosa-display-maromba-p/` | Agrícola Famosa, Display Maromba P | 137 × 58 × 40 cm |
+| `ngv-stand-conexao-farma/` | NGV Ecossistema, stand Conexão Farma 2027 (Abradilan) | 3 × 8 × 5 m (ambiente inteiro) |
 
 ## Como publicar um display novo
 
@@ -48,6 +49,23 @@ Pré-requisitos (uma vez): `cd tools && npm install`. O resto já vem no macOS (
 **Atualizando um display que já existe:** repita os passos 2, 4 e 6 e suba o `?v=N` de `display.glb`,
 `display.usdz`, `poster.webp` e `og.jpg` no `index.html` — sem isso, celulares que já abriram o link
 continuam vendo o modelo antigo por um tempo (cache).
+
+## Ambientes grandes (stand inteiro)
+
+O stand da NGV veio do Blender com ~2,7 milhões de triângulos e 170 MB. O que levou a 22 MB / 417 mil:
+
+1. **No Blender, antes de exportar** (`tools/blender-export-ambiente.py`):
+   subdivisão (`SUBSURF`) em 0, `DISPLACE` desligado, `DECIMATE` nas malhas acima de 6 mil triângulos,
+   imagens acima de 4096 px reduzidas (o `sharp` não abre o piso de 14 × 22 mil px). Coleções excluídas
+   da view layer, luzes e câmeras ficam de fora (`use_visible`, `export_lights=False`).
+2. **Preparar com limites mais duros**:
+   ```bash
+   node tools/prepare-glb.mjs raw.glb <pasta>/display.glb --rotate-y=-90 \
+     --max-texture=2048 --max-texture-data=1024 --max-tri=1500 --simplify-error=0.02
+   ```
+   `--max-texture-data` reduz só normal/rugosidade/metal (a arte das paredes continua em 2048).
+3. A página tem o seletor **Tamanho real / Maquete** (`data-ar-scale="fixed|auto"`, script na própria página):
+   40 m² nem sempre cabe na sala, e na maquete a pinça diminui o stand.
 
 ## O que o `prepare-glb.mjs` corrige
 

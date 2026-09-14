@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stand Conexão Farma 2027 · NGV Ecossistema | AR 75 LAB</title>
+<meta name="description" content="Entre no stand da NGV Ecossistema na Conexão Farma 2027 em realidade aumentada, em tamanho real.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F3F4EE">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://projetos.75lab.com.br/ar/ngv-stand-conexao-farma/">
+<meta property="og:title" content="Stand Conexão Farma 2027 · NGV Ecossistema">
+<meta property="og:description" content="Toque para entrar no stand em realidade aumentada, em tamanho real.">
+<meta property="og:image" content="https://projetos.75lab.com.br/ar/ngv-stand-conexao-farma/og.jpg?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23C0EE4E'/%3E%3Cg stroke='%230E1110' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5.9 8.5l12.2 7M18.1 8.5l-12.2 7'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Lexend:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/ar.css?v=3">
+<style>
+  /* modo do AR em ambiente grande: tamanho real travado ou maquete redimensionável */
+  .modos {
+    display: inline-flex; align-items: center; gap: 2px; margin-top: 10px;
+    background: var(--card); border: 1px solid var(--rule); border-radius: 20px; padding: 3px 3px 3px 12px;
+  }
+  .modos span { font-size: 11.5px; font-weight: 300; color: var(--ink2); margin-right: 6px; }
+  .modos button {
+    font-family: 'Anton', 'Impact', sans-serif; font-size: 12.5px; letter-spacing: 1px; text-transform: uppercase;
+    background: none; border: 0; color: var(--ink2); padding: 5px 12px; border-radius: 16px;
+  }
+  .modos button[aria-pressed="true"] { background: var(--ink); color: var(--lime); }
+</style>
+<script>(function(){if(location.protocol==='http:'&&!/^(localhost|127\.)/.test(location.hostname))location.replace('https://'+location.host+location.pathname+location.search+location.hash);var u=navigator.userAgent,m=/Android|iPhone|iPad|iPod/i.test(u)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);document.documentElement.classList.add(m?'is-mobile':'is-desktop')})()</script>
+<script type="module" src="../vendor/model-viewer.min.js"></script>
+<script defer src="../vendor/qrcode.min.js"></script>
+<script type="module" src="../assets/ar.js"></script>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div class="brand">75<em>LAB</em></div>
+    <div class="tag">Realidade aumentada</div>
+  </header>
+
+  <section class="intro">
+    <div class="eyebrow">Conexão Farma 2027 · Abradilan</div>
+    <h1>Stand <b>NGV</b></h1>
+    <div class="dims" aria-label="Medidas">
+      <span>Frente<b>8 m</b></span><span>Profundidade<b>5 m</b></span><span>Altura<b>3 m</b></span>
+    </div>
+    <div class="modos" role="group" aria-label="Como abrir o stand">
+      <span>Abrir em</span>
+      <button type="button" data-ar-scale="fixed" aria-pressed="true"
+        data-hint="Em <b>tamanho real</b>: 40 m², precisa de espaço livre. Aponte para o chão e entre caminhando.">Tamanho real</button>
+      <button type="button" data-ar-scale="auto" aria-pressed="false"
+        data-hint="Como <b>maquete</b>: faça pinça com dois dedos para diminuir o stand e ver em cima da mesa.">Maquete</button>
+    </div>
+  </section>
+
+  <section class="stage">
+    <model-viewer
+      src="display.glb?v=1" ios-src="display.usdz?v=1" poster="poster.webp?v=1"
+      alt="Stand da NGV Ecossistema na Conexão Farma 2027 em 3D"
+      ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor" xr-environment
+      camera-controls auto-rotate auto-rotate-delay="3000" rotation-per-second="8deg"
+      camera-orbit="-25deg 68deg auto" min-camera-orbit="auto 20deg auto" max-camera-orbit="auto 88deg auto"
+      interaction-prompt="none" shadow-intensity="0.8" shadow-softness="1"
+      environment-image="neutral" exposure="1.1" loading="eager">
+      <button slot="ar-button" hidden></button>
+      <div slot="progress-bar"></div>
+      <div slot="ar-prompt" class="ar-prompt">Aponte para o <b>chão</b> e mova o celular devagar</div>
+    </model-viewer>
+    <div class="drag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>Arraste para girar · pinça para aproximar</div>
+    <div class="progress"><i></i></div>
+  </section>
+
+  <section class="dock">
+    <div id="panel-ar">
+      <button class="cta" id="cta" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M12 6.6l4.6 2.7v5.4L12 17.4l-4.6-2.7V9.3z"/><path d="M7.4 9.3 12 12l4.6-2.7M12 12v5.4"/></svg>
+        <span>Entrar no stand</span>
+      </button>
+      <p class="hint">Em <b>tamanho real</b>: 40 m², precisa de espaço livre. Aponte para o chão e entre caminhando.</p>
+    </div>
+
+    <div id="panel-noar" hidden>
+      <div class="note">
+        <strong>Abra no navegador</strong>
+        Para entrar no stand em realidade aumentada, abra este link no <b>Safari</b> (iPhone) ou no <b>Chrome</b> (Android).
+      </div>
+      <button class="ghost" id="copy" type="button">Copiar link</button>
+    </div>
+
+    <div id="panel-desktop" hidden>
+      <div class="qrcard">
+        <div class="qr" id="qr"></div>
+        <div>
+          <strong>Entre no stand</strong>
+          <p>Aponte a câmera do celular para o código e toque em <b>Entrar no stand</b>.</p>
+        </div>
+      </div>
+      <ol class="steps">
+        <li><span>1</span>Abra o link no celular, iPhone ou Android. O arquivo é grande: prefira Wi-Fi.</li>
+        <li><span>2</span>Vá para um espaço aberto (garagem, galpão, área externa), aponte para o chão e mova o aparelho devagar.</li>
+        <li><span>3</span>O stand aparece em tamanho real: caminhe para dentro, veja o lounge, o balcão e as paredes de perto.</li>
+        <li><span>4</span>Sem espaço? Escolha “Maquete” e diminua o stand com dois dedos.</li>
+      </ol>
+    </div>
+
+    <div id="panel-erro" hidden>
+      <div class="note"><strong>Não carregou</strong>Não foi possível carregar o stand. Verifique a conexão e recarregue a página.</div>
+    </div>
+  </section>
+
+  <footer class="foot">Projeto 75 LAB para NGV Ecossistema · Conexão Farma 2027 · Visualização em realidade aumentada</footer>
+</main>
+<div class="toast" role="status" aria-live="polite"></div>
+<script>
+  // tamanho real (escala travada) ou maquete (pinça para diminuir); o model-viewer lê o ar-scale ao abrir o AR
+  const modos = document.querySelectorAll('[data-ar-scale]');
+  modos.forEach((btn) => btn.addEventListener('click', () => {
+    document.querySelector('model-viewer').setAttribute('ar-scale', btn.dataset.arScale);
+    modos.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    document.querySelector('#panel-ar .hint').innerHTML = btn.dataset.hint;
+  }));
+</script>
+</body>
+</html>
