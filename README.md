@@ -94,7 +94,7 @@ Polígonos `PSUB`/`SUBD` (subdivisão, ex.: ventosas) leem igual a `FACE` (usa-s
    não a do nó — preencha as duas, senão parece que a peça está cinza.
 6. Produtos replicados (camada `Point Cloud` + `replicator`) ficam de fora: o AR mostra o display vazio, como nos renders.
 
-## Montador automático do .lxo — o que aprendemos nas peças SEMP Split HW
+## Montador automático do .lxo: o que aprendemos nas peças SEMP Split HW
 
 `tools/modo/auto_lxo.py` lê a árvore de shaders do próprio .lxo (máscara por `ptag`, camada de imagem de cima ligada,
 localizador planar/cúbico/UV com `VMAP`/`VMAD`, cores e luminosos) e só pede no config o mapa *nome da arte no Modo → imagem local*,
