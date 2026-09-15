@@ -24,6 +24,7 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `savencia-display-pp-frescatino/` | Savencia, Display PP Frescatino | 145 × 17 × 24 cm (faca) |
 | `savencia-gravitacional-frescatino/` | Savencia, Gravitacional Frescatino (com 4 embalagens) | 39 × 8,5 × 5 cm |
 | `savencia-frame-glorifier-frescatino/` | Savencia, Frame Glorifier Frescatino (ventosas, AR de parede) | 18 × 20 cm |
+| `semp-split-hw/` | SEMP, sete peças de PDV do lançamento Split HW numa página (`?modelo=ilha`, `portico`, `backdrop`, `cubo`, `poster-cinta`, `berco`, `regua`) + `embed.html` | de 10 × 47 × 6 cm (régua) a 340 × 306 × 60 cm (pórtico) |
 | `codice-displays/` | Códice, oito displays numa página (`?modelo=essencial`, `sense`, `media`, `ilha`, `painel`, `vitrine`, `categoria`, `multiuso`) | medidas de referência, de 195 × 74 × 52 cm a 202 × 104 × 55 cm |
 
 > **Códice:** não havia arquivo 3D dos displays. Os modelos foram montados em three.js a partir dos renders
@@ -92,6 +93,24 @@ Polígonos `PSUB`/`SUBD` (subdivisão, ex.: ventosas) leem igual a `FACE` (usa-s
 5. **Renders de conferência no Workbench:** material sem imagem aparece com a *cor de viewport* (`diffuse_color`),
    não a do nó — preencha as duas, senão parece que a peça está cinza.
 6. Produtos replicados (camada `Point Cloud` + `replicator`) ficam de fora: o AR mostra o display vazio, como nos renders.
+
+## Montador automático do .lxo — o que aprendemos nas peças SEMP Split HW
+
+`tools/modo/auto_lxo.py` lê a árvore de shaders do próprio .lxo (máscara por `ptag`, camada de imagem de cima ligada,
+localizador planar/cúbico/UV com `VMAP`/`VMAD`, cores e luminosos) e só pede no config o mapa *nome da arte no Modo → imagem local*,
+a escala e o que excluir. Página com as 7 peças: `semp-split-hw/` e, para incorporar em apresentação de terceiros,
+`semp-split-hw/embed.html` (vitrine com todas girando ao mesmo tempo; `?peca=`, `?modo=todas`, `?escala=real`, `?fundo=transparente`).
+Posters de páginas com vários modelos: `tools/posters.html?slug=<pasta>&ids=a,b,c`.
+
+1. **PSD com transparência:** o `sips` achata o transparente em **preto**. Quando a camada de cima da árvore sai com
+   quadrados pretos, a arte completa costuma ser a camada de baixo (ex.: `UV-Cubo.psd`, `UV-Pórtico.psd`, `Régua-Frente.psd`).
+   Conferir cada textura convertida antes de montar.
+2. **Sentido dos polígonos não é confiável** (o Modo renderiza os dois lados): o montador recalcula as normais e a projeção cúbica
+   não depende do sinal da normal (senão aparece "OVON" no lugar de "NOVO").
+3. **Escala:** as cenas do Mauricio usam 1 unidade = 3,532 cm (o split sai com 79 × 25 × 21 cm); algumas vêm em metros (cubo, régua)
+   ou em centímetros (backdrop). Conferir pelo produto ou pelo `DIMS` antes do pipeline.
+4. **Estrutura de tubos pesada** (backdrop, 42 mil polígonos) não cai no `prepare-glb`: `"decimar_tags": {"Black": 0.08}` no config.
+5. Boneco de escala (`Sandro`) e `Shadow Catcher` ficam de fora.
 
 ## Ambientes grandes (stand inteiro)
 

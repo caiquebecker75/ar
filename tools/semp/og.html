@@ -1,0 +1,36 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>SEMP Split HW · og:image</title>
+<!--
+  Miniatura do link (1200x630) da página semp-split-hw, no padrão visual das páginas de AR 75 LAB.
+  http://localhost:8833/tools/semp/og.html  →  semp-split-hw/og.jpg
+-->
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Lexend:wght@200;300;600&display=swap" rel="stylesheet">
+<pre id="log" style="font:13px/1.5 ui-monospace,monospace;padding:16px">gerando…</pre>
+<script type="module">
+const log = (m) => { document.getElementById('log').textContent += '\n' + m; };
+try {
+  await Promise.all(['30px Anton', '200 88px Lexend', '600 88px Lexend', '300 26px Lexend'].map((f) => document.fonts.load(f)));
+  const load = (src) => new Promise((ok, err) => { const i = new Image(); i.onload = () => ok(i); i.onerror = err; i.src = src; });
+  const [cubo, ilha, portico] = await Promise.all(['cubo', 'ilha', 'portico'].map((id) => load(`/semp-split-hw/${id}-poster.webp`)));
+  const c = Object.assign(document.createElement('canvas'), { width: 1200, height: 630 });
+  const x = c.getContext('2d');
+  x.fillStyle = '#F3F4EE'; x.fillRect(0, 0, 1200, 630);
+  const draw = (img, cx, h) => { const w = (img.width / img.height) * h; x.drawImage(img, cx - w / 2, 630 - h + 10, w, h); };
+  draw(portico, 1060, 520); draw(cubo, 690, 430); draw(ilha, 870, 600);
+
+  x.fillStyle = '#0E1110'; x.font = '30px Anton'; x.fillText('75', 72, 92);
+  const w75 = x.measureText('75').width; x.fillStyle = '#A6D934'; x.fillText('LAB', 72 + w75 + 2, 92);
+  x.fillStyle = '#A6D934'; x.fillRect(72, 184, 34, 3);
+  x.fillStyle = '#0E1110'; x.font = '22px Anton'; x.letterSpacing = '3px'; x.fillText('SEMP SPLIT HW', 118, 194); x.letterSpacing = '0px';
+  x.font = '200 88px Lexend'; x.fillText('PEÇAS', 66, 290);
+  x.font = '600 88px Lexend'; x.fillText('DE PDV', 66, 380);
+  x.fillStyle = '#54594E'; x.font = '300 26px Lexend';
+  x.fillText('Sete peças em 3D e', 72, 440); x.fillText('em realidade aumentada.', 72, 476);
+  x.fillStyle = '#C0EE4E'; x.beginPath(); x.roundRect(72, 520, 290, 58, 29); x.fill();
+  x.fillStyle = '#0E1110'; x.font = '20px Anton'; x.letterSpacing = '2px'; x.fillText('ESCOLHA E VEJA EM AR', 98, 557);
+  const blob = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.88));
+  log(await (await fetch(`/__save?path=${encodeURIComponent('semp-split-hw/og.jpg')}`, { method: 'POST', body: blob })).text());
+  log('PRONTO');
+} catch (e) { log('ERRO: ' + (e.stack || e)); }
+</script>

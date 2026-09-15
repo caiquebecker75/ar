@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Peças SEMP Split HW em 3D</title>
+<meta name="robots" content="noindex">
+<!--
+  Vitrine para INCORPORAR em outra apresentação (iframe). Ocupa 100% do iframe.
+    <iframe src="https://projetos.75lab.com.br/ar/semp-split-hw/embed.html" style="width:100%;height:100%;border:0" allow="fullscreen; xr-spatial-tracking" loading="lazy"></iframe>
+  Parâmetros: ?peca=portico (abre nela) · ?modo=todas (grade) · ?escala=real · ?fundo=transparente
+  As sete peças ficam na tela ao mesmo tempo; cada uma gira com o dedo ou o mouse.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Lexend:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<script type="module" src="../vendor/model-viewer.min.js"></script>
+<script defer src="../vendor/qrcode.min.js"></script>
+<style>
+  :root {
+    --ink: #0B1733; --ink2: #4B566C; --ink3: #8C95A7; --rule: #DDE2EA;
+    --paper: #F4F5F8; --card: #FFFFFF; --red: #E30613; --blue: #0050B5;
+    --gap: clamp(10px, 2.4vmin, 24px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { background: var(--paper); color: var(--ink); font-family: 'Lexend', system-ui, -apple-system, sans-serif;
+    overflow: hidden; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+  body.transparente { background: transparent; }
+  button, a { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; text-decoration: none; }
+  [hidden] { display: none !important; }
+
+  .app { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; padding: var(--gap) calc(var(--gap) * 1.3); gap: calc(var(--gap) * .4); }
+
+  /* ---------- topo ---------- */
+  .top { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .eyebrow { font-family: 'Anton', Impact, sans-serif; font-size: clamp(10px, 1.5vmin, 13px); letter-spacing: .22em; text-transform: uppercase; color: var(--ink2); display: flex; align-items: center; gap: 9px; }
+  .eyebrow i { width: 18px; height: 3px; background: var(--red); box-shadow: 18px 0 0 var(--blue); margin-right: 18px; }
+  h1 { font-weight: 200; text-transform: uppercase; font-size: clamp(20px, 4.4vmin, 40px); line-height: 1; letter-spacing: -.01em; margin-top: 4px; }
+  h1 b { font-weight: 600; }
+  .ctrl { display: flex; align-items: center; gap: 8px; }
+  .seg { display: inline-flex; background: var(--card); border: 1px solid var(--rule); border-radius: 999px; padding: 3px; }
+  .seg button { font-size: clamp(11px, 1.6vmin, 13px); padding: 7px 13px; border-radius: 999px; color: var(--ink2); white-space: nowrap; }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+  .real { display: inline-flex; align-items: center; gap: 8px; font-size: clamp(11px, 1.6vmin, 13px); color: var(--ink2); background: var(--card); border: 1px solid var(--rule); border-radius: 999px; padding: 6px 12px 6px 6px; }
+  .real .sw { width: 30px; height: 18px; border-radius: 999px; background: var(--rule); position: relative; transition: background .25s; }
+  .real .sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform .25s; box-shadow: 0 1px 2px rgba(11,23,51,.25); }
+  .real[aria-pressed="true"] { color: var(--ink); }
+  .real[aria-pressed="true"] .sw { background: var(--blue); }
+  .real[aria-pressed="true"] .sw::after { transform: translateX(12px); }
+
+  /* ---------- palco ---------- */
+  .stage { position: relative; min-height: 0; }
+  .slot { position: absolute; top: 0; left: 50%; height: 100%; width: min(40%, 62vh);
+    transform: translateX(calc(-50% + var(--x, 0px))) scale(var(--s, 1)); opacity: var(--o, 1); z-index: var(--z, 1);
+    transition: transform .75s cubic-bezier(.2, .8, .2, 1), opacity .5s ease; }
+  .slot model-viewer { width: 100%; height: 100%; background: transparent; --poster-color: transparent; --progress-bar-height: 0px; }
+  .slot:not(.on) model-viewer { cursor: pointer; }
+  .slot .cap { display: none; }
+  .chao { position: absolute; left: 8%; right: 8%; bottom: 7%; height: 1px; background: var(--rule); }
+  .nav { width: clamp(30px, 5vmin, 40px); aspect-ratio: 1; border-radius: 50%; flex: none;
+    background: var(--card); border: 1px solid var(--rule); display: grid; place-items: center; }
+  .nav:hover { border-color: var(--ink3); }
+  .nav svg { width: 46%; height: 46%; }
+  .dica { position: absolute; left: 50%; bottom: 1%; transform: translateX(-50%); z-index: 21; font-size: clamp(10px, 1.5vmin, 12px); color: var(--ink3); display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: opacity .6s; }
+  .dica svg { width: 14px; height: 14px; }
+
+  /* modo "todas": as sete lado a lado, em grade */
+  .todas .stage { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: calc(var(--gap) * .6); }
+  .todas .slot { position: relative; left: auto; top: auto; width: auto; height: auto; min-height: 0; transform: none; opacity: 1; z-index: 1;
+    background: var(--card); border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; display: grid; grid-template-rows: minmax(0, 1fr) auto; }
+  .todas .slot.on { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .todas .slot .cap { display: flex; justify-content: space-between; align-items: baseline; gap: 6px; padding: 0 12px 9px; font-size: clamp(10px, 1.5vmin, 13px); }
+  .todas .slot .cap b { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .todas .slot .cap small { color: var(--ink3); white-space: nowrap; font-size: .9em; }
+  .todas .chao, .todas .dica { display: none; }
+  .todas .grade-ar { order: 99; }
+  .todas .grade-ar { display: grid; place-items: center; align-content: center; gap: 10px; text-align: center; padding: 14px; border: 1px dashed var(--rule); border-radius: 14px; color: var(--ink2); font-size: clamp(11px, 1.6vmin, 13px); }
+  .grade-ar { display: none; }
+  .grade-ar strong { font-family: 'Anton', Impact, sans-serif; font-weight: 400; letter-spacing: .08em; font-size: clamp(14px, 2.4vmin, 22px); color: var(--ink); text-transform: uppercase; line-height: 1.1; }
+
+  /* ---------- base: peça escolhida ---------- */
+  .base { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px 18px; }
+  .info { min-width: 0; display: flex; align-items: baseline; gap: 6px 14px; flex-wrap: wrap; }
+  .num { font-family: 'Anton', Impact, sans-serif; font-size: clamp(12px, 1.8vmin, 15px); letter-spacing: .12em; color: var(--ink3); }
+  .num b { color: var(--ink); font-weight: 400; }
+  .nome { font-weight: 500; font-size: clamp(16px, 3.2vmin, 28px); line-height: 1.1; }
+  .medida { font-size: clamp(11px, 1.6vmin, 13px); color: var(--ink2); background: var(--card); border: 1px solid var(--rule); border-radius: 999px; padding: 4px 10px; white-space: nowrap; }
+  .medida em { font-style: normal; color: var(--ink3); margin-right: 5px; }
+  .desc { flex-basis: 100%; font-weight: 300; font-size: clamp(11px, 1.7vmin, 14px); color: var(--ink2); }
+  .acoes { display: flex; align-items: center; gap: 10px; position: relative; }
+  .thumbs { display: flex; gap: 6px; }
+  .thumbs button { width: clamp(30px, 5.2vmin, 46px); aspect-ratio: 4 / 5; border-radius: 8px; background: var(--card); border: 1px solid var(--rule); padding: 2px; opacity: .75; transition: opacity .2s, border-color .2s; }
+  .thumbs button img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .thumbs button[aria-pressed="true"] { opacity: 1; border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .thumbs button:hover { opacity: 1; }
+  .ar { display: inline-flex; align-items: center; gap: 8px; background: var(--ink); color: #fff; border-radius: 999px; padding: clamp(8px, 1.4vmin, 11px) clamp(13px, 2.2vmin, 18px); font-size: clamp(12px, 1.8vmin, 14px); font-weight: 500; white-space: nowrap; }
+  .ar svg { width: 18px; height: 18px; }
+  .ar:hover { background: #1B2A4F; }
+  .pop { position: absolute; right: 0; bottom: calc(100% + 10px); z-index: 40; width: 250px; background: var(--card); border: 1px solid var(--rule); border-radius: 14px; padding: 14px; box-shadow: 0 12px 40px rgba(11,23,51,.16); display: grid; grid-template-columns: 96px 1fr; gap: 12px; align-items: center; }
+  .pop .qr svg { width: 96px; height: 96px; display: block; }
+  .pop strong { display: block; font-weight: 500; font-size: 13px; margin-bottom: 4px; }
+  .pop p { font-size: 11.5px; font-weight: 300; color: var(--ink2); line-height: 1.4; }
+
+  @media (max-width: 640px) {
+    .slot { width: 80%; }
+    .thumbs { display: none; }
+    .todas .stage { grid-template-columns: repeat(2, 1fr); grid-template-rows: none; grid-auto-rows: minmax(0, 1fr); }
+    .todas .grade-ar { display: none; }
+    .base { grid-template-columns: 1fr; }
+    .acoes { justify-content: flex-start; }
+    .acoes .next { margin-right: auto; }
+    .desc { display: none; }
+  }
+  @media (max-height: 420px) { .desc, .dica { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .slot { transition: none; } }
+</style>
+</head>
+<body>
+<main class="app" id="app">
+  <header class="top">
+    <div>
+      <div class="eyebrow"><i></i>SEMP · Lançamento Split HW</div>
+      <h1>Peças de PDV <b>em 3D e AR</b></h1>
+    </div>
+    <div class="ctrl">
+      <div class="seg" role="group" aria-label="Como ver as peças">
+        <button type="button" data-modo="vitrine" aria-pressed="true">Uma a uma</button>
+        <button type="button" data-modo="todas" aria-pressed="false">Todas</button>
+      </div>
+      <button type="button" class="real" id="real" aria-pressed="false" title="Mesma distância para todas: compare o tamanho das peças"><span class="sw"></span>Tamanho real</button>
+    </div>
+  </header>
+
+  <section class="stage" id="stage" aria-roledescription="carrossel">
+    <div class="chao"></div>
+    <div class="grade-ar"><strong>Veja em<br>tamanho real</strong>Escolha uma peça e toque em <b>Ver em AR</b></div>
+    <div class="dica" id="dica"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>Arraste para girar · toque nas laterais para trocar</div>
+  </section>
+
+  <section class="base">
+    <div class="info" aria-live="polite">
+      <span class="num"><b id="n">01</b> / 07</span>
+      <span class="nome" id="nome">Ilha Premium</span>
+      <span class="medida" id="medida"><em>A × L × P</em>179 × 120 × 94 cm</span>
+      <span class="desc" id="desc"></span>
+    </div>
+    <div class="acoes">
+      <button class="nav prev" type="button" aria-label="Peça anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="thumbs" id="thumbs" role="group" aria-label="Escolha a peça"></div>
+      <button class="nav next" type="button" aria-label="Próxima peça"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+      <a class="ar" id="ar" href="./" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M12 6.6l4.6 2.7v5.4L12 17.4l-4.6-2.7V9.3z"/><path d="M7.4 9.3 12 12l4.6-2.7M12 12v5.4"/></svg>
+        <span>Ver em AR</span>
+      </a>
+      <div class="pop" id="pop" hidden>
+        <div class="qr" id="qr"></div>
+        <div><strong>Aponte o celular</strong><p>A câmera abre a peça em tamanho real no seu espaço, no iPhone ou no Android.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script type="module">
+const PECAS = [
+  { id: 'ilha', nome: 'Ilha Premium', medida: '179 × 120 × 94 cm', desc: 'Ilha com testeira, produto exposto, cubos, totem digital e adesivo de chão.' },
+  { id: 'portico', nome: 'Pórtico', medida: '340 × 306 × 60 cm', desc: 'Arco de entrada com testeira e módulos encaixados nas colunas.' },
+  { id: 'backdrop', nome: 'Backdrop', medida: '205 × 354 × 90 cm', desc: 'Painel curvo para ações, eventos e fotos com o produto.' },
+  { id: 'cubo', nome: 'Cubos', medida: '139 × 110 × 69 cm', desc: 'Quatro cubos empilháveis com as mensagens do produto em cada face.' },
+  { id: 'poster-cinta', nome: 'Poster e cinta de caixa', medida: '94 × 92 × 54 cm', desc: 'Cinta que veste a caixa do produto, com o aparelho e o berço por cima.' },
+  { id: 'berco', nome: 'Display berço', medida: '33 × 79 × 35 cm', desc: 'Berço que apoia o aparelho inclinado, com a assinatura da marca na frente.' },
+  { id: 'regua', nome: 'Régua de argumentação', medida: '10 × 47 × 6 cm', desc: 'Régua de gôndola com os diferenciais: AI Eco, fluxo de ar e filtro 6x1.' },
+];
+const P = new URLSearchParams(location.search);
+const AR_URL = (id) => new URL(`./?modelo=${id}`, location.href).href;
+const PUBLICO = (id) => `https://projetos.75lab.com.br/ar/semp-split-hw/?modelo=${id}`;
+const movel = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const $ = (s) => document.querySelector(s);
+const app = $('#app'), stage = $('#stage');
+if (P.get('fundo') === 'transparente') document.body.classList.add('transparente');
+
+let atual = Math.max(0, PECAS.findIndex((p) => p.id === P.get('peca')));
+let modo = P.get('modo') === 'todas' ? 'todas' : 'vitrine';
+let real = P.get('escala') === 'real';
+
+// ---------- monta as sete peças (ficam carregadas o tempo todo) ----------
+const slots = PECAS.map((p, i) => {
+  const s = document.createElement('div');
+  s.className = 'slot';
+  s.innerHTML = `<model-viewer src="${p.id}.glb?v=1" poster="${p.id}-poster.webp?v=1" alt="${p.nome} SEMP Split HW em 3D"
+    camera-controls disable-zoom disable-pan touch-action="pan-y" interaction-prompt="none"
+    auto-rotate auto-rotate-delay="1800" rotation-per-second="16deg"
+    camera-orbit="-25deg 78deg auto" min-camera-orbit="auto 30deg auto" max-camera-orbit="auto 90deg 40m"
+    field-of-view="30deg" shadow-intensity="1" shadow-softness="0.9" environment-image="neutral" exposure="1.05"
+    loading="eager" reveal="auto"></model-viewer>
+    <div class="cap"><b>${p.nome}</b><small>${p.medida}</small></div>`;
+  let x0 = 0, y0 = 0;
+  s.addEventListener('pointerdown', (e) => { x0 = e.clientX; y0 = e.clientY; }, true);
+  s.addEventListener('pointerup', (e) => {
+    if (Math.hypot(e.clientX - x0, e.clientY - y0) > 6) { esconderDica(); return; }   // foi giro, não clique
+    if (i !== atual) ir(i);
+    else if (modo === 'todas' && e.detail > 1) trocarModo('vitrine');
+  }, true);
+  stage.appendChild(s);
+  return s;
+});
+
+const thumbs = PECAS.map((p, i) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.title = p.nome; b.setAttribute('aria-label', p.nome);
+  b.innerHTML = `<img src="${p.id}-poster.webp?v=1" alt="">`;
+  b.addEventListener('click', () => ir(i));
+  $('#thumbs').appendChild(b);
+  return b;
+});
+
+// ---------- posição de cada peça na vitrine: todas visíveis, a escolhida no centro ----------
+function arrumar() {
+  const n = PECAS.length, w = stage.clientWidth, estreito = w < 640;
+  slots.forEach((s, i) => {
+    let d = i - atual;
+    if (d > n / 2) d -= n;
+    if (d < -n / 2) d += n;
+    const a = Math.abs(d);
+    const POS = estreito ? [0, 0.3, 0.43, 0.56] : [0, 0.26, 0.375, 0.455];   // centro de cada peça, em fração da largura
+    const ESC = estreito ? [1, 0.56, 0.36, 0.2] : [1, 0.62, 0.44, 0.32];
+    s.style.setProperty('--x', `${Math.sign(d) * POS[a] * w}px`);
+    s.style.setProperty('--s', ESC[a]);
+    s.style.setProperty('--o', a === 0 ? 1 : estreito && a === 3 ? 0 : [1, 0.95, 0.85, 0.75][a]);
+    s.style.setProperty('--z', 10 - a);
+    s.classList.toggle('on', a === 0);
+    s.setAttribute('aria-hidden', a === 0 ? 'false' : 'true');
+  });
+}
+
+function ir(i) {
+  atual = (i + PECAS.length) % PECAS.length;
+  const p = PECAS[atual];
+  $('#n').textContent = String(atual + 1).padStart(2, '0');
+  $('#nome').textContent = p.nome;
+  $('#medida').innerHTML = `<em>A × L × P</em>${p.medida}`;
+  $('#desc').textContent = p.desc;
+  thumbs.forEach((b, k) => b.setAttribute('aria-pressed', k === atual ? 'true' : 'false'));
+  if (modo === 'vitrine') arrumar(); else slots.forEach((s, k) => s.classList.toggle('on', k === atual));
+  const ar = $('#ar');
+  ar.href = AR_URL(p.id);
+  if (!$('#pop').hidden) desenharQR();
+}
+
+function trocarModo(m) {
+  modo = m;
+  app.classList.toggle('todas', m === 'todas');
+  document.querySelectorAll('[data-modo]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.modo === m ? 'true' : 'false'));
+  slots.forEach((s) => ['--x', '--s', '--o', '--z'].forEach((v) => s.style.removeProperty(v)));
+  ir(atual);
+  if (real) requestAnimationFrame(aplicarEscala);   // o quadro muda de proporção entre vitrine e grade
+}
+document.querySelectorAll('[data-modo]').forEach((b) => b.addEventListener('click', () => trocarModo(b.dataset.modo)));
+
+// ---------- tamanho real: mesma câmera para todas, apoiadas no mesmo chão ----------
+// a maior peça (pórtico 3,4 m de altura, backdrop 3,5 m de largura) tem de caber no quadro; a distância
+// sai da proporção do quadro e é a mesma para as sete, então o tamanho na tela é comparável
+function aplicarEscala() {
+  $('#real').setAttribute('aria-pressed', real ? 'true' : 'false');
+  const ref = slots[0].querySelector('model-viewer');
+  const asp = Math.max(0.3, (ref.clientWidth || 1) / (ref.clientHeight || 1));
+  const t = Math.tan((30 / 2) * Math.PI / 180);
+  const raio = Math.max(1.95 / t, 1.9 / (t * asp)).toFixed(2);
+  slots.forEach((s) => {
+    const mv = s.querySelector('model-viewer');
+    mv.cameraOrbit = real ? `-25deg 82deg ${raio}m` : '-25deg 78deg auto';
+    mv.cameraTarget = real ? '0m 1.7m 0m' : 'auto auto auto';
+    mv.jumpCameraToGoal?.();
+  });
+}
+$('#real').addEventListener('click', () => { real = !real; aplicarEscala(); });
+
+// ---------- navegação ----------
+$('.prev').addEventListener('click', () => ir(atual - 1));
+$('.next').addEventListener('click', () => ir(atual + 1));
+addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') { ir(atual + 1); e.preventDefault(); }
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') { ir(atual - 1); e.preventDefault(); }
+});
+let dicaFora = false;
+function esconderDica() { if (!dicaFora) { dicaFora = true; $('#dica').style.opacity = '0'; } }
+addEventListener('resize', () => { if (modo === 'vitrine') arrumar(); if (real) aplicarEscala(); });
+
+// ---------- AR: no celular abre a página de AR; no computador mostra o QR ----------
+function desenharQR() {
+  if (!window.qrcode) return;
+  const q = qrcode(0, 'M'); q.addData(PUBLICO(PECAS[atual].id)); q.make();
+  $('#qr').innerHTML = q.createSvgTag({ cellSize: 3, margin: 0 });
+}
+$('#ar').addEventListener('click', (e) => {
+  if (movel) return;
+  e.preventDefault();
+  const pop = $('#pop'); pop.hidden = !pop.hidden;
+  if (!pop.hidden) desenharQR();
+});
+addEventListener('pointerdown', (e) => { if (!e.target.closest('.acoes')) $('#pop').hidden = true; });
+
+trocarModo(modo);
+aplicarEscala();
+</script>
+</body>
+</html>

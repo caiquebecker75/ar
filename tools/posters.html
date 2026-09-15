@@ -1,0 +1,36 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Posters de uma página com vários modelos</title>
+<!--
+  Renderiza cada modelo no model-viewer (o mesmo visualizador da página) e grava <pasta>/<id>-poster.webp.
+  http://localhost:8833/tools/posters.html?slug=<pasta>&ids=a,b,c[&orbit=-25deg%2080deg%20auto]
+-->
+<script type="module" src="/vendor/model-viewer.min.js"></script>
+<style>
+  body { margin: 0; font: 13px/1.5 ui-monospace, monospace; background: #ddd; }
+  model-viewer { width: 720px; height: 900px; background: transparent; }
+</style>
+<pre id="log">capturando…</pre>
+<script type="module">
+const P = new URLSearchParams(location.search);
+const slug = P.get('slug');
+const IDS = (P.get('ids') || '').split(',').filter(Boolean);
+const orbit = P.get('orbit') || '-25deg 80deg auto';
+const log = (m) => { document.getElementById('log').textContent += '\n' + m; };
+const save = async (path, blob) => (await fetch(`/__save?path=${encodeURIComponent(path)}`, { method: 'POST', body: blob })).text();
+try {
+  await customElements.whenDefined('model-viewer');
+  for (const id of IDS) {
+    const mv = document.createElement('model-viewer');
+    Object.entries({ 'environment-image': 'neutral', exposure: '1.05', 'shadow-intensity': '1.1', 'shadow-softness': '0.9',
+      'camera-orbit': orbit, 'interaction-prompt': 'none', loading: 'eager' }).forEach(([k, v]) => mv.setAttribute(k, v));
+    mv.src = `/${slug}/${id}.glb`;
+    document.body.prepend(mv);
+    await new Promise((r) => mv.addEventListener('load', r, { once: true }));
+    await new Promise((r) => setTimeout(r, 1500));
+    log(`${id}: ` + await save(`${slug}/${id}-poster.webp`, await mv.toBlob({ mimeType: 'image/webp', qualityArgument: 0.85, idealAspect: false })));
+    mv.remove();
+  }
+  log('PRONTO');
+} catch (e) { log('ERRO: ' + (e.stack || e)); }
+</script>
