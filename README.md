@@ -20,6 +20,9 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `ngv-stand-conexao-farma/` | NGV Ecossistema, stand Conexão Farma 2027 (Abradilan) | 3 × 8 × 5 m (ambiente inteiro) |
 | `savencia-clipstrip-frescatino/` | Savencia, Clip Strip Frescatino | 70 × 10 × 6 cm |
 | `savencia-display-pp-polenguinho/` | Savencia, Display PP Polenguinho (Update) | 140 × 18 × 24 cm |
+| `savencia-display-pp-frescatino/` | Savencia, Display PP Frescatino | 145 × 17 × 24 cm (faca) |
+| `savencia-gravitacional-frescatino/` | Savencia, Gravitacional Frescatino (com 4 embalagens) | 39 × 8,5 × 5 cm |
+| `savencia-frame-glorifier-frescatino/` | Savencia, Frame Glorifier Frescatino (ventosas, AR de parede) | 18 × 20 cm |
 | `codice-displays/` | Códice, oito displays numa página (`?modelo=essencial`, `sense`, `media`, `ilha`, `painel`, `vitrine`, `categoria`, `multiuso`) | medidas de referência, de 195 × 74 × 52 cm a 202 × 104 × 55 cm |
 
 > **Códice:** não havia arquivo 3D dos displays. Os modelos foram montados em three.js a partir dos renders
@@ -67,7 +70,13 @@ continuam vendo o modelo antigo por um tempo (cache).
 
 ## Arquivo do Modo (.lxo) — o que aprendemos no Display PP Polenguinho
 
-Scripts em `tools/modo/` (`lxo_parse.py`, `lxo_inspecionar.py`, `build_display_pp.py` como exemplo completo).
+Scripts em `tools/modo/`. **Use `build_lxo.py` (genérico, por arquivo de configuração JSON)** — exemplos em
+`.work` dos projetos do Frescatino: malhas visíveis com transformação e cópias (`meshInst`), texturas por localizador no
+espaço local da malha, cores/transparência por grupo, bordas finas brancas, verso das artes e `decimar` por malha.
+Descobrir o que entra: itens `mesh` com `visible` diferente de `allOff`/`off` (a ordem dos itens `mesh` = ordem das camadas),
+transformações nos itens `translation`/`scale` ligados a cada malha, e cópias em `meshInst` (link `source`).
+Polígonos `PSUB`/`SUBD` (subdivisão, ex.: ventosas) leem igual a `FACE` (usa-se a malha de controle). Peça de parede/vitrine:
+`ar-placement="wall"` na página. `build_display_pp.py` fica como exemplo do primeiro caso.
 
 1. **Contagem de vértices do POLS em 16 bits cheios.** O LWO usa 10 bits (máx. 1023). No .lxo polígonos grandes
    (painel com recortes) passam disso; ler com máscara `&0x3ff` desalinha tudo e embaralha forma e materiais.
