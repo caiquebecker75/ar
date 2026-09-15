@@ -92,7 +92,7 @@ def mat_do_grupo(tag):
     tex = C.get('texturas', {})
     if tag in tex: return material(tag, img=tex[tag]['img'], um_lado=True)
     c = C.get('cores', {}).get(tag)
-    if isinstance(c, dict): return material(tag, cor=lin(c['cor']) if c.get('srgb') else tuple(c['cor']), alfa=c.get('alfa', 1.0), rough=c.get('rough', 0.6))
+    if isinstance(c, dict): return material(tag, cor=lin(c['cor']) if c.get('srgb') else tuple(c['cor']), alfa=c.get('alfa', 1.0), rough=c.get('rough', 0.6), um_lado=c.get('um_lado', False))
     if c: return material(tag, cor=tuple(c))
     return material('Padrao', cor=tuple(C.get('padrao', [0.6, 0.6, 0.6])))
 
@@ -106,13 +106,14 @@ def uv(tcfg, q, fora):   # q = coordenada local do Modo
     else: u, v = r[0], -r[2]
     return (u + 0.5, v + 0.5)
 
-me = bpy.data.meshes.new('peca'); bm = bmesh.new(); uvl = bm.loops.layers.uv.new('UVMap')
-ordem = []; est = {}
-def idx(m):
-    if m.name not in ordem: ordem.append(m.name)
-    return ordem.index(m.name)
-
-for spec in C['malhas']:
+est = {}
+objetos = []
+for ns, spec in enumerate(C['malhas']):
+    me = bpy.data.meshes.new(f'malha{ns}'); bm = bmesh.new(); uvl = bm.loops.layers.uv.new('UVMap')
+    ordem = []
+    def idx(m):
+        if m.name not in ordem: ordem.append(m.name)
+        return ordem.index(m.name)
     L = [x for x in layers if x['idx'] == spec['camada']][0]
     pts, polys, ptag = geometria(L)
     pos = spec.get('pos', [0, 0, 0]); esc = spec.get('escala', 1.0)
@@ -171,24 +172,33 @@ for spec in C['malhas']:
                 else:
                     tras.material_index = idx(material(tag + '-verso', cor=tuple(vs['cor']), um_lado=True))
 
-bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-6)
-bm.to_mesh(me); bm.free()
-for nome in ordem: me.materials.append(bpy.data.materials[nome])
-ob = bpy.data.objects.new('peca', me); bpy.context.scene.collection.objects.link(ob)
-# origem no centro da base
-bb = [ob.matrix_world @ mathutils.Vector(c) for c in ob.bound_box]
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-6)
+    bm.to_mesh(me); bm.free()
+    for nome in ordem: me.materials.append(bpy.data.materials[nome])
+    ob_ = bpy.data.objects.new(f'malha{ns}', me); bpy.context.scene.collection.objects.link(ob_)
+    if spec.get('decimar'):   # reduz só esta malha (ex.: ventosas muito detalhadas)
+        antes = len(me.polygons)
+        bpy.context.view_layer.objects.active = ob_
+        mod = ob_.modifiers.new('reduz', 'DECIMATE'); mod.ratio = spec['decimar']
+        bpy.ops.object.modifier_apply(modifier='reduz')
+        print('DECIMAR camada', spec['camada'], antes, '->', len(ob_.data.polygons))
+    objetos.append(ob_)
+
+# origem no centro da base (todas as malhas juntas)
+bb = [o.matrix_world @ mathutils.Vector(c) for o in objetos for c in o.bound_box]
 cx = (min(p.x for p in bb) + max(p.x for p in bb)) / 2; cy = (min(p.y for p in bb) + max(p.y for p in bb)) / 2; z0 = min(p.z for p in bb)
-me.transform(mathutils.Matrix.Translation((-cx, -cy, -z0)))
+for o in objetos: o.data.transform(mathutils.Matrix.Translation((-cx, -cy, -z0)))
+dims = [max(p.x for p in bb) - min(p.x for p in bb), max(p.y for p in bb) - min(p.y for p in bb), max(p.z for p in bb) - min(p.z for p in bb)]
 print('TRIS por grupo', est)
-print('DIMS cm (L x P x A)', [round(x * 100, 1) for x in ob.dimensions])
+print('DIMS cm (L x P x A)', [round(x * 100, 1) for x in dims])
 bpy.ops.export_scene.gltf(filepath=BASE + C.get('saida', 'raw.glb'), export_format='GLB', export_image_format='JPEG', export_jpeg_quality=90)
 
 # ---------- conferência ----------
 diag = BASE + C.get('diag', 'diag') + '/'; os.makedirs(diag, exist_ok=True)
 sc = bpy.context.scene; sc.render.engine = 'BLENDER_WORKBENCH'
 sc.display.shading.color_type = 'TEXTURE'; sc.display.shading.light = 'STUDIO'
-A = max(ob.dimensions); alvo = mathutils.Vector((0, 0, ob.dimensions.z / 2))
-sc.render.resolution_x = 700; sc.render.resolution_y = int(700 * max(1, ob.dimensions.z / max(ob.dimensions.x, 1e-3)) ** 0.6)
+A = max(dims); alvo = mathutils.Vector((0, 0, dims[2] / 2))
+sc.render.resolution_x = 700; sc.render.resolution_y = int(700 * max(1, dims[2] / max(dims[0], 1e-3)) ** 0.6)
 cam = bpy.data.cameras.new('c'); cam.type = 'ORTHO'; cam.ortho_scale = A * 1.15
 co = bpy.data.objects.new('cam', cam); sc.collection.objects.link(co); sc.camera = co
 w = bpy.data.worlds.new('w'); sc.world = w
