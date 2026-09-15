@@ -19,6 +19,7 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `famosa-display-maromba-p/` | Agrícola Famosa, Display Maromba P | 137 × 58 × 40 cm |
 | `ngv-stand-conexao-farma/` | NGV Ecossistema, stand Conexão Farma 2027 (Abradilan) | 3 × 8 × 5 m (ambiente inteiro) |
 | `savencia-clipstrip-frescatino/` | Savencia, Clip Strip Frescatino | 70 × 10 × 6 cm |
+| `savencia-display-pp-polenguinho/` | Savencia, Display PP Polenguinho (Update) | 140 × 18 × 24 cm |
 | `codice-displays/` | Códice, oito displays numa página (`?modelo=essencial`, `sense`, `media`, `ilha`, `painel`, `vitrine`, `categoria`, `multiuso`) | medidas de referência, de 195 × 74 × 52 cm a 202 × 104 × 55 cm |
 
 > **Códice:** não havia arquivo 3D dos displays. Os modelos foram montados em three.js a partir dos renders
@@ -63,6 +64,24 @@ Pré-requisitos (uma vez): `cd tools && npm install`. O resto já vem no macOS (
 **Atualizando um display que já existe:** repita os passos 2, 4 e 6 e suba o `?v=N` de `display.glb`,
 `display.usdz`, `poster.webp` e `og.jpg` no `index.html` — sem isso, celulares que já abriram o link
 continuam vendo o modelo antigo por um tempo (cache).
+
+## Arquivo do Modo (.lxo) — o que aprendemos no Display PP Polenguinho
+
+Scripts em `tools/modo/` (`lxo_parse.py`, `lxo_inspecionar.py`, `build_display_pp.py` como exemplo completo).
+
+1. **Contagem de vértices do POLS em 16 bits cheios.** O LWO usa 10 bits (máx. 1023). No .lxo polígonos grandes
+   (painel com recortes) passam disso; ler com máscara `&0x3ff` desalinha tudo e embaralha forma e materiais.
+   Conferência: o total de polígonos tem de bater com o maior índice do `PTAG MATR` + 1 e o bloco tem de fechar exato.
+2. **Material por grupo:** máscara (`mask`) → canal texto `ptag <nome>` (fica em `CHNS`, não em `CHAN`).
+   Imagem: `imageMap` → `shadeLoc` aponta para o `txtrLocator` (projType, eixo) e para o `videoStill` (caminho do arquivo).
+3. **Projeção cúbica:** posição e escala do localizador ficam nos itens `translation`/`scale` ligados a ele;
+   UV = (coordenada − posição) / escala + 0,5. No Modo z = −z do arquivo. Orientar a arte pelo lado de fora da peça
+   (frente −Y do Blender, laterais ±X), senão o texto sai espelhado.
+4. **Planos de uma face só com arte** (laterais, testeira): criar o verso explícito 1 mm para dentro (azul liso ou a arte
+   do verso) e marcar o material com backface culling, para o `prepare-glb` não duplicar de novo.
+5. **Renders de conferência no Workbench:** material sem imagem aparece com a *cor de viewport* (`diffuse_color`),
+   não a do nó — preencha as duas, senão parece que a peça está cinza.
+6. Produtos replicados (camada `Point Cloud` + `replicator`) ficam de fora: o AR mostra o display vazio, como nos renders.
 
 ## Ambientes grandes (stand inteiro)
 
