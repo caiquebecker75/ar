@@ -79,6 +79,21 @@ function escolher(m) {
   mv.setAttribute('ios-src', m.ios);
   mv.setAttribute('alt', m.alt);
   mv.setAttribute('src', m.src);
+  // câmera própria (ex.: banner suspenso, que o enquadramento automático deixa pequeno): "camera": { "orbita", "alvo" }
+  if (!('orbita' in mv.dataset)) { mv.dataset.orbita = mv.getAttribute('camera-orbit') ?? ''; mv.dataset.alvo = mv.getAttribute('camera-target') ?? ''; }
+  for (const [attr, chave] of [['camera-orbit', 'orbita'], ['camera-target', 'alvo']]) {
+    const v = m.camera?.[chave] || mv.dataset[chave];
+    if (v) mv.setAttribute(attr, v); else mv.removeAttribute(attr);
+  }
+  // peça de parede (ex.: aplicada no produto): "posicionamento": "wall" no modelo
+  mv.setAttribute('ar-placement', m.posicionamento || 'floor');
+  const onde = mv.querySelector('[slot="ar-prompt"] b');
+  if (onde) onde.textContent = m.posicionamento === 'wall' ? 'parede' : 'chão';
+  const dica = $('.hint');
+  if (dica) {
+    dica.dataset.chao ??= dica.innerHTML;
+    dica.innerHTML = m.posicionamento === 'wall' ? 'Em <b>tamanho real</b>. Aponte a câmera para uma parede e mova o celular devagar.' : dica.dataset.chao;
+  }
   ctaText = `Ver o ${m.nome} no meu espaço`;
   document.querySelectorAll('[data-modelo]').forEach((b) => {
     const on = b.dataset.modelo === m.id;

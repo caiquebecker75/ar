@@ -11,7 +11,7 @@
 <meta property="og:url" content="https://projetos.75lab.com.br/ar/semp-split-hw/">
 <meta property="og:title" content="Peças SEMP Split HW em realidade aumentada">
 <meta property="og:description" content="Escolha a peça e toque para ver em tamanho real, no seu espaço.">
-<meta property="og:image" content="https://projetos.75lab.com.br/ar/semp-split-hw/og.jpg?v=1">
+<meta property="og:image" content="https://projetos.75lab.com.br/ar/semp-split-hw/og.jpg?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -19,9 +19,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Lexend:wght@200;300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/ar.css?v=3">
+<link rel="stylesheet" href="../assets/ar.css?v=4">
 <style>
-  /* sete peças: a escolha vira uma faixa que rola na horizontal */
+  /* quinze peças: a escolha vira uma faixa que rola na horizontal */
   .modelos { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(168px, 1fr); max-width: none; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
   .modelos::-webkit-scrollbar { display: none; }
   @media (min-width: 900px) { .is-desktop .modelos { grid-auto-flow: row; grid-template-columns: 1fr 1fr; overflow: visible; max-width: 520px; } }
@@ -29,7 +29,7 @@
 <script>(function(){if(location.protocol==='http:'&&!/^(localhost|127\.)/.test(location.hostname))location.replace('https://'+location.host+location.pathname+location.search+location.hash);var u=navigator.userAgent,m=/Android|iPhone|iPad|iPod/i.test(u)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);document.documentElement.classList.add(m?'is-mobile':'is-desktop')})()</script>
 <script type="module" src="../vendor/model-viewer.min.js"></script>
 <script defer src="../vendor/qrcode.min.js"></script>
-<script type="module" src="../assets/ar.js?v=3"></script>
+<script type="module" src="../assets/ar.js?v=5"></script>
 <!-- modelos desta página: o primeiro é o que abre sem ?modelo= -->
 <script type="application/json" id="modelos">
 [
@@ -39,7 +39,15 @@
   { "id": "cubo", "nome": "Cubos", "alt": "Cubos empilhados SEMP Split HW em 3D", "src": "cubo.glb?v=1", "ios": "cubo.usdz?v=1", "poster": "cubo-poster.webp?v=1" },
   { "id": "poster-cinta", "nome": "Poster e cinta de caixa", "alt": "Cinta de caixa SEMP Split HW em 3D", "src": "poster-cinta.glb?v=1", "ios": "poster-cinta.usdz?v=1", "poster": "poster-cinta-poster.webp?v=1" },
   { "id": "berco", "nome": "Display berço", "alt": "Display berço SEMP Split HW em 3D", "src": "berco.glb?v=1", "ios": "berco.usdz?v=1", "poster": "berco-poster.webp?v=1" },
-  { "id": "regua", "nome": "Régua de argumentação", "alt": "Régua de argumentação SEMP Split HW em 3D", "src": "regua.glb?v=1", "ios": "regua.usdz?v=1", "poster": "regua-poster.webp?v=1" }
+  { "id": "regua", "nome": "Régua de argumentação", "alt": "Régua de argumentação SEMP Split HW em 3D", "src": "regua.glb?v=1", "ios": "regua.usdz?v=1", "poster": "regua-poster.webp?v=1" },
+  { "id": "placa", "nome": "Placa de features e guia de BTU", "alt": "Placa de features e guia de BTU SEMP Split HW em 3D", "src": "placa.glb?v=1", "ios": "placa.usdz?v=1", "poster": "placa-poster.webp?v=1", "posicionamento": "wall" },
+  { "id": "topper", "nome": "Topper", "alt": "Topper SEMP Split HW em 3D", "src": "topper.glb?v=1", "ios": "topper.usdz?v=1", "poster": "topper-poster.webp?v=1", "posicionamento": "wall" },
+  { "id": "orelha", "nome": "Orelha", "alt": "Orelha SEMP Split HW em 3D", "src": "orelha.glb?v=1", "ios": "orelha.usdz?v=1", "poster": "orelha-poster.webp?v=1", "posicionamento": "wall" },
+  { "id": "tapete", "nome": "Tapete de piso", "alt": "Tapete de piso SEMP Split HW em 3D", "src": "tapete.glb?v=1", "ios": "tapete.usdz?v=1", "poster": "tapete-poster.webp?v=1" },
+  { "id": "aerea", "nome": "Comunicação aérea", "alt": "Comunicação aérea SEMP Split HW em 3D", "src": "aerea.glb?v=1", "ios": "aerea.usdz?v=1", "poster": "aerea-poster.webp?v=2", "camera": { "orbita": "-25deg 84deg 3.4m", "alvo": "0m 2.2m 0m" } },
+  { "id": "adam-lama", "nome": "Lamá (ADAM)", "alt": "Lamá (ADAM) SEMP Split HW em 3D", "src": "adam-lama.glb?v=1", "ios": "adam-lama.usdz?v=1", "poster": "adam-lama-poster.webp?v=1" },
+  { "id": "adam-poster-caixa", "nome": "Poster de caixa (ADAM)", "alt": "Poster de caixa (ADAM) SEMP Split HW em 3D", "src": "adam-poster-caixa.glb?v=1", "ios": "adam-poster-caixa.usdz?v=1", "poster": "adam-poster-caixa-poster.webp?v=1" },
+  { "id": "adam-testeira", "nome": "Testeira e orelha (ADAM)", "alt": "Testeira e orelha (ADAM) SEMP Split HW em 3D", "src": "adam-testeira.glb?v=1", "ios": "adam-testeira.usdz?v=1", "poster": "adam-testeira-poster.webp?v=1", "posicionamento": "wall" }
 ]
 </script>
 </head>
@@ -61,6 +69,14 @@
       <button type="button" data-modelo="poster-cinta" aria-pressed="false"><img src="poster-cinta-poster.webp?v=1" alt="" width="40" height="50"><span><b>Cinta de caixa</b><small>94 × 92 × 54 cm</small></span></button>
       <button type="button" data-modelo="berco" aria-pressed="false"><img src="berco-poster.webp?v=1" alt="" width="40" height="50"><span><b>Display berço</b><small>33 × 79 × 35 cm</small></span></button>
       <button type="button" data-modelo="regua" aria-pressed="false"><img src="regua-poster.webp?v=1" alt="" width="40" height="50"><span><b>Régua</b><small>10 × 47 × 6 cm</small></span></button>
+      <button type="button" data-modelo="placa" aria-pressed="false"><img src="placa-poster.webp?v=1" alt="" width="40" height="50"><span><b>Placa e guia BTU</b><small>10,5 × 63 cm</small></span></button>
+      <button type="button" data-modelo="topper" aria-pressed="false"><img src="topper-poster.webp?v=1" alt="" width="40" height="50"><span><b>Topper</b><small>11 × 50 cm</small></span></button>
+      <button type="button" data-modelo="orelha" aria-pressed="false"><img src="orelha-poster.webp?v=1" alt="" width="40" height="50"><span><b>Orelha</b><small>18,8 × 10 cm</small></span></button>
+      <button type="button" data-modelo="tapete" aria-pressed="false"><img src="tapete-poster.webp?v=1" alt="" width="40" height="50"><span><b>Tapete de piso</b><small>68 × 100 cm</small></span></button>
+      <button type="button" data-modelo="aerea" aria-pressed="false"><img src="aerea-poster.webp?v=2" alt="" width="40" height="50"><span><b>Comunicação aérea</b><small>42 × 120 cm</small></span></button>
+      <button type="button" data-modelo="adam-lama" aria-pressed="false"><img src="adam-lama-poster.webp?v=1" alt="" width="40" height="50"><span><b>Lamá ADAM</b><small>151 × 51 cm</small></span></button>
+      <button type="button" data-modelo="adam-poster-caixa" aria-pressed="false"><img src="adam-poster-caixa-poster.webp?v=1" alt="" width="40" height="50"><span><b>Poster de caixa</b><small>125 × 188 cm</small></span></button>
+      <button type="button" data-modelo="adam-testeira" aria-pressed="false"><img src="adam-testeira-poster.webp?v=1" alt="" width="40" height="50"><span><b>Testeira ADAM</b><small>13 × 43 cm</small></span></button>
     </div>
   </section>
 

@@ -9,7 +9,7 @@
   Vitrine para INCORPORAR em outra apresentação (iframe). Ocupa 100% do iframe.
     <iframe src="https://projetos.75lab.com.br/ar/semp-split-hw/embed.html" style="width:100%;height:100%;border:0" allow="fullscreen; xr-spatial-tracking" loading="lazy"></iframe>
   Parâmetros: ?peca=portico (abre nela) · ?modo=todas (grade) · ?escala=real · ?fundo=transparente
-  As sete peças ficam na tela ao mesmo tempo; cada uma gira com o dedo ou o mouse.
+  As peças ficam na tela ao mesmo tempo; cada uma gira com o dedo ou o mouse.
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -66,7 +66,7 @@
   .dica svg { width: 14px; height: 14px; }
 
   /* modo "todas": as sete lado a lado, em grade */
-  .todas .stage { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: calc(var(--gap) * .6); }
+  .todas .stage { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, minmax(0, 1fr)); gap: calc(var(--gap) * .6); }
   .todas .slot { position: relative; left: auto; top: auto; width: auto; height: auto; min-height: 0; transform: none; opacity: 1; z-index: 1;
     background: var(--card); border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; display: grid; grid-template-rows: minmax(0, 1fr) auto; }
   .todas .slot.on { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
@@ -89,7 +89,9 @@
   .medida em { font-style: normal; color: var(--ink3); margin-right: 5px; }
   .desc { flex-basis: 100%; font-weight: 300; font-size: clamp(11px, 1.7vmin, 14px); color: var(--ink2); }
   .acoes { display: flex; align-items: center; gap: 10px; position: relative; }
-  .thumbs { display: flex; gap: 6px; }
+  .thumbs { display: flex; gap: 6px; overflow-x: auto; max-width: min(46vw, 560px); scrollbar-width: none; padding: 2px; }
+  .thumbs::-webkit-scrollbar { display: none; }
+  .thumbs button { flex: none; }
   .thumbs button { width: clamp(30px, 5.2vmin, 46px); aspect-ratio: 4 / 5; border-radius: 8px; background: var(--card); border: 1px solid var(--rule); padding: 2px; opacity: .75; transition: opacity .2s, border-color .2s; }
   .thumbs button img { width: 100%; height: 100%; object-fit: contain; display: block; }
   .thumbs button[aria-pressed="true"] { opacity: 1; border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
@@ -105,7 +107,7 @@
   @media (max-width: 640px) {
     .slot { width: 80%; }
     .thumbs { display: none; }
-    .todas .stage { grid-template-columns: repeat(2, 1fr); grid-template-rows: none; grid-auto-rows: minmax(0, 1fr); }
+    .todas .stage { grid-template-columns: repeat(2, 1fr); grid-template-rows: none; grid-auto-rows: 52vw; overflow-y: auto; }
     .todas .grade-ar { display: none; }
     .base { grid-template-columns: 1fr; }
     .acoes { justify-content: flex-start; }
@@ -140,7 +142,7 @@
 
   <section class="base">
     <div class="info" aria-live="polite">
-      <span class="num"><b id="n">01</b> / 07</span>
+      <span class="num"><b id="n">01</b> / <span id="total">15</span></span>
       <span class="nome" id="nome">Ilha Premium</span>
       <span class="medida" id="medida"><em>A × L × P</em>179 × 120 × 94 cm</span>
       <span class="desc" id="desc"></span>
@@ -163,13 +165,21 @@
 
 <script type="module">
 const PECAS = [
-  { id: 'ilha', nome: 'Ilha Premium', medida: '179 × 120 × 94 cm', desc: 'Ilha com testeira, produto exposto, cubos, totem digital e adesivo de chão.' },
-  { id: 'portico', nome: 'Pórtico', medida: '340 × 306 × 60 cm', desc: 'Arco de entrada com testeira e módulos encaixados nas colunas.' },
-  { id: 'backdrop', nome: 'Backdrop', medida: '205 × 354 × 90 cm', desc: 'Painel curvo para ações, eventos e fotos com o produto.' },
-  { id: 'cubo', nome: 'Cubos', medida: '139 × 110 × 69 cm', desc: 'Quatro cubos empilháveis com as mensagens do produto em cada face.' },
-  { id: 'poster-cinta', nome: 'Poster e cinta de caixa', medida: '94 × 92 × 54 cm', desc: 'Cinta que veste a caixa do produto, com o aparelho e o berço por cima.' },
-  { id: 'berco', nome: 'Display berço', medida: '33 × 79 × 35 cm', desc: 'Berço que apoia o aparelho inclinado, com a assinatura da marca na frente.' },
-  { id: 'regua', nome: 'Régua de argumentação', medida: '10 × 47 × 6 cm', desc: 'Régua de gôndola com os diferenciais: AI Eco, fluxo de ar e filtro 6x1.' },
+  { id: 'ilha', nome: 'Ilha Premium', medida: '179 × 120 × 94 cm', rotulo: 'A × L × P', desc: 'Ilha com testeira, produto exposto, cubos, totem digital e adesivo de chão.' },
+  { id: 'portico', nome: 'Pórtico', medida: '340 × 306 × 60 cm', rotulo: 'A × L × P', desc: 'Arco de entrada com testeira e módulos encaixados nas colunas.' },
+  { id: 'backdrop', nome: 'Backdrop', medida: '205 × 354 × 90 cm', rotulo: 'A × L × P', desc: 'Painel curvo para ações, eventos e fotos com o produto.' },
+  { id: 'cubo', nome: 'Cubos', medida: '139 × 110 × 69 cm', rotulo: 'A × L × P', desc: 'Quatro cubos empilháveis com as mensagens do produto em cada face.' },
+  { id: 'poster-cinta', nome: 'Poster e cinta de caixa', medida: '94 × 92 × 54 cm', rotulo: 'A × L × P', desc: 'Cinta que veste a caixa do produto, com o aparelho e o berço por cima.' },
+  { id: 'berco', nome: 'Display berço', medida: '33 × 79 × 35 cm', rotulo: 'A × L × P', desc: 'Berço que apoia o aparelho inclinado, com a assinatura da marca na frente.' },
+  { id: 'regua', nome: 'Régua de argumentação', medida: '10 × 47 × 6 cm', rotulo: 'A × L × P', desc: 'Régua de gôndola com os diferenciais: AI Eco, fluxo de ar e filtro 6x1.' },
+  { id: 'placa', nome: 'Placa de features e guia de BTU', medida: '10,5 × 63 cm', rotulo: 'A × L', desc: 'Placa abaixo do aparelho com os diferenciais e a escolha do BTU ideal.' },
+  { id: 'topper', nome: 'Topper', medida: '11 × 50 cm', rotulo: 'A × L', desc: 'Topper recortado encaixado em cima do aparelho, com os diferenciais.' },
+  { id: 'orelha', nome: 'Orelha', medida: '18,8 × 10 cm', rotulo: 'A × L', desc: 'Orelha AI Eco presa na lateral do aparelho (a arte existe em 3 cores).' },
+  { id: 'tapete', nome: 'Tapete de piso', medida: '68 × 100 cm', rotulo: 'P × L', desc: 'Tapete em meia-lua para a frente do ponto de venda.' },
+  { id: 'aerea', orbita: '-25deg 84deg 4.4m', alvo: '0m 2.2m 0m', nome: 'Comunicação aérea', medida: '42 × 120 cm', rotulo: 'A × L', desc: 'Banner suspenso por cabos, a 2 m do chão (medida estimada).' },
+  { id: 'adam-lama', nome: 'Lamá (ADAM)', medida: '151 × 51 cm', rotulo: 'A × L', desc: 'Totem curvo de chão com a mensagem completa do produto.' },
+  { id: 'adam-poster-caixa', nome: 'Poster de caixa (ADAM)', medida: '125 × 188 cm', rotulo: 'A × L', desc: 'Poster aplicado na frente da pilha de caixas, com o produto em cima.' },
+  { id: 'adam-testeira', nome: 'Testeira e orelha (ADAM)', medida: '13 × 43 cm', rotulo: 'A × L', desc: 'Adesivo na frente do aparelho e orelha lateral, versão da agência ADAM.' },
 ];
 const P = new URLSearchParams(location.search);
 const AR_URL = (id) => new URL(`./?modelo=${id}`, location.href).href;
@@ -177,17 +187,18 @@ const PUBLICO = (id) => `https://projetos.75lab.com.br/ar/semp-split-hw/?modelo=
 const movel = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 const $ = (s) => document.querySelector(s);
 const app = $('#app'), stage = $('#stage');
+$('#total').textContent = String(PECAS.length).padStart(2, '0');
 if (P.get('fundo') === 'transparente') document.body.classList.add('transparente');
 
 let atual = Math.max(0, PECAS.findIndex((p) => p.id === P.get('peca')));
 let modo = P.get('modo') === 'todas' ? 'todas' : 'vitrine';
 let real = P.get('escala') === 'real';
 
-// ---------- monta as sete peças (ficam carregadas o tempo todo) ----------
+// ---------- monta as peças (ficam carregadas o tempo todo) ----------
 const slots = PECAS.map((p, i) => {
   const s = document.createElement('div');
   s.className = 'slot';
-  s.innerHTML = `<model-viewer src="${p.id}.glb?v=1" poster="${p.id}-poster.webp?v=1" alt="${p.nome} SEMP Split HW em 3D"
+  s.innerHTML = `<model-viewer src="${p.id}.glb?v=1" poster="${p.id}-poster.webp?v=${p.id === 'aerea' ? 2 : 1}" alt="${p.nome} SEMP Split HW em 3D"
     camera-controls disable-zoom disable-pan touch-action="pan-y" interaction-prompt="none"
     auto-rotate auto-rotate-delay="1800" rotation-per-second="16deg"
     camera-orbit="-25deg 78deg auto" min-camera-orbit="auto 30deg auto" max-camera-orbit="auto 90deg 40m"
@@ -208,7 +219,7 @@ const slots = PECAS.map((p, i) => {
 const thumbs = PECAS.map((p, i) => {
   const b = document.createElement('button');
   b.type = 'button'; b.title = p.nome; b.setAttribute('aria-label', p.nome);
-  b.innerHTML = `<img src="${p.id}-poster.webp?v=1" alt="">`;
+  b.innerHTML = `<img src="${p.id}-poster.webp?v=${p.id === 'aerea' ? 2 : 1}" alt="">`;
   b.addEventListener('click', () => ir(i));
   $('#thumbs').appendChild(b);
   return b;
@@ -224,9 +235,11 @@ function arrumar() {
     const a = Math.abs(d);
     const POS = estreito ? [0, 0.3, 0.43, 0.56] : [0, 0.26, 0.375, 0.455];   // centro de cada peça, em fração da largura
     const ESC = estreito ? [1, 0.56, 0.36, 0.2] : [1, 0.62, 0.44, 0.32];
-    s.style.setProperty('--x', `${Math.sign(d) * POS[a] * w}px`);
-    s.style.setProperty('--s', ESC[a]);
-    s.style.setProperty('--o', a === 0 ? 1 : estreito && a === 3 ? 0 : [1, 0.95, 0.85, 0.75][a]);
+    const longe = a > 3;   // da quarta em diante fica escondida atrás das laterais até chegar a vez dela
+    s.style.setProperty('--x', `${Math.sign(d) * (longe ? 0.5 : POS[a]) * w}px`);
+    s.style.setProperty('--s', longe ? 0.2 : ESC[a]);
+    s.style.setProperty('--o', longe || (estreito && a === 3) ? 0 : [1, 0.95, 0.85, 0.75][a]);
+    s.style.pointerEvents = longe ? 'none' : '';
     s.style.setProperty('--z', 10 - a);
     s.classList.toggle('on', a === 0);
     s.setAttribute('aria-hidden', a === 0 ? 'false' : 'true');
@@ -238,9 +251,10 @@ function ir(i) {
   const p = PECAS[atual];
   $('#n').textContent = String(atual + 1).padStart(2, '0');
   $('#nome').textContent = p.nome;
-  $('#medida').innerHTML = `<em>A × L × P</em>${p.medida}`;
+  $('#medida').innerHTML = `<em>${p.rotulo}</em>${p.medida}`;
   $('#desc').textContent = p.desc;
   thumbs.forEach((b, k) => b.setAttribute('aria-pressed', k === atual ? 'true' : 'false'));
+  thumbs[atual].scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
   if (modo === 'vitrine') arrumar(); else slots.forEach((s, k) => s.classList.toggle('on', k === atual));
   const ar = $('#ar');
   ar.href = AR_URL(p.id);
@@ -266,10 +280,10 @@ function aplicarEscala() {
   const asp = Math.max(0.3, (ref.clientWidth || 1) / (ref.clientHeight || 1));
   const t = Math.tan((30 / 2) * Math.PI / 180);
   const raio = Math.max(1.95 / t, 1.9 / (t * asp)).toFixed(2);
-  slots.forEach((s) => {
-    const mv = s.querySelector('model-viewer');
-    mv.cameraOrbit = real ? `-25deg 82deg ${raio}m` : '-25deg 78deg auto';
-    mv.cameraTarget = real ? '0m 1.7m 0m' : 'auto auto auto';
+  slots.forEach((s, i) => {
+    const mv = s.querySelector('model-viewer'), p = PECAS[i];
+    mv.cameraOrbit = real ? `-25deg 82deg ${raio}m` : (p.orbita || '-25deg 78deg auto');
+    mv.cameraTarget = real ? '0m 1.7m 0m' : (p.alvo || 'auto auto auto');
     mv.jumpCameraToGoal?.();
   });
 }

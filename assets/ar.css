@@ -21,6 +21,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .app {
   height: 100vh; height: 100svh;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);   /* sem isso a faixa de modelos que rola alarga a página inteira no celular */
   grid-template-rows: auto auto minmax(0, 1fr) auto;
   grid-template-areas: "top" "intro" "stage" "dock";
 }

@@ -24,7 +24,7 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `savencia-display-pp-frescatino/` | Savencia, Display PP Frescatino | 145 × 17 × 24 cm (faca) |
 | `savencia-gravitacional-frescatino/` | Savencia, Gravitacional Frescatino (com 4 embalagens) | 39 × 8,5 × 5 cm |
 | `savencia-frame-glorifier-frescatino/` | Savencia, Frame Glorifier Frescatino (ventosas, AR de parede) | 18 × 20 cm |
-| `semp-split-hw/` | SEMP, sete peças de PDV do lançamento Split HW numa página (`?modelo=ilha`, `portico`, `backdrop`, `cubo`, `poster-cinta`, `berco`, `regua`) + `embed.html` | de 10 × 47 × 6 cm (régua) a 340 × 306 × 60 cm (pórtico) |
+| `semp-split-hw/` | SEMP, quinze peças de PDV do lançamento Split HW numa página: sete com 3D do Modo (`ilha`, `portico`, `backdrop`, `cubo`, `poster-cinta`, `berco`, `regua`) e oito montadas da arte 2D (`placa`, `topper`, `orelha`, `tapete`, `aerea`, `adam-lama`, `adam-poster-caixa`, `adam-testeira`) + `embed.html` | de 10 × 47 × 6 cm (régua) a 340 × 306 × 60 cm (pórtico) |
 | `codice-displays/` | Códice, oito displays numa página (`?modelo=essencial`, `sense`, `media`, `ilha`, `painel`, `vitrine`, `categoria`, `multiuso`) | medidas de referência, de 195 × 74 × 52 cm a 202 × 104 × 55 cm |
 
 > **Códice:** não havia arquivo 3D dos displays. Os modelos foram montados em three.js a partir dos renders
@@ -111,6 +111,23 @@ Posters de páginas com vários modelos: `tools/posters.html?slug=<pasta>&ids=a,
    ou em centímetros (backdrop). Conferir pelo produto ou pelo `DIMS` antes do pipeline.
 4. **Estrutura de tubos pesada** (backdrop, 42 mil polígonos) não cai no `prepare-glb`: `"decimar_tags": {"Black": 0.08}` no config.
 5. Boneco de escala (`Sandro`) e `Shadow Catcher` ficam de fora.
+
+## Peça que só existe como arte 2D: o que aprendemos nas peças SEMP Split HW
+
+`tools/semp/pecas2d.py` (Blender) monta a peça a partir da arte: o recorte sai da transparência do PNG
+(`"mascara": "alfa"`) ou do fundo branco (`"escuro"`), com espessura real, verso e borda, painel curvo (`"curva"`),
+e pode ser aplicada no produto já em 3D (o split lido do .lxo da Ilha). Config de exemplo: `.work/semp2d/pecas.json`.
+
+1. **Medida:** o cabeçalho do PSD traz pixels e dpi (lido por *range* no Drive, sem baixar o arquivo inteiro).
+   Render ou mockup a 72 dpi não serve de medida: aí a medida é estimada e isso vai escrito na página.
+2. **CMYK e objeto inteligente:** `tools/psd_composto.py` lê a imagem composta de PSD/PSB RGB ou CMYK (o `sips` falha no CMYK com canal extra)
+   e aceita o offset de um PSB embutido. Se o composto embutido vier em branco, `tools/semp/desentortar.py` recupera a arte
+   plana do render (quadrilátero sobre fundo branco, por homografia).
+3. **Peça aplicada no produto** (orelha, topper, placa, testeira): `"posicionamento": "wall"` no modelo da página
+   (o `ar.js` troca `ar-placement` e a instrução) e `tools/usdz.html?...&alinhamento=vertical` no USDZ.
+4. **Peça suspensa** (comunicação aérea): um quadrado invisível em z = 0 (`marco_chao`) guarda a altura real no AR;
+   na página, `"camera": { "orbita", "alvo" }` no modelo evita que o banner apareça minúsculo.
+5. Arte com recorte: a cor é "sangrada" para fora do recorte antes de virar JPEG, senão aparece franja escura na borda.
 
 ## Ambientes grandes (stand inteiro)
 
