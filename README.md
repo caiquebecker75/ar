@@ -20,6 +20,7 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `famosa-arco-melao/` | Agrícola Famosa, Testeira Arco Melão Famosa | 53 × 106 × 9 cm |
 | `famosa-portal-melao/` | Agrícola Famosa, Portal Melão Famosa (com tapete de chão) | 257 × 274 × 271 cm |
 | `famosa-carenagem-melao/` | Agrícola Famosa, Carenagem de pallet Melão Famosa (com pallet e caixas) | 169 × 120 × 100 cm |
+| `mars-display-flex/` | Mars Petcare, Display Flex Whiskas & Pedigree (modelo de referência, por medida e fotos do protótipo) | 146 × 44,5 × 33 cm |
 | `ngv-stand-conexao-farma/` | NGV Ecossistema, stand Conexão Farma 2027 (Abradilan) | 3 × 8 × 5 m (ambiente inteiro) |
 | `savencia-clipstrip-frescatino/` | Savencia, Clip Strip Frescatino | 70 × 10 × 6 cm |
 | `savencia-display-pp-polenguinho/` | Savencia, Display PP Polenguinho (Update) | 140 × 18 × 24 cm |
