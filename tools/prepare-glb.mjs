@@ -31,6 +31,9 @@ const MAX_TRI = flag('max-tri', 4000);
 // cenas grandes (ex.: stand inteiro): mapas técnicos (normal, rugosidade) menores que a cor
 const MAX_TEX_DATA = flag('max-texture-data', MAX_TEX);
 const SIMPLIFY_ERROR = flag('simplify-error', 0.005);
+// --no-verso: mantém doubleSided (web/Android) em vez de duplicar faces; --keep-alpha: textura com transparência continua PNG
+const NO_VERSO = process.argv.includes('--no-verso');
+const KEEP_ALPHA = process.argv.includes('--keep-alpha');
 if (!input || !output) {
   console.error('uso: node tools/prepare-glb.mjs <entrada.glb> <saida.glb> [--rotate-y=graus] [--max-texture=2048]');
   process.exit(1);
@@ -229,7 +232,7 @@ const dims = { largura_m: +(max[0] - min[0]).toFixed(3), altura_m: +(max[1] - mi
 // renderizador resolve de um jeito as faces coincidentes (ex.: lado de fora impresso e
 // lado de dentro preto da caixa no mesmo plano). O verso é duplicado com a ordem invertida
 // e recuado 1 mm para trás da própria face — assim ganha sempre a face virada para quem olha.
-const VERSO_OFFSET = 0.001;
+const VERSO_OFFSET = flag('verso-offset', 0.001);
 // Malha fechada com as faces para fora (ex.: os melões) nunca mostra o lado de dentro:
 // não precisa de verso, e poupa metade dos triângulos dela.
 function closedOutward(prim) {
@@ -256,7 +259,7 @@ function closedOutward(prim) {
   for (const c of edges.values()) if (c !== 2) return false;
   return volume > 0;
 }
-const doubleSided = root.listMaterials().filter((m) => m.getDoubleSided());
+const doubleSided = NO_VERSO ? [] : root.listMaterials().filter((m) => m.getDoubleSided());
 const versoStats = { comVerso: 0, fechadas: 0 };
 for (const mesh of bakedMeshes()) for (const prim of mesh.listPrimitives()) {
   if (!doubleSided.includes(prim.getMaterial()) || !prim.getAttribute('NORMAL') || !prim.getIndices()) continue;
@@ -304,6 +307,13 @@ for (const tex of root.listTextures()) {
   const limit = long / short >= 6 ? base * 2 : base;
   if (long <= limit && tex.getMimeType() === 'image/jpeg') continue;
   const k = Math.min(1, limit / long);
+  if (KEEP_ALPHA && meta.hasAlpha) {
+    const st = await sharp(img).stats();
+    if (st.channels[3] && st.channels[3].min < 250) {
+      if (k < 1 || tex.getMimeType() !== 'image/png') tex.setImage(new Uint8Array(await sharp(img).resize(Math.round(meta.width * k), Math.round(meta.height * k)).png({ compressionLevel: 9, palette: false }).toBuffer())).setMimeType('image/png');
+      continue;
+    }
+  }
   const buf = await sharp(img).resize(Math.round(meta.width * k), Math.round(meta.height * k))
     .flatten({ background: '#ffffff' }).jpeg({ quality: 88, mozjpeg: true }).toBuffer();
   tex.setImage(new Uint8Array(buf)).setMimeType('image/jpeg');

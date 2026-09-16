@@ -26,7 +26,7 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `savencia-display-pp-polenguinho/` | Savencia, Display PP Polenguinho (Update) | 140 × 18 × 24 cm |
 | `savencia-display-m-polenguinho/` | Savencia, Display M Polenguinho (Update, largo, sem produtos) | 140 × 36 × 24 cm |
 | `savencia-display-pp-frescatino/` | Savencia, Display PP Frescatino | 145 × 17 × 24 cm (faca) |
-| `scala-queijos-scala-flow/` | Queijos Scala, display gravitacional Scala Flow (requeijão 1,5 kg; USDZ sem os acrílicos, que deixavam um véu branco no Quick Look) | 31 × 17 × 53 cm |
+| `scala-queijos-scala-flow/` | Queijos Scala, display gravitacional Scala Flow: 4 modelos numa página (`?modelo=m1-1`, `m1-3`, `m2-1`, `m2-2`), reflexo do HDR de supermercado | de 31 × 17 × 53 cm (modelo 1) a 31 × 102 × 52 cm (modelo 2 com 2 peças) |
 | `savencia-gravitacional-frescatino/` | Savencia, Gravitacional Frescatino (com 4 embalagens) | 39 × 8,5 × 5 cm |
 | `savencia-frame-glorifier-frescatino/` | Savencia, Frame Glorifier Frescatino (ventosas, AR de parede) | 18 × 20 cm |
 | `semp-split-hw/` | SEMP, quinze peças de PDV do lançamento Split HW numa página: sete com 3D do Modo (`ilha`, `portico`, `backdrop`, `cubo`, `poster-cinta`, `berco`, `regua`) e oito montadas da arte 2D (`placa`, `topper`, `orelha`, `tapete`, `aerea`, `adam-lama`, `adam-poster-caixa`, `adam-testeira`) + `embed.html` | de 10 × 47 × 6 cm (régua) a 340 × 306 × 60 cm (pórtico) |
@@ -168,3 +168,19 @@ O stand da NGV veio do Blender com ~2,7 milhões de triângulos e 170 MB. O que 
 - Separa a imagem usada como cor e como mapa técnico ao mesmo tempo.
 - Simplifica malhas com mais de 4.000 triângulos (`--max-tri`), com erro máximo de 0,5% do tamanho delas: os melões de 18 mil triângulos viram 4 mil sem diferença visível.
 - Põe a origem no centro da base (o display nasce apoiado no chão) e reduz as texturas para JPEG ≤ 2048 px.
+
+## HDR de supermercado e peças com acrílico: o que aprendemos no Scala Flow
+
+- `tools/hdr-supermercado.html` monta em three.js um corredor de supermercado (gôndolas, geladeiras de porta de vidro,
+  luminárias tubulares, piso encerado) e grava `assets/hdr/supermercado.hdr`. Usar em `environment-image` com
+  `tone-mapping="aces"`: a peça reflete a loja. Posters com o mesmo HDR: `tools/posters.html?...&env=/assets/hdr/supermercado.hdr&tm=aces&exp=1`.
+- **Nunca simplificar/limpar sem comparar com o original** no mesmo ângulo (`orientation` no model-viewer para girar o bruto).
+  Três defeitos que mudavam a peça e só apareceram na comparação:
+  1. tirar a `NORMAL` dos painéis de arte: sem normal o `prepare-glb` não cria o verso e a arte some de um lado;
+  2. o verso recuado 1 mm cobria a arte do painel vizinho: `--no-verso` no GLB da web (doubleSided resolve) e
+     `--verso-offset=0` no GLB que vira USDZ (verso coincidente com ordem invertida não briga);
+  3. fundir vértices (`weld`) para achar triângulos repetidos embaralha normais/UV: comparar pela posição, sem fundir
+     (`tools/scala/preclean.mjs`).
+- Acrílico: na web, `KHR_materials_transmission` + IOR 1,49 (vidro físico, reflete o HDR). No iPhone o Quick Look ignora
+  transmissão: variante com opacidade 6% (`tools/scala/ios-acrilico.mjs`); com 12 a 14% já aparece um véu branco.
+- Texturas com transparência: `--keep-alpha` no `prepare-glb` mantém PNG (o padrão achata em JPEG com fundo branco).

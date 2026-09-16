@@ -3,7 +3,7 @@
 <title>Posters de uma página com vários modelos</title>
 <!--
   Renderiza cada modelo no model-viewer (o mesmo visualizador da página) e grava <pasta>/<id>-poster.webp.
-  http://localhost:8833/tools/posters.html?slug=<pasta>&ids=a,b,c[&orbit=-25deg%2080deg%20auto][&alvo=0m%202.2m%200m]
+  http://localhost:8833/tools/posters.html?slug=<pasta>&ids=a,b,c[&orbit=-25deg%2080deg%20auto][&alvo=0m%202.2m%200m][&env=/assets/hdr/supermercado.hdr&tm=aces&exp=1]
 -->
 <script type="module" src="/vendor/model-viewer.min.js"></script>
 <style>
@@ -22,7 +22,7 @@ try {
   await customElements.whenDefined('model-viewer');
   for (const id of IDS) {
     const mv = document.createElement('model-viewer');
-    Object.entries({ 'environment-image': 'neutral', exposure: '1.05', 'shadow-intensity': '1.1', 'shadow-softness': '0.9',
+    Object.entries({ 'environment-image': P.get('env') || 'neutral', 'tone-mapping': P.get('tm') || 'neutral', exposure: P.get('exp') || '1.05', 'shadow-intensity': '1.1', 'shadow-softness': '0.9',
       'camera-orbit': orbit, 'interaction-prompt': 'none', loading: 'eager' }).forEach(([k, v]) => mv.setAttribute(k, v));
     if (P.get('alvo')) mv.setAttribute('camera-target', P.get('alvo'));   // ex.: peça suspensa
     mv.src = `/${slug}/${id}.glb`;

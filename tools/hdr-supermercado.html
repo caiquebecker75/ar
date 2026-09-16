@@ -1,0 +1,168 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>HDR supermercado</title>
+<!--
+  Gera assets/hdr/supermercado.hdr (equiretangular RGBE, 1024x512 por padrão, ?w=2048 para maior) e uma prévia JPG:
+  um corredor de supermercado montado em three.js (gôndolas cheias, geladeiras com porta de vidro,
+  luminárias tubulares, piso encerado) para servir de reflexo/iluminação nas peças.
+  http://localhost:8833/tools/hdr-supermercado.html   (rodar com tools/run-page.mjs)
+-->
+<script type="importmap">
+{ "imports": { "three": "/tools/node_modules/three/build/three.module.js", "three/addons/": "/tools/node_modules/three/examples/jsm/" } }
+</script>
+<pre id="log">gerando…</pre>
+<script type="module">
+import * as THREE from 'three';
+const log = (m) => { document.getElementById('log').textContent += '\n' + m; };
+try {
+const P = new URLSearchParams(location.search); const W = +(P.get("w") || 1024), H = W / 2;
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(64, 64);
+renderer.toneMapping = THREE.NoToneMapping;
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0.35, 0.34, 0.33);
+
+// gerador pseudoaleatório fixo (o HDR sai sempre igual)
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const lin = (hex, k = 1) => new THREE.Color(hex).convertSRGBToLinear().multiplyScalar(k);
+const basic = (c) => new THREE.MeshBasicMaterial({ color: c, side: THREE.DoubleSide });
+
+// piso encerado: ladrilho claro com juntas
+{
+  const cv = document.createElement('canvas'); cv.width = cv.height = 512; const g = cv.getContext('2d');
+  g.fillStyle = '#d9d6cf'; g.fillRect(0, 0, 512, 512);
+  g.fillStyle = '#c9c5bc'; g.fillRect(0, 0, 512, 6); g.fillRect(0, 0, 6, 512);
+  const t = new THREE.CanvasTexture(cv); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(40, 60); t.colorSpace = THREE.SRGBColorSpace;
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(40, 60), new THREE.MeshBasicMaterial({ map: t, color: lin('#ffffff', .9) }));
+  m.rotation.x = -Math.PI / 2; scene.add(m);
+}
+// teto e vigas
+{
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(40, 60), basic(lin('#a9a7a2', .38)));
+  m.rotation.x = Math.PI / 2; m.position.y = 4.2; scene.add(m);
+  for (let z = -30; z <= 30; z += 5) { const b = new THREE.Mesh(new THREE.BoxGeometry(40, .25, .2), basic(lin('#9a9893', .5))); b.position.set(0, 4.05, z); scene.add(b); }
+}
+// luminárias tubulares em linhas contínuas (as faixas de luz que aparecem no reflexo)
+for (let x = -9; x <= 9; x += 3) {
+  for (let z = -28; z <= 28; z += 3.2) {
+    const tube = new THREE.Mesh(new THREE.BoxGeometry(.16, .06, 2.7), basic(new THREE.Color(14, 13.6, 12.8)));
+    tube.position.set(x, 3.85, z); scene.add(tube);
+    const hous = new THREE.Mesh(new THREE.BoxGeometry(.3, .05, 2.8), basic(lin('#dcdad4', .8)));
+    hous.position.set(x, 3.91, z); scene.add(hous);
+  }
+}
+// textura de produtos para as prateleiras (faces coloridas de embalagens)
+function prateleiraTex(pal) {
+  const cv = document.createElement('canvas'); cv.width = 1024; cv.height = 128; const g = cv.getContext('2d');
+  g.fillStyle = '#2a2a2a'; g.fillRect(0, 0, 1024, 128);
+  let x = 0;
+  while (x < 1024) {
+    const w = 22 + rnd() * 40, h = 60 + rnd() * 62, c = pal[Math.floor(rnd() * pal.length)];
+    const n = 1 + Math.floor(rnd() * 4);
+    for (let i = 0; i < n && x < 1024; i++) {
+      g.fillStyle = c; g.fillRect(x + 1, 128 - h, w - 2, h);
+      g.fillStyle = 'rgba(255,255,255,.55)'; g.fillRect(x + 4, 128 - h * .62, w - 8, h * .18);
+      g.fillStyle = 'rgba(0,0,0,.18)'; g.fillRect(x + w - 5, 128 - h, 3, h);
+      x += w;
+    }
+  }
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; return t;
+}
+const PAL = ['#c8102e', '#f2c200', '#0057b8', '#ffffff', '#e87722', '#009a44', '#7a1f5c', '#f4e3b5', '#d52b1e', '#1d428a', '#ffd100', '#6cc24a'];
+function gondola(x, z0, z1, face) {
+  const len = z1 - z0, cz = (z0 + z1) / 2;
+  const back = new THREE.Mesh(new THREE.BoxGeometry(.08, 2.1, len), basic(lin('#e9e7e2', .85)));
+  back.position.set(x, 1.05, cz); scene.add(back);
+  for (let i = 0; i < 5; i++) {
+    const y = .18 + i * .4;
+    const shelf = new THREE.Mesh(new THREE.BoxGeometry(.5, .03, len), basic(lin('#f1efea', .95)));
+    shelf.position.set(x + face * .25, y, cz); scene.add(shelf);
+    const tex = prateleiraTex(PAL); tex.repeat.set(len / 3, 1);
+    const prod = new THREE.Mesh(new THREE.PlaneGeometry(len, .34), new THREE.MeshBasicMaterial({ map: tex, color: lin('#ffffff', 1.05) }));
+    prod.rotation.y = face > 0 ? Math.PI / 2 : -Math.PI / 2; prod.position.set(x + face * .45, y + .19, cz); scene.add(prod);
+    const tag = new THREE.Mesh(new THREE.PlaneGeometry(len, .035), basic(lin('#fff6c8', 1.1)));
+    tag.rotation.y = prod.rotation.y; tag.position.set(x + face * .51, y + .005, cz); scene.add(tag);
+  }
+  const top = new THREE.Mesh(new THREE.BoxGeometry(.55, .28, len), basic(lin('#c8102e', .9)));
+  top.position.set(x + face * .05, 2.3, cz); scene.add(top);
+}
+// corredores de gôndolas à frente e dos lados
+for (const x of [-6.6, -3.4, 3.4, 6.6]) { gondola(x - .3, -26, -2.5, -1); gondola(x + .3, -26, -2.5, 1); gondola(x - .3, 8, 26, -1); gondola(x + .3, 8, 26, 1); }
+// geladeiras verticais com porta de vidro atrás de quem olha (o "expositor refrigerado")
+for (let i = 0; i < 14; i++) {
+  const z = -8 + i * 1.05;
+  const body = new THREE.Mesh(new THREE.BoxGeometry(.9, 2.2, 1), basic(lin('#1d1d1f', .6)));
+  body.position.set(-9.2, 1.1, z); scene.add(body);
+  const inner = new THREE.Mesh(new THREE.PlaneGeometry(.9, 1.8), basic(new THREE.Color(3.2, 3.3, 3.5)));
+  inner.rotation.y = Math.PI / 2; inner.position.set(-8.74, 1.15, z); scene.add(inner);
+  for (let s = 0; s < 4; s++) {
+    const tex = prateleiraTex(['#c8102e', '#ffffff', '#0057b8', '#f2c200', '#e5e1d8']); tex.repeat.set(.4, 1);
+    const p = new THREE.Mesh(new THREE.PlaneGeometry(.86, .3), new THREE.MeshBasicMaterial({ map: tex, color: lin('#ffffff', 1.4) }));
+    p.rotation.y = Math.PI / 2; p.position.set(-8.72, .45 + s * .44, z); scene.add(p);
+  }
+  const frame = new THREE.Mesh(new THREE.BoxGeometry(.05, 2.2, .05), basic(lin('#b8b8b8', .7)));
+  frame.position.set(-8.7, 1.1, z + .52); scene.add(frame);
+  const led = new THREE.Mesh(new THREE.BoxGeometry(.06, .16, 1), basic(new THREE.Color(6, 6.2, 6.5)));
+  led.position.set(-8.72, 2.28, z); scene.add(led);
+}
+// ilhas refrigeradas ao lado (baixas, com luz interna)
+for (let i = 0; i < 4; i++) {
+  const b = new THREE.Mesh(new THREE.BoxGeometry(2.2, .9, 1.1), basic(lin('#f4f4f4', .9)));
+  b.position.set(1.2, .45, 9 + i * 2.6); scene.add(b);
+  const g2 = new THREE.Mesh(new THREE.PlaneGeometry(2, .9), basic(new THREE.Color(2.4, 2.6, 2.8)));
+  g2.rotation.x = -Math.PI / 2; g2.position.set(1.2, .91, 9 + i * 2.6); scene.add(g2);
+}
+// paredes do fundo com faixa de sinalização vermelha e janelas altas
+for (const [z, r] of [[-30, 0], [30, Math.PI]]) {
+  const w = new THREE.Mesh(new THREE.PlaneGeometry(40, 4.2), basic(lin('#efece6', .8))); w.position.set(0, 2.1, z); w.rotation.y = r; scene.add(w);
+  const band = new THREE.Mesh(new THREE.PlaneGeometry(40, .6), basic(lin('#be1e28', 1.1))); band.position.set(0, 3.1, z + (r ? -.02 : .02)); band.rotation.y = r; scene.add(band);
+}
+for (const [x, r] of [[-12, Math.PI / 2], [12, -Math.PI / 2]]) {
+  const w = new THREE.Mesh(new THREE.PlaneGeometry(60, 4.2), basic(lin('#efece6', .75))); w.position.set(x, 2.1, 0); w.rotation.y = r; scene.add(w);
+  for (let z = -24; z <= 24; z += 8) { const win = new THREE.Mesh(new THREE.PlaneGeometry(5, 1), basic(new THREE.Color(5.5, 5.8, 6.2))); win.position.set(x + (x < 0 ? .02 : -.02), 3.4, z); win.rotation.y = r; scene.add(win); }
+}
+
+// câmera no lugar do display: prateleira de geladeira, no meio do corredor
+const cubeRT = new THREE.WebGLCubeRenderTarget(1024, { type: THREE.HalfFloatType, generateMipmaps: false });
+const cubeCam = new THREE.CubeCamera(.05, 100, cubeRT);
+cubeCam.position.set(-1.2, 1.25, 1.5);
+scene.add(cubeCam);
+cubeCam.update(renderer, scene);
+
+// cubo → equiretangular (float)
+const rt = new THREE.WebGLRenderTarget(W, H, { type: THREE.FloatType });
+const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
+  uniforms: { cube: { value: cubeRT.texture } },
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0., 1.); }',
+  fragmentShader: `uniform samplerCube cube; varying vec2 vUv;
+    void main(){ float phi = (vUv.x - .5) * 6.28318530718; float th = (vUv.y - .5) * 3.14159265359;
+      vec3 d = vec3(sin(phi) * cos(th), sin(th), -cos(phi) * cos(th));
+      gl_FragColor = vec4(textureCube(cube, vec3(-d.x, d.y, d.z)).rgb, 1.); }`,
+  depthTest: false,
+}));
+const qs = new THREE.Scene(); qs.add(quad);
+renderer.setRenderTarget(rt); renderer.render(qs, new THREE.Camera()); renderer.setRenderTarget(null);
+const px = new Float32Array(W * H * 4);
+renderer.readRenderTargetPixels(rt, 0, 0, W, H, px);
+
+// RGBE (.hdr, sem RLE), linhas de cima para baixo
+const head = new TextEncoder().encode(`#?RADIANCE\nFORMAT=32-bit_rle_rgbe\n\n-Y ${H} +X ${W}\n`);
+const body = new Uint8Array(W * H * 4);
+const prev = document.createElement('canvas'); prev.width = W / 2; prev.height = H / 2; const pg = prev.getContext('2d'); const pim = pg.createImageData(W / 2, H / 2);
+for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+  const s = ((H - 1 - y) * W + x) * 4, o = (y * W + x) * 4;
+  const r = px[s], g = px[s + 1], b = px[s + 2], m = Math.max(r, g, b);
+  if (m < 1e-32) { body[o] = body[o + 1] = body[o + 2] = body[o + 3] = 0; }
+  else { const e = Math.ceil(Math.log2(m) + 1e-9), f = 256 / Math.pow(2, e); body[o] = Math.min(255, r * f); body[o + 1] = Math.min(255, g * f); body[o + 2] = Math.min(255, b * f); body[o + 3] = e + 128; }
+  if (x % 2 === 0 && y % 2 === 0) { const q = ((y / 2) * (W / 2) + x / 2) * 4; const tm = (v) => 255 * Math.pow(v / (1 + v), 1 / 2.2) * 1.4;
+    pim.data[q] = tm(r); pim.data[q + 1] = tm(g); pim.data[q + 2] = tm(b); pim.data[q + 3] = 255; }
+}
+pg.putImageData(pim, 0, 0);
+const blob = new Blob([head, body]);
+log(await (await fetch('/__save?path=assets/hdr/supermercado.hdr', { method: 'POST', body: blob })).text());
+const jpg = await new Promise((r) => prev.toBlob(r, 'image/jpeg', .9));
+log(await (await fetch('/__save?path=.work/scala/hdr-preview.jpg', { method: 'POST', body: jpg })).text());
+log('PRONTO');
+} catch (e) { log('ERRO ' + e.message + '\n' + e.stack); }
+</script>
