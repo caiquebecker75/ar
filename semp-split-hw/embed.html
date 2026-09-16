@@ -200,7 +200,6 @@ const slots = PECAS.map((p, i) => {
   s.className = 'slot';
   s.innerHTML = `<model-viewer src="${p.id}.glb?v=1" poster="${p.id}-poster.webp?v=${p.id === 'aerea' ? 2 : 1}" alt="${p.nome} SEMP Split HW em 3D"
     camera-controls disable-zoom disable-pan touch-action="pan-y" interaction-prompt="none"
-    auto-rotate auto-rotate-delay="1800" rotation-per-second="16deg"
     camera-orbit="-25deg 78deg auto" min-camera-orbit="auto 30deg auto" max-camera-orbit="auto 90deg 40m"
     field-of-view="30deg" shadow-intensity="1" shadow-softness="0.9" environment-image="neutral" exposure="1.05"
     loading="eager" reveal="auto"></model-viewer>
