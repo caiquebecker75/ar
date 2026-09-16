@@ -9,7 +9,7 @@
   Vitrine para INCORPORAR em outra apresentação (iframe). Ocupa 100% do iframe.
     <iframe src="https://projetos.75lab.com.br/ar/semp-split-hw/embed.html" style="width:100%;height:100%;border:0" allow="fullscreen; xr-spatial-tracking" loading="lazy"></iframe>
   Parâmetros: ?peca=portico (abre nela) · ?modo=todas (grade) · ?escala=real · ?fundo=transparente
-  As peças ficam na tela ao mesmo tempo; cada uma gira com o dedo ou o mouse.
+  Uma peça por vez na tela (o botão "Todas" mostra as quinze em grade); cada uma gira com o dedo ou o mouse.
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,7 +51,7 @@
 
   /* ---------- palco ---------- */
   .stage { position: relative; min-height: 0; }
-  .slot { position: absolute; top: 0; left: 50%; height: 100%; width: min(40%, 62vh);
+  .slot { position: absolute; top: 0; left: 50%; height: 100%; width: min(76%, 104vh);
     transform: translateX(calc(-50% + var(--x, 0px))) scale(var(--s, 1)); opacity: var(--o, 1); z-index: var(--z, 1);
     transition: transform .75s cubic-bezier(.2, .8, .2, 1), opacity .5s ease; }
   .slot model-viewer { width: 100%; height: 100%; background: transparent; --poster-color: transparent; --progress-bar-height: 0px; }
@@ -105,7 +105,7 @@
   .pop p { font-size: 11.5px; font-weight: 300; color: var(--ink2); line-height: 1.4; }
 
   @media (max-width: 640px) {
-    .slot { width: 80%; }
+    .slot { width: 94%; }
     .thumbs { display: none; }
     .todas .stage { grid-template-columns: repeat(2, 1fr); grid-template-rows: none; grid-auto-rows: 52vw; overflow-y: auto; }
     .todas .grade-ar { display: none; }
@@ -137,7 +137,7 @@
   <section class="stage" id="stage" aria-roledescription="carrossel">
     <div class="chao"></div>
     <div class="grade-ar"><strong>Veja em<br>tamanho real</strong>Escolha uma peça e toque em <b>Ver em AR</b></div>
-    <div class="dica" id="dica"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>Arraste para girar · toque nas laterais para trocar</div>
+    <div class="dica" id="dica"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>Arraste para girar a peça</div>
   </section>
 
   <section class="base">
@@ -177,9 +177,9 @@ const PECAS = [
   { id: 'orelha', nome: 'Orelha', medida: '18,8 × 10 cm', rotulo: 'A × L', desc: 'Orelha AI Eco presa na lateral do aparelho (a arte existe em 3 cores).' },
   { id: 'tapete', nome: 'Tapete de piso', medida: '68 × 100 cm', rotulo: 'P × L', desc: 'Tapete em meia-lua para a frente do ponto de venda.' },
   { id: 'aerea', orbita: '-25deg 84deg 4.4m', alvo: '0m 2.2m 0m', nome: 'Comunicação aérea', medida: '42 × 120 cm', rotulo: 'A × L', desc: 'Banner suspenso por cabos, a 2 m do chão (medida estimada).' },
-  { id: 'adam-lama', nome: 'Lamá (ADAM)', medida: '151 × 51 cm', rotulo: 'A × L', desc: 'Totem curvo de chão com a mensagem completa do produto.' },
-  { id: 'adam-poster-caixa', nome: 'Poster de caixa (ADAM)', medida: '125 × 188 cm', rotulo: 'A × L', desc: 'Poster aplicado na frente da pilha de caixas, com o produto em cima.' },
-  { id: 'adam-testeira', nome: 'Testeira e orelha (ADAM)', medida: '13 × 43 cm', rotulo: 'A × L', desc: 'Adesivo na frente do aparelho e orelha lateral, versão da agência ADAM.' },
+  { id: 'lama', nome: 'Lamá', medida: '151 × 51 cm', rotulo: 'A × L', desc: 'Totem curvo de chão com a mensagem completa do produto.' },
+  { id: 'poster-caixa', nome: 'Poster de caixa', medida: '125 × 188 cm', rotulo: 'A × L', desc: 'Poster aplicado na frente da pilha de caixas, com o produto em cima.' },
+  { id: 'testeira', nome: 'Testeira e orelha', medida: '13 × 43 cm', rotulo: 'A × L', desc: 'Adesivo na frente do aparelho e orelha lateral.' },
 ];
 const P = new URLSearchParams(location.search);
 const AR_URL = (id) => new URL(`./?modelo=${id}`, location.href).href;
@@ -226,19 +226,16 @@ const thumbs = PECAS.map((p, i) => {
 
 // ---------- posição de cada peça na vitrine: todas visíveis, a escolhida no centro ----------
 function arrumar() {
-  const n = PECAS.length, w = stage.clientWidth, estreito = w < 640;
+  const n = PECAS.length, w = stage.clientWidth;
   slots.forEach((s, i) => {
     let d = i - atual;
     if (d > n / 2) d -= n;
     if (d < -n / 2) d += n;
     const a = Math.abs(d);
-    const POS = estreito ? [0, 0.3, 0.43, 0.56] : [0, 0.26, 0.375, 0.455];   // centro de cada peça, em fração da largura
-    const ESC = estreito ? [1, 0.56, 0.36, 0.2] : [1, 0.62, 0.44, 0.32];
-    const longe = a > 3;   // da quarta em diante fica escondida atrás das laterais até chegar a vez dela
-    s.style.setProperty('--x', `${Math.sign(d) * (longe ? 0.5 : POS[a]) * w}px`);
-    s.style.setProperty('--s', longe ? 0.2 : ESC[a]);
-    s.style.setProperty('--o', longe || (estreito && a === 3) ? 0 : [1, 0.95, 0.85, 0.75][a]);
-    s.style.pointerEvents = longe ? 'none' : '';
+    s.style.setProperty('--x', `${Math.sign(d) * (a ? 0.62 : 0) * w}px`);   // uma peça por vez: as outras esperam fora da tela
+    s.style.setProperty('--s', a ? 0.85 : 1);
+    s.style.setProperty('--o', a ? 0 : 1);
+    s.style.pointerEvents = a ? 'none' : '';
     s.style.setProperty('--z', 10 - a);
     s.classList.toggle('on', a === 0);
     s.setAttribute('aria-hidden', a === 0 ? 'false' : 'true');
