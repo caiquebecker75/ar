@@ -26,6 +26,7 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `savencia-display-pp-polenguinho/` | Savencia, Display PP Polenguinho (Update) | 140 × 18 × 24 cm |
 | `savencia-display-m-polenguinho/` | Savencia, Display M Polenguinho (Update, largo, sem produtos) | 140 × 36 × 24 cm |
 | `savencia-display-pp-frescatino/` | Savencia, Display PP Frescatino | 145 × 17 × 24 cm (faca) |
+| `scala-queijos-scala-flow/` | Queijos Scala, display gravitacional Scala Flow (requeijão 1,5 kg; USDZ sem os acrílicos, que deixavam um véu branco no Quick Look) | 31 × 17 × 53 cm |
 | `savencia-gravitacional-frescatino/` | Savencia, Gravitacional Frescatino (com 4 embalagens) | 39 × 8,5 × 5 cm |
 | `savencia-frame-glorifier-frescatino/` | Savencia, Frame Glorifier Frescatino (ventosas, AR de parede) | 18 × 20 cm |
 | `semp-split-hw/` | SEMP, quinze peças de PDV do lançamento Split HW numa página: sete com 3D do Modo (`ilha`, `portico`, `backdrop`, `cubo`, `poster-cinta`, `berco`, `regua`) e oito montadas da arte 2D (`placa`, `topper`, `orelha`, `tapete`, `aerea`, `adam-lama`, `adam-poster-caixa`, `adam-testeira`) + `embed.html` | de 10 × 47 × 6 cm (régua) a 340 × 306 × 60 cm (pórtico) |
