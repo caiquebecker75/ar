@@ -1,0 +1,82 @@
+# Etapa 4: monta o GLB de AR com a luz assada.
+#   blender -b <saida>/prep.blend --python tools/bake/export.py   (lê <saida>/bake/*.jpg, grava <saida>/assado.glb)
+# Cada atlas ganha um material só com a textura assada como EMISSÃO (base preta, sem reflexo):
+# no celular aparece como no render, sem a luz do lugar mudar as cores. O acrílico (Material.009)
+# continua translúcido. Só o UV de bake vai para o GLB.
+import bpy, os, mathutils
+
+PASTA = bpy.path.abspath("//")
+sc = bpy.context.scene
+
+def material_assado(nome, imagem):
+    m = bpy.data.materials.new(nome)
+    m.use_nodes = True
+    nt = m.node_tree
+    p = next(n for n in nt.nodes if n.type == "BSDF_PRINCIPLED")
+    p.inputs["Base Color"].default_value = (0, 0, 0, 1)
+    p.inputs["Roughness"].default_value = 1.0
+    p.inputs["Metallic"].default_value = 0.0
+    p.inputs["Specular IOR Level"].default_value = 0.0
+    tex = nt.nodes.new("ShaderNodeTexImage")
+    tex.image = imagem
+    uv = nt.nodes.new("ShaderNodeUVMap"); uv.uv_map = "bake"
+    nt.links.new(uv.outputs["UV"], tex.inputs["Vector"])
+    nt.links.new(tex.outputs["Color"], p.inputs["Emission Color"])
+    p.inputs["Emission Strength"].default_value = 1.0
+    return m
+
+acrilico = bpy.data.materials.new("ACRILICO")
+acrilico.use_nodes = True
+pa = next(n for n in acrilico.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
+pa.inputs["Base Color"].default_value = (0.92, 0.95, 1.0, 1)
+pa.inputs["Alpha"].default_value = 0.22
+pa.inputs["Roughness"].default_value = 0.05
+acrilico.surface_render_method = 'BLENDED'
+
+# grava a posição final de cada atlas na geometria antes de apagar os vazios-pais do GLB importado
+# (em duas fases: um atlas pode ser pai de outro, e mexer no pai antes move o filho)
+atlas = [x for x in sc.objects if x.type == 'MESH' and x.name.startswith("ATLAS_")]
+finais = {o.name: o.matrix_world.copy() for o in atlas}
+for o in atlas:
+    o.parent = None
+    o.data.transform(finais[o.name])
+    o.matrix_world = mathutils.Matrix.Identity(4)
+
+for o in list(sc.objects):
+    if o.type != 'MESH' or not o.name.startswith("ATLAS_"):
+        bpy.data.objects.remove(o)   # luzes, câmeras e o que sobrou
+        continue
+    caminho = os.path.join(PASTA, "bake", f"{o.name}.jpg")
+    img = bpy.data.images.load(caminho)
+    assado = material_assado(f"BAKE_{o.name[6:]}", img)
+    for slot in o.material_slots:
+        slot.material = acrilico if (slot.material and slot.material.name.startswith("Material.009")) else assado
+    # só o UV de bake segue para o GLB
+    me = o.data
+    # cor de vértice herdada de modelos prontos (móveis): no USD vira primvars:Color e o motor da Apple
+    # pinta a peça de branco por cima da textura assada
+    for ca in list(me.color_attributes):
+        me.color_attributes.remove(ca)
+    for uv in [u for u in me.uv_layers if u.name != "bake"]:
+        me.uv_layers.remove(uv)
+    me.uv_layers["bake"].active = True
+    me.uv_layers["bake"].active_render = True
+    print("atlas", o.name, img.size[:], "slots", len(o.material_slots), flush=True)
+
+import numpy as np, bmesh
+from collections import defaultdict
+# sobras escondidas debaixo do piso (no render o piso cobre; no AR o stand flutuaria): remove faces inteiras abaixo de -5 cm
+for o in [x for x in sc.objects if x.type == 'MESH']:
+    bm = bmesh.new(); bm.from_mesh(o.data); info = defaultdict(lambda: [0, 9e9, -9e9])
+    apagar = [f for f in bm.faces if max(v.co.z for v in f.verts) < -0.05]
+    for f in apagar:
+        m = o.data.materials[f.material_index]; k = m.name if m else None
+        i = info[k]; i[0] += 1; i[1] = min(i[1], min(v.co.z for v in f.verts)); i[2] = max(i[2], max(v.co.z for v in f.verts))
+    for k, (n, a, b) in info.items(): print("ABAIXO DO PISO", o.name, k, "faces", n, "z", round(a, 2), "a", round(b, 2), flush=True)
+    bmesh.ops.delete(bm, geom=apagar, context='FACES')
+    bm.to_mesh(o.data); bm.free()
+bpy.ops.export_scene.gltf(
+    filepath=os.path.join(PASTA, "assado.glb"), export_format='GLB',
+    export_apply=True, export_cameras=False, export_lights=False, export_yup=True,
+    export_image_format='AUTO', export_materials='EXPORT')
+print("EXPORT OK", os.path.getsize(os.path.join(PASTA, "assado.glb")) // 1048576, "MB", flush=True)

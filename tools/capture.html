@@ -39,7 +39,8 @@ try {
   await customElements.whenDefined('model-viewer');
   async function renderizar(src, camera) {
     const mv = document.createElement('model-viewer');
-    for (const a of ['environment-image', 'exposure', 'shadow-intensity', 'shadow-softness']) mv.setAttribute(a, mvPage.getAttribute(a));
+    // tone-mapping: modelos com luz assada usam "none" (só copia se a página definir)
+    for (const a of ['environment-image', 'exposure', 'shadow-intensity', 'shadow-softness', 'tone-mapping']) if (mvPage.hasAttribute(a)) mv.setAttribute(a, mvPage.getAttribute(a));
     mv.setAttribute('camera-orbit', P.get('orbit') || mvPage.getAttribute('camera-orbit'));
     for (const [k, v] of Object.entries(camera || {})) mv.setAttribute(k, v);
     mv.setAttribute('interaction-prompt', 'none');

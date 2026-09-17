@@ -160,6 +160,39 @@ O stand da NGV veio do Blender com ~2,7 milhões de triângulos e 170 MB. O que 
    virtual em volta do stand não resolve: as paredes reais estão mais perto que ela e aparecem por cima.
    O parâmetro `&file=` do `usdz.html` ficou dessa tentativa (converte `<file>.glb` → `<file>.usdz`).
 
+## Luz assada (padrão de qualidade: igual ao "Viewport Shading: Rendered" do Blender)
+
+**Regra (Caique, 16/09/2026):** todo AR sai com a iluminação do render do Blender gravada nas texturas, não com
+a luz neutra do export cru. Scripts em `tools/bake/` (Blender 5.1 em segundo plano, GPU Metal):
+
+```bash
+B=/Applications/Blender.app/Contents/MacOS/Blender; S=.work/<pasta>   # pasta de trabalho (não vai para o git)
+$B -b --python tools/bake/prep.py -- --glb=ARQ.glb --luzes=ARQ_COM_LUZES.blend --saida=$S   # solda, reduz, atlas + UV
+$B -b $S/prep.blend --python tools/bake/bake.py -- --luz-px=2048 --luz-amostras=1024      # bake: cor × luz + emissão
+$B -b $S/prep.blend --python tools/bake/export.py                                          # $S/assado.glb (só emissão)
+node tools/prepare-glb.mjs $S/assado.glb $S/web.glb --rotate-y=-90 --max-texture=4096 --max-tri=200000 --no-verso
+node tools/bake/compacta-glb.mjs $S/web.glb $S/base.glb 0.5 0.002 sem-quantizar            # simplifica sem mexer nas costuras
+node tools/bake/compacta-glb.mjs $S/base.glb <pasta>/display.glb 1 0                        # quantiza (web/Android)
+node tools/prepare-glb.mjs $S/base.glb $S/_usdz.glb --max-texture=4096 --max-tri=500000     # com verso (iPhone)
+$B -b --python tools/bake/usdz.py -- --glb=$S/_usdz.glb --usdz=<pasta>/display.usdz && usdchecker --arkit <pasta>/display.usdz
+```
+
+Na página: `tone-mapping="none"` e `exposure="1"` (as cores já saem com o Filmic da cena). Conferir sempre um render do
+`assado.glb` com a mesma câmera de um render do arquivo original antes de publicar.
+
+O que já deu errado e está resolvido nos scripts:
+- **GLB chega com vértices separados** em toda quina: sem soldar, o Smart UV vira milhares de ilhas e o atlas some.
+- **Redução**: primeiro dissolução planar (respeitando UV e material), depois colapso; triangular antes do UV
+  (face côncava gigante quebra a área de UV). Ilhas "agulha" são refeitas por projeção no próprio plano.
+- **Anéis/faixas longas** (testeira): costuras nas quinas e numa grade (1,5 / 0,5 / 0,25 m); último recurso Lightmap Pack.
+  O `prep.py` mede a cobertura de UV de cada atlas e avisa.
+- `correct_aspect` do Smart UV usa a proporção da imagem ativa do material (degradê 4000×200 achatou tudo): desligado.
+- **Metal** sai preto no bake de cor: o `bake.py` zera o metálico antes.
+- **Export**: a posição de cada atlas é gravada na geometria antes de apagar os vazios-pais do GLB importado (em duas
+  fases); faces inteiras abaixo de -5 cm são removidas (sobras escondidas pelo piso fariam o modelo flutuar no AR).
+- **USDZ grande**: o `usdz.html` (three.js) não aguenta cena de 1 milhão de triângulos; usar o exportador USD do Blender.
+- Blender em português: achar nós pelo tipo (`BSDF_PRINCIPLED`), nunca pelo nome.
+
 ## O que o `prepare-glb.mjs` corrige
 
 - Aplica as transformações dos objetos na geometria (escala negativa do Blender vira geometria espelhada correta).

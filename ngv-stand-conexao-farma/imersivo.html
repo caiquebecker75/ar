@@ -129,7 +129,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const $ = (s) => document.querySelector(s);
-const MODELO = 'display.glb?v=1', TAMANHO = 22982064; // mesmo arquivo da página de AR (já fica em cache)
+const MODELO = 'display.glb?v=2', TAMANHO = 28919272; // mesmo arquivo da página de AR (já fica em cache)
 const OLHO = 1.6, VELOCIDADE = 1.3, RAIO = 14, FOLGA = 0.35;
 const toque = matchMedia('(pointer: coarse)').matches;
 if (!toque) $('#explica').innerHTML = 'Só o stand, sem a sala em volta. <b>Arraste com o mouse</b> para olhar ao redor e use <b>W A S D</b> ou as setas para andar.';
@@ -137,8 +137,7 @@ if (!toque) $('#explica').innerHTML = 'Só o stand, sem a sala em volta. <b>Arra
 // ---------- cena ----------
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.toneMapping = THREE.NeutralToneMapping;
-renderer.toneMappingExposure = 1.05;
+renderer.toneMapping = THREE.NoToneMapping; // luz já assada nas texturas (render do Cycles)
 document.body.prepend(renderer.domElement);
 const canvas = renderer.domElement;
 
@@ -187,7 +186,13 @@ scene.add(chao);
 // ---------- stand ----------
 const obstaculos = [];
 new GLTFLoader().load(MODELO, (gltf) => {
-  gltf.scene.traverse((o) => { if (o.isMesh) obstaculos.push(o); });
+  gltf.scene.traverse((o) => {
+    if (!o.isMesh) return;
+    obstaculos.push(o);
+    // textura assada vem como emissiva: mostra exatamente o render, sem luz extra
+    const m = o.material;
+    if (m.emissiveMap) o.material = new THREE.MeshBasicMaterial({ map: m.emissiveMap, side: m.side });
+  });
   scene.add(gltf.scene);
   gltf.scene.updateMatrixWorld(true);
   renderer.compile(scene, camera);
