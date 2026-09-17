@@ -19,21 +19,17 @@ bpy.ops.wm.usd_export(filepath=usdc, selected_objects_only=False, export_materia
     export_global_forward_selection='NEGATIVE_Z', export_global_up_selection='Y',
     export_animation=False, export_uvmaps=True, export_normals=False)
 
-# Ajustes que o exportador do Blender não faz:
-# - sem brilho especular (material só emissivo; o brilho padrão do USD estoura em branco nas superfícies de lado)
-# - acrílico com transparência (o exportador grava opacidade 1)
+# Ajuste que o exportador do Blender não faz: acrílico com transparência (ele grava opacidade 1).
+# Os materiais assados mantêm rugosidade e reflexo: no AR o ambiente real reflete no balcão, no acrílico etc.
 from pxr import Usd, UsdShade, UsdUtils, Sdf
 st = Usd.Stage.Open(usdc)
 for prim in st.Traverse():
     sh = UsdShade.Shader(prim)
     if not sh or sh.GetIdAttr().Get() != "UsdPreviewSurface": continue
-    sh.CreateInput("useSpecularWorkflow", Sdf.ValueTypeNames.Int).Set(1)
-    sh.CreateInput("specularColor", Sdf.ValueTypeNames.Color3f).Set((0.0, 0.0, 0.0))
-    sh.CreateInput("roughness", Sdf.ValueTypeNames.Float).Set(1.0)
+    sh.CreateInput("metallic", Sdf.ValueTypeNames.Float).Set(0.0)
     if "ACRILICO" in str(prim.GetPath()):
         sh.CreateInput("opacity", Sdf.ValueTypeNames.Float).Set(0.22)
-        sh.CreateInput("specularColor", Sdf.ValueTypeNames.Color3f).Set((0.3, 0.3, 0.3))
-        sh.CreateInput("roughness", Sdf.ValueTypeNames.Float).Set(0.1)
+        sh.CreateInput("roughness", Sdf.ValueTypeNames.Float).Set(0.05)
 st.GetRootLayer().Save()
 if os.path.exists(saida): os.remove(saida)
 ok = UsdUtils.CreateNewARKitUsdzPackage(Sdf.AssetPath(usdc), saida)

@@ -11,6 +11,7 @@ args = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 opt = lambda k, d: next((a.split("=", 1)[1] for a in args if a.startswith(f"--{k}=")), d)
 SO = opt("so", None)            # um ou mais atlas separados por vírgula
 FATOR_METAL = float(opt("metal-fator", 0.4))
+APENAS_RUG = "--apenas-rugosidade" in args   # refaz só o mapa de rugosidade (rápido)
 LUZ_PX = int(opt("luz-px", 1024))
 LUZ_AMOSTRAS = int(opt("luz-amostras", 512))
 PASTA = bpy.path.abspath("//bake")
@@ -79,6 +80,20 @@ for m in bpy.data.materials:
                 k = 1 - metal * (1 - FATOR_METAL)
                 cor.default_value = (cor.default_value[0] * k, cor.default_value[1] * k, cor.default_value[2] * k, cor.default_value[3])
 
+def salvar_rugosidade(o, px):
+    # rugosidade assada (reflexos ao vivo no AR e no 3D). A imagem do bake é float: salvar direto em PNG dá zero,
+    # então copia para uma imagem de 8 bits sem gestão de cor.
+    rpx = max(1024, px // 4)
+    rug = bake(o, 'ROUGHNESS', set(), rpx, 1, 4)
+    r = pixels(rug)
+    rb = bpy.data.images.new(f"{o.name}_rug8", rpx, rpx, alpha=False, float_buffer=False)
+    rb.colorspace_settings.name = 'Non-Color'
+    rb.pixels.foreach_set(np.clip(r, 0, 1).ravel().astype(np.float32))
+    caminho_r = os.path.join(PASTA, f"{o.name}_rug.png")
+    rb.filepath_raw = caminho_r; rb.file_format = 'PNG'; rb.save()
+    log(f"  rugosidade média {float(r[..., 0].mean()):.2f}", caminho_r)
+    bpy.data.images.remove(rug); bpy.data.images.remove(rb)
+
 atlas = [o for o in sc.objects if o.type == 'MESH' and o.name.startswith("ATLAS_") and (not SO or o.name in SO.split(","))]
 for o in atlas:
     px = int(o.get("atlas_px", 4096))
@@ -88,6 +103,8 @@ for o in atlas:
     bpy.ops.object.select_all(action='DESELECT')
     o.select_set(True); bpy.context.view_layer.objects.active = o
 
+    if APENAS_RUG:
+        salvar_rugosidade(o, px); continue
     cor = bake(o, 'DIFFUSE', {'COLOR'}, px, 8, 16 if px >= 4096 else 8)
     emi = bake(o, 'EMIT', set(), px, 4, 16 if px >= 4096 else 8)
     luz_px = LUZ_PX if px >= 4096 else LUZ_PX // 2
@@ -115,6 +132,8 @@ for o in atlas:
     caminho = os.path.join(PASTA, f"{o.name}.jpg")
     out.save_render(caminho, scene=sc)   # aplica Filmic High Contrast / exposição da cena
     log("  salvo", caminho, os.path.getsize(caminho) // 1024, "KB")
+
+    salvar_rugosidade(o, px)
     for img in (cor, emi, luz, out): bpy.data.images.remove(img)
 
 log("fim")

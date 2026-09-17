@@ -8,7 +8,7 @@ import bpy, os, mathutils
 PASTA = bpy.path.abspath("//")
 sc = bpy.context.scene
 
-def material_assado(nome, imagem):
+def material_assado(nome, imagem, rugosidade=None):
     m = bpy.data.materials.new(nome)
     m.use_nodes = True
     nt = m.node_tree
@@ -16,13 +16,18 @@ def material_assado(nome, imagem):
     p.inputs["Base Color"].default_value = (0, 0, 0, 1)
     p.inputs["Roughness"].default_value = 1.0
     p.inputs["Metallic"].default_value = 0.0
-    p.inputs["Specular IOR Level"].default_value = 0.0
+    p.inputs["Specular IOR Level"].default_value = 0.5   # reflexo normal: o ambiente real (AR) ou o HDR (3D) reflete
     tex = nt.nodes.new("ShaderNodeTexImage")
     tex.image = imagem
     uv = nt.nodes.new("ShaderNodeUVMap"); uv.uv_map = "bake"
     nt.links.new(uv.outputs["UV"], tex.inputs["Vector"])
     nt.links.new(tex.outputs["Color"], p.inputs["Emission Color"])
     p.inputs["Emission Strength"].default_value = 1.0
+    if rugosidade:
+        rugosidade.colorspace_settings.name = 'Non-Color'
+        tr = nt.nodes.new("ShaderNodeTexImage"); tr.image = rugosidade
+        nt.links.new(uv.outputs["UV"], tr.inputs["Vector"])
+        nt.links.new(tr.outputs["Color"], p.inputs["Roughness"])
     return m
 
 acrilico = bpy.data.materials.new("ACRILICO")
@@ -48,7 +53,8 @@ for o in list(sc.objects):
         continue
     caminho = os.path.join(PASTA, "bake", f"{o.name}.jpg")
     img = bpy.data.images.load(caminho)
-    assado = material_assado(f"BAKE_{o.name[6:]}", img)
+    cr = os.path.join(PASTA, "bake", f"{o.name}_rug.png")
+    assado = material_assado(f"BAKE_{o.name[6:]}", img, bpy.data.images.load(cr) if os.path.exists(cr) else None)
     for slot in o.material_slots:
         slot.material = acrilico if (slot.material and slot.material.name.startswith("Material.009")) else assado
     # só o UV de bake segue para o GLB
