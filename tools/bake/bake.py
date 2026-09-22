@@ -53,6 +53,7 @@ def bake(obj, tipo, filtro, px, amostras, margem):
     return img
 
 def pixels(img):
+    _ = img.pixels[0]   # toca o buffer: sem isso o resultado recém-assado às vezes é lido todo zerado
     a = np.empty(img.size[0] * img.size[1] * 4, dtype=np.float32)
     img.pixels.foreach_get(a)
     return a.reshape(img.size[1], img.size[0], 4)

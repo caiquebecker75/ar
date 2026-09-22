@@ -1,6 +1,8 @@
 # Etapa 1 do bake de luz: importa o GLB, traz as luzes de um .blend, solda/reduz malhas, agrupa em atlas
 # e cria o UV "bake". Salva <saida>/prep.blend.
 #   blender -b --python tools/bake/prep.py -- --glb=ARQ.glb --luzes=ARQ_COM_LUZES.blend --saida=PASTA [--hdr=ARQ.exr]
+#   (ou --blend=CENA.blend, quando o material é procedural e não sobrevive ao glTF: a cena entra inteira,
+#    com as luzes que já tem dentro. Nesse caso os objetos já devem estar em malha real e local.)
 # (as luzes vêm dos objetos "Area*" do .blend; sem --luzes, só o HDR ilumina)
 import bpy, bmesh, math, mathutils, time, sys, os
 T0=time.time()
@@ -12,8 +14,12 @@ OLD = _opt("luzes")
 SAIDA = os.path.abspath(_opt("saida", "."))
 HDR = _opt("hdr", os.path.join(bpy.utils.system_resource('DATAFILES'), "studiolights", "world", "interior.exr"))
 
-bpy.ops.wm.read_factory_settings(use_empty=True)
-bpy.ops.import_scene.gltf(filepath=GLB)
+BLEND = _opt("blend")   # cena do Blender pronta (alternativa ao GLB: preserva material procedural)
+if BLEND:
+    bpy.ops.wm.open_mainfile(filepath=os.path.abspath(BLEND))
+else:
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    bpy.ops.import_scene.gltf(filepath=GLB)
 sc=bpy.context.scene
 log("import ok", len(sc.objects))
 
@@ -28,7 +34,13 @@ log("luzes", len(luzes))
 
 # ambiente
 w=bpy.data.worlds.new("Ambiente"); sc.world=w; w.use_nodes=True
-nt=w.node_tree; bg=nt.nodes["Background"]; env=nt.nodes.new("ShaderNodeTexEnvironment")
+nt=w.node_tree
+bg=next((n for n in nt.nodes if n.type=='BACKGROUND'), None)   # Blender em português: achar pelo tipo
+if bg is None:
+    bg=nt.nodes.new("ShaderNodeBackground")
+    saida=next((n for n in nt.nodes if n.type=='OUTPUT_WORLD'), nt.nodes.new("ShaderNodeOutputWorld"))
+    nt.links.new(bg.outputs[0], saida.inputs[0])
+env=nt.nodes.new("ShaderNodeTexEnvironment")
 env.image=bpy.data.images.load(HDR); nt.links.new(env.outputs[0], bg.inputs[0]); bg.inputs[1].default_value=1.0
 
 # ---------- render ----------
@@ -140,6 +152,16 @@ for g,(objs,px,a) in grupos.items():
     ctx={"active_object":objs[0],"selected_editable_objects":objs,"selected_objects":objs}
     with bpy.context.temp_override(**ctx): bpy.ops.object.join()
     o=objs[0]; o.name=f"ATLAS_{g}"; o.data.name=o.name
+    o.hide_render=False; o.hide_viewport=False   # objeto juntado herda a flag do primeiro: sem isso o bake recusa
+    # asset com visibilidade de raio desligada (câmera/difuso/reflexo): o objeto juntado herda e o bake sai TODO PRETO, sem erro
+    for campo in ("visible_camera","visible_diffuse","visible_glossy","visible_transmission","visible_volume_scatter","visible_shadow"):
+        setattr(o, campo, True)
+    o.is_holdout=False
+    # slot de material vazio faz o bake do objeto inteiro sair preto (sem erro): tirar antes
+    for i in range(len(o.material_slots)-1, -1, -1):
+        if o.material_slots[i].material is None:
+            o.active_material_index=i
+            with bpy.context.temp_override(object=o): bpy.ops.object.material_slot_remove()
     o.data.uv_layers[0].active_render=True
     o.data.uv_layers.active=o.data.uv_layers["bake"]
     bpy.context.view_layer.objects.active=o; o.select_set(True)

@@ -38,6 +38,20 @@ pa.inputs["Alpha"].default_value = 0.22
 pa.inputs["Roughness"].default_value = 0.05
 acrilico.surface_render_method = 'BLENDED'
 
+def translucido(m):
+    """Vidro e acrílico não têm cor difusa: no bake saem pretos. Reconhece pelo material original
+    (transmissão ou alfa), além do nome antigo Material.009 do stand da NGV."""
+    if not m: return False
+    if m.name.startswith("Material.009"): return True
+    if not m.use_nodes: return False
+    for n in m.node_tree.nodes:
+        if n.type != 'BSDF_PRINCIPLED': continue
+        t = n.inputs.get("Transmission Weight")
+        a = n.inputs.get("Alpha")
+        if t is not None and not t.is_linked and t.default_value > 0.2: return True
+        if a is not None and not a.is_linked and a.default_value < 0.9: return True
+    return False
+
 # grava a posição final de cada atlas na geometria antes de apagar os vazios-pais do GLB importado
 # (em duas fases: um atlas pode ser pai de outro, e mexer no pai antes move o filho)
 atlas = [x for x in sc.objects if x.type == 'MESH' and x.name.startswith("ATLAS_")]
@@ -56,7 +70,7 @@ for o in list(sc.objects):
     cr = os.path.join(PASTA, "bake", f"{o.name}_rug.png")
     assado = material_assado(f"BAKE_{o.name[6:]}", img, bpy.data.images.load(cr) if os.path.exists(cr) else None)
     for slot in o.material_slots:
-        slot.material = acrilico if (slot.material and slot.material.name.startswith("Material.009")) else assado
+        slot.material = acrilico if translucido(slot.material) else assado
     # só o UV de bake segue para o GLB
     me = o.data
     # cor de vértice herdada de modelos prontos (móveis): no USD vira primvars:Color e o motor da Apple

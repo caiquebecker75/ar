@@ -21,6 +21,7 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `famosa-portal-melao/` | Agrícola Famosa, Portal Melão Famosa (com tapete de chão) | 257 × 274 × 271 cm |
 | `famosa-carenagem-melao/` | Agrícola Famosa, Carenagem de pallet Melão Famosa (com pallet e caixas) | 169 × 120 × 100 cm |
 | `mars-display-flex/` | Mars Petcare, Display Flex Whiskas & Pedigree (modelo de referência, por medida e fotos do protótipo) | 146 × 44,5 × 33 cm |
+| `panasonic-modulo-lavanderia/` | Panasonic, Módulo de Lavanderia (projeto P09426 R05, com as duas lavadoras) | 145 × 178 × 99 cm |
 | `ngv-stand-conexao-farma/` | NGV Ecossistema, stand Conexão Farma 2027 (Abradilan) | 3 × 8 × 5 m (ambiente inteiro) |
 | `savencia-clipstrip-frescatino/` | Savencia, Clip Strip Frescatino | 70 × 10 × 6 cm |
 | `savencia-display-pp-polenguinho/` | Savencia, Display PP Polenguinho (Update) | 140 × 18 × 24 cm |
@@ -38,6 +39,11 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 > `codice-displays/<id>.glb` → `tools/usdz.html?slug=codice-displays&file=<id>` + `usdz-compact.py` →
 > `tools/codice/shots.html` (posters) → `tools/codice/og.html` (miniatura; o `capture.html` com oito modelos
 > fica ilegível). As medidas são de referência, não de fabricação.
+
+> **Material procedural do Blender (madeira do módulo Panasonic):** não existe no glTF, então o export cru
+> sai branco. Para esses casos o `prep.py` aceita `--blend=CENA.blend` e assa a cor direto da cena original
+> (malhas reais e locais, luzes dentro do próprio arquivo). Antes disso, na cena: soltar filhos de vazios de
+> instância (senão o glTF os coloca longe do módulo), `duplicates_make_real` e `make_local`.
 
 > **Arquivo do Modo (.lxo), como o clip strip da Savencia:** o Blender não abre `.lxo`. A geometria foi lida
 > direto do arquivo (formato IFF parecido com o LWO: `PNTS`, `POLS`, `PTAG`, `VMAP/VMAD`), com o Z invertido,
