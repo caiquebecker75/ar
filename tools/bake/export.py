@@ -8,6 +8,11 @@ import bpy, os, mathutils
 PASTA = bpy.path.abspath("//")
 sc = bpy.context.scene
 
+# parte da textura assada entra como COR, não só como emissão: assim o ambiente do visualizador
+# (AR ou 3D) devolve o reflexo que o bake difuso não guarda, e painel brilhante branco para de
+# aparecer cinza. 0 = só emissão (comportamento antigo).
+COR_AMBIENTE = float(os.environ.get("BAKE_COR_AMBIENTE", "0.45"))
+
 def material_assado(nome, imagem, rugosidade=None):
     m = bpy.data.materials.new(nome)
     m.use_nodes = True
@@ -22,7 +27,13 @@ def material_assado(nome, imagem, rugosidade=None):
     uv = nt.nodes.new("ShaderNodeUVMap"); uv.uv_map = "bake"
     nt.links.new(uv.outputs["UV"], tex.inputs["Vector"])
     nt.links.new(tex.outputs["Color"], p.inputs["Emission Color"])
-    p.inputs["Emission Strength"].default_value = 1.0
+    p.inputs["Emission Strength"].default_value = 1.0 - COR_AMBIENTE
+    if COR_AMBIENTE > 0:
+        mix = nt.nodes.new("ShaderNodeMixRGB"); mix.blend_type = 'MULTIPLY'
+        mix.inputs[0].default_value = 1.0
+        mix.inputs[2].default_value = (COR_AMBIENTE, COR_AMBIENTE, COR_AMBIENTE, 1)
+        nt.links.new(tex.outputs["Color"], mix.inputs[1])
+        nt.links.new(mix.outputs["Color"], p.inputs["Base Color"])
     if rugosidade:
         rugosidade.colorspace_settings.name = 'Non-Color'
         tr = nt.nodes.new("ShaderNodeTexImage"); tr.image = rugosidade
