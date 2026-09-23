@@ -44,6 +44,8 @@ def translucido(m):
     if not m: return False
     if m.name.startswith("Material.009"): return True
     if not m.use_nodes: return False
+    # vidro puro (Glass/Refraction/Transparent BSDF) não tem cor difusa nenhuma
+    if any(n.type in {'BSDF_GLASS','BSDF_REFRACTION','BSDF_TRANSPARENT'} for n in m.node_tree.nodes): return True
     for n in m.node_tree.nodes:
         if n.type != 'BSDF_PRINCIPLED': continue
         t = n.inputs.get("Transmission Weight")

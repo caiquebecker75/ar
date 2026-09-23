@@ -14,6 +14,8 @@ FATOR_METAL = float(opt("metal-fator", 0.4))
 APENAS_RUG = "--apenas-rugosidade" in args   # refaz só o mapa de rugosidade (rápido)
 LUZ_PX = int(opt("luz-px", 1024))
 LUZ_AMOSTRAS = int(opt("luz-amostras", 512))
+# piso de luz ambiente: sombra fechada entre peças vira preto no mapa e no celular parece pintura preta
+LUZ_MINIMA = float(opt("luz-minima", 0.0))
 PASTA = bpy.path.abspath("//bake")
 os.makedirs(PASTA, exist_ok=True)
 
@@ -51,6 +53,28 @@ def bake(obj, tipo, filtro, px, amostras, margem):
     bpy.ops.object.bake(type=tipo, pass_filter=filtro, margin=margem, use_clear=True)
     log(f"  {tipo} {sorted(filtro)} {px}px {amostras}spp em {time.time()-t:.0f}s")
     return img
+
+def luz_branca():
+    """Mapa de luz de verdade: material branco fosco em tudo. Com o material original, peça metálica
+    ou com Glossy BSDF devolve quase zero no passe difuso e a textura sai preta."""
+    m = bpy.data.materials.get("LUZ_BRANCA") or bpy.data.materials.new("LUZ_BRANCA")
+    m.use_nodes = True
+    p = next((n for n in m.node_tree.nodes if n.type == 'BSDF_PRINCIPLED'), None)
+    if p:
+        p.inputs["Base Color"].default_value = (0.8, 0.8, 0.8, 1)
+        p.inputs["Metallic"].default_value = 0.0
+        p.inputs["Roughness"].default_value = 1.0
+        if "Specular IOR Level" in p.inputs: p.inputs["Specular IOR Level"].default_value = 0.0
+    return m
+
+def bake_luz(obj, px, amostras):
+    branco = luz_branca()
+    guarda = [s.material for s in obj.material_slots]
+    for s in obj.material_slots: s.material = branco
+    try:
+        return bake(obj, 'DIFFUSE', {'DIRECT', 'INDIRECT'}, px, amostras, 4)
+    finally:
+        for s, m in zip(obj.material_slots, guarda): s.material = m
 
 def pixels(img):
     _ = img.pixels[0]   # toca o buffer: sem isso o resultado recém-assado às vezes é lido todo zerado
@@ -109,7 +133,7 @@ for o in atlas:
     cor = bake(o, 'DIFFUSE', {'COLOR'}, px, 8, 16 if px >= 4096 else 8)
     emi = bake(o, 'EMIT', set(), px, 4, 16 if px >= 4096 else 8)
     luz_px = LUZ_PX if px >= 4096 else LUZ_PX // 2
-    luz = bake(o, 'DIFFUSE', {'DIRECT', 'INDIRECT'}, luz_px, LUZ_AMOSTRAS, 4)
+    luz = bake_luz(o, luz_px, LUZ_AMOSTRAS)
 
     def st(n, a):
         a = a[..., :3]; nz = (a.max(-1) > 1e-6).mean()
@@ -123,6 +147,7 @@ for o in atlas:
     L = pixels(luz)[..., :3]
     st("luz ampliada", L)
 
+    if LUZ_MINIMA > 0: L = np.maximum(L, LUZ_MINIMA)
     final = pixels(cor)[..., :3] * L + pixels(emi)[..., :3]
     out = bpy.data.images.new(f"{o.name}_final", px, px, alpha=False, float_buffer=True)
     out.colorspace_settings.name = 'Linear Rec.709'
