@@ -22,7 +22,7 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `famosa-carenagem-melao/` | Agrícola Famosa, Carenagem de pallet Melão Famosa (com pallet e caixas) | 169 × 120 × 100 cm |
 | `mars-display-flex/` | Mars Petcare, Display Flex Whiskas & Pedigree (modelo de referência, por medida e fotos do protótipo) | 146 × 44,5 × 33 cm |
 | `mars-display-polionda/` | Mars Petcare, Display Polionda Whiskas & Pedigree (4 prateleiras, com produtos) | 147 × 33 × 45 cm |
-| `panasonic-modulo-lavanderia/` | Panasonic, Módulo de Lavanderia (projeto P09426 R05, com as duas lavadoras) | 145 × 178 × 99 cm |
+| `panasonic-modulo-lavanderia/` | Panasonic, Módulo de Lavanderia (projeto P09426 R06, com tela de LED e as duas lavadoras) | 145 × 178 × 99 cm |
 | `ngv-stand-conexao-farma/` | NGV Ecossistema, stand Conexão Farma 2027 (Abradilan) | 3 × 8 × 5 m (ambiente inteiro) |
 | `savencia-clipstrip-frescatino/` | Savencia, Clip Strip Frescatino | 70 × 10 × 6 cm |
 | `savencia-display-pp-polenguinho/` | Savencia, Display PP Polenguinho (Update) | 140 × 18 × 24 cm |
