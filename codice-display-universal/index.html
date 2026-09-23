@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Display Universal Códice | AR 75 LAB</title>
-<meta name="description" content="Veja o Display Universal da Códice em 3D e em realidade aumentada, em tamanho real, no seu espaço: seis configurações e três exemplos de marca.">
+<meta name="description" content="Veja o Display Universal da Códice em 3D e em realidade aumentada, em tamanho real, no seu espaço: seis configurações, três exemplos de marca e o módulo inteligente da base.">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#F3F4EE">
 <meta property="og:type" content="website">
@@ -21,7 +21,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Lexend:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/ar.css?v=4">
 <style>
-  /* nove modelos em dois grupos: cada faixa rola na horizontal no celular */
+  /* dez modelos em três grupos: cada faixa rola na horizontal no celular */
   .modelos { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(172px, 1fr); max-width: none; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
   .modelos::-webkit-scrollbar { display: none; }
   .grupo { margin-top: 14px; }
@@ -43,7 +43,8 @@
   { "id": "baixa-aereo", "nome": "ilha baixa com aéreo", "alt": "Display Universal Códice, ilha baixa com prateleiras aéreas, em 3D", "src": "baixa-aereo.glb?v=1", "ios": "baixa-aereo.usdz?v=1", "poster": "baixa-aereo-poster.webp?v=1" },
   { "id": "lacta", "nome": "exemplo Lacta", "alt": "Display Universal Códice com comunicação da Lacta, em 3D", "src": "lacta.glb?v=1", "ios": "lacta.usdz?v=1", "poster": "lacta-poster.webp?v=1" },
   { "id": "bis", "nome": "exemplo Bis", "alt": "Display Universal Códice com comunicação do Bis, em 3D", "src": "bis.glb?v=1", "ios": "bis.usdz?v=1", "poster": "bis-poster.webp?v=1" },
-  { "id": "pedigree-whiskas", "nome": "exemplo Pedigree e Whiskas", "alt": "Display Universal Códice com comunicação de Pedigree e Whiskas, em 3D", "src": "pedigree-whiskas.glb?v=1", "ios": "pedigree-whiskas.usdz?v=1", "poster": "pedigree-whiskas-poster.webp?v=1" }
+  { "id": "pedigree-whiskas", "nome": "exemplo Pedigree e Whiskas", "alt": "Display Universal Códice com comunicação de Pedigree e Whiskas, em 3D", "src": "pedigree-whiskas.glb?v=1", "ios": "pedigree-whiskas.usdz?v=1", "poster": "pedigree-whiskas-poster.webp?v=1" },
+  { "id": "brain", "nome": "módulo inteligente", "alt": "Módulo inteligente da base do Display Universal Códice, em 3D", "src": "brain.glb?v=1", "ios": "brain.usdz?v=1", "poster": "brain-poster.webp?v=1", "camera": { "orbita": "-30deg 62deg auto" } }
 ]
 </script>
 </head>
@@ -74,6 +75,12 @@
         <button type="button" data-modelo="lacta" aria-pressed="false"><img src="lacta-poster.webp?v=1" alt="" width="40" height="50"><span><b>Lacta</b><small>ilha · 111 × 112 × 170 cm</small></span></button>
         <button type="button" data-modelo="bis" aria-pressed="false"><img src="bis-poster.webp?v=1" alt="" width="40" height="50"><span><b>Bis</b><small>ilha · 111 × 112 × 170 cm</small></span></button>
         <button type="button" data-modelo="pedigree-whiskas" aria-pressed="false"><img src="pedigree-whiskas-poster.webp?v=1" alt="" width="40" height="50"><span><b>Pedigree e Whiskas</b><small>ilha · 111 × 112 × 170 cm</small></span></button>
+      </div>
+    </div>
+    <div class="grupo">
+      <h2>Componente</h2>
+      <div class="modelos" role="group" aria-label="Escolha o componente">
+        <button type="button" data-modelo="brain" aria-pressed="false"><img src="brain-poster.webp?v=1" alt="" width="40" height="50"><span><b>Módulo inteligente</b><small>20 × 13 × 5 cm</small></span></button>
       </div>
     </div>
   </section>

@@ -22,7 +22,8 @@ zipfile.ZipFile(src).extractall(work)
 
 before = os.path.getsize(src)
 tex_dir = os.path.join(work, "textures")
-for name in sorted(os.listdir(tex_dir)):
+# peça sem textura (ex.: a caixa preta do brain) não tem a pasta
+for name in sorted(os.listdir(tex_dir)) if os.path.isdir(tex_dir) else []:
     if not name.lower().endswith(".png"):
         continue
     png = os.path.join(tex_dir, name)

@@ -32,7 +32,7 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `savencia-frame-glorifier-frescatino/` | Savencia, Frame Glorifier Frescatino (ventosas, AR de parede) | 18 × 20 cm |
 | `semp-split-hw/` | SEMP, quinze peças de PDV do lançamento Split HW numa página: sete com 3D do Modo (`ilha`, `portico`, `backdrop`, `cubo`, `poster-cinta`, `berco`, `regua`) e oito montadas da arte 2D (`placa`, `topper`, `orelha`, `tapete`, `aerea`, `adam-lama`, `adam-poster-caixa`, `adam-testeira`) + `embed.html` | de 10 × 47 × 6 cm (régua) a 340 × 306 × 60 cm (pórtico) |
 | `codice-displays/` | Códice, oito displays numa página (`?modelo=essencial`, `sense`, `media`, `ilha`, `painel`, `vitrine`, `categoria`, `multiuso`) | medidas de referência, de 195 × 74 × 52 cm a 202 × 104 × 55 cm |
-| `codice-display-universal/` | Códice, Display Universal (projeto NEO001): seis configurações do mesmo módulo (`?modelo=torre`, `duplo`, `ilha`, `ilha-frentes`, `baixa`, `baixa-aereo`) e três exemplos de marca (`lacta`, `bis`, `pedigree-whiskas`) | de 62 × 65 × 170 cm (módulo único) a 112 × 112 × 170 cm (ilha de 4 módulos) |
+| `codice-display-universal/` | Códice, Display Universal (projeto NEO001): seis configurações do mesmo módulo (`?modelo=torre`, `duplo`, `ilha`, `ilha-frentes`, `baixa`, `baixa-aereo`), três exemplos de marca (`lacta`, `bis`, `pedigree-whiskas`) e o módulo inteligente da base (`brain`) | de 20 × 13 × 5 cm (módulo inteligente) a 112 × 112 × 170 cm (ilha de 4 módulos) |
 
 > **Códice:** não havia arquivo 3D dos displays. Os modelos foram montados em three.js a partir dos renders
 > do deck comercial, com as texturas desenhadas em canvas (logotipo, painel perfurado, tela do pacote Media).
@@ -47,6 +47,8 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 > Drive, convertidos com `tools/psd_composto.py` (o do Pedigree tem 1,34 GB). Cada modelo vira dois GLB: o da web
 > com `--no-verso` + `tools/bake/compacta-glb.mjs <ent> <sai> 1 0` (quantiza; a ilha cai de 18 para 8,7 MB) e o do
 > USDZ com verso, pelo `usdz.html`. Miniatura própria em `tools/codice/og-universal.html`.
+> O `brain` (a caixa eletrônica da base, 20 × 13 × 5 cm) sai do `3D-DISPLAY-UNIVERSAL-BRAIN.lxo`, que traz a cena
+> inteira: só a camada 2 é a caixa (`excluir_camadas` com todas as outras).
 > **Pegadinhas:** os arquivos de marca (`LACTA`, `BIS`, `PEDIGREE-WHISKAS`) trazem camadas visíveis de sobras de
 > montagem fora da ilha (uma testeira solta no ar, painéis no chão): `"excluir_camadas": [3, 4, 7, 8]` no config,
 > senão o modelo sai com 157 × 177 × 199 cm em vez de 111 × 112 × 170. As réguas de preço são acrílico
