@@ -49,7 +49,11 @@ prefs=bpy.context.preferences.addons['cycles'].preferences
 prefs.compute_device_type='METAL'; prefs.get_devices()
 for d in prefs.devices: d.use=True
 sc.cycles.device='GPU'
-sc.view_settings.view_transform='Filmic'; sc.view_settings.look='High Contrast'; sc.view_settings.exposure=0.5
+# gestão de cor: vindo de um .blend do projeto, mantém a da própria cena (senão o modelo sai
+# com outro tom do render do cliente). Só o GLB cru cai no padrão antigo.
+if not BLEND:
+    sc.view_settings.view_transform='Filmic'; sc.view_settings.look='High Contrast'; sc.view_settings.exposure=0.5
+print("gestão de cor:", sc.view_settings.view_transform, sc.view_settings.look, sc.view_settings.exposure)
 
 # ---------- malhas: dados únicos, sem modificadores, redução ----------
 meshes=[o for o in sc.objects if o.type=='MESH']

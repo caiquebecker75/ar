@@ -16,6 +16,8 @@ LUZ_PX = int(opt("luz-px", 1024))
 LUZ_AMOSTRAS = int(opt("luz-amostras", 512))
 # piso de luz ambiente: sombra fechada entre peças vira preto no mapa e no celular parece pintura preta
 LUZ_MINIMA = float(opt("luz-minima", 0.0))
+# ganho do mapa de luz: superfície branca tem de ler branca, como no render do cliente
+LUZ_GANHO = float(opt("luz-ganho", 1.0))
 PASTA = bpy.path.abspath("//bake")
 os.makedirs(PASTA, exist_ok=True)
 
@@ -147,6 +149,7 @@ for o in atlas:
     L = pixels(luz)[..., :3]
     st("luz ampliada", L)
 
+    if LUZ_GANHO != 1.0: L = L * LUZ_GANHO
     if LUZ_MINIMA > 0: L = np.maximum(L, LUZ_MINIMA)
     final = pixels(cor)[..., :3] * L + pixels(emi)[..., :3]
     out = bpy.data.images.new(f"{o.name}_final", px, px, alpha=False, float_buffer=True)
