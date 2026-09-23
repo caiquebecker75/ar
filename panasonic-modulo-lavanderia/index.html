@@ -26,8 +26,10 @@
 <script type="module" src="../assets/ar.js?v=8"></script>
 <script type="application/json" id="modelos">
 [
-  { "id": "modulo", "nome": "Módulo", "alt": "Módulo de lavanderia Panasonic em 3D",
-    "src": "display.glb?v=8", "ios": "display.usdz?v=8", "poster": "poster.webp?v=8" }
+  { "id": "lavadoras", "nome": "módulo com lavadoras", "alt": "Módulo de lavanderia Panasonic com lavadoras em 3D",
+    "src": "display.glb?v=8", "ios": "display.usdz?v=8", "poster": "poster.webp?v=8" },
+  { "id": "prateleiras", "nome": "módulo com prateleiras", "alt": "Módulo de lavanderia Panasonic com prateleiras em 3D",
+    "src": "prateleiras.glb?v=1", "ios": "prateleiras.usdz?v=1", "poster": "prateleiras-poster.webp?v=1" }
 ]
 </script>
 </head>
@@ -44,13 +46,23 @@
     <div class="dims" aria-label="Medidas">
       <span>Largura<b>1,78 m</b></span><span>Profundidade<b>99 cm</b></span><span>Altura<b>1,45 m</b></span>
     </div>
+    <div class="modelos" role="group" aria-label="Escolha o modelo de execução">
+      <button type="button" data-modelo="lavadoras" aria-pressed="true" class="on">
+        <img src="poster.webp?v=8" alt="" width="40" height="50">
+        <span><b>Com lavadoras</b><small>15 kg e 19 kg</small></span>
+      </button>
+      <button type="button" data-modelo="prateleiras" aria-pressed="false">
+        <img src="prateleiras-poster.webp?v=1" alt="" width="40" height="50">
+        <span><b>Com prateleiras</b><small>sem lavadoras</small></span>
+      </button>
+    </div>
   </section>
 
   <section class="stage">
     <model-viewer
       alt="Módulo de lavanderia Panasonic em 3D"
       ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor" xr-environment
-      camera-controls auto-rotate auto-rotate-delay="2500" rotation-per-second="14deg"
+      camera-controls
       camera-orbit="-28deg 76deg auto" min-camera-orbit="auto 25deg auto" max-camera-orbit="auto 92deg auto"
       interaction-prompt="none" shadow-intensity="1.1" shadow-softness="0.9"
       environment-image="neutral" exposure="1" tone-mapping="none" loading="eager">
