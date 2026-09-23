@@ -148,7 +148,9 @@ def consertar_agulhas(o):
 # ---------- UV de bake: junta cada grupo e projeta ----------
 falhas=[]
 bpy.ops.object.select_all(action='DESELECT')
-for g,(objs,px,a) in grupos.items():
+for g,(objs,px,a) in list(grupos.items()):
+    if not objs:            # cena só com peças médias: caixa vazia não vira atlas
+        del grupos[g]; continue
     for o in objs:
         uv=o.data.uv_layers
         if not uv: uv.new(name="UVMap")    # mantém todos os UVs: materiais usam UVMap.001 etc.
