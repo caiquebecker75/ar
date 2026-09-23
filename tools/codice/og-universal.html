@@ -1,0 +1,41 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Códice · Display Universal · og:image</title>
+<!--
+  Miniatura do link (1200x630) da página codice-display-universal, no padrão visual das páginas de AR 75 LAB.
+  O capture.html põe todos os modelos lado a lado; com nove configurações a imagem fica ilegível.
+  http://localhost:8833/tools/codice/og-universal.html  →  codice-display-universal/og.jpg
+-->
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Lexend:wght@200;300;600&display=swap" rel="stylesheet">
+<pre id="log" style="font:13px/1.5 ui-monospace,monospace;padding:16px">gerando…</pre>
+<script type="module">
+const log = (m) => { document.getElementById('log').textContent += '\n' + m; };
+try {
+  await Promise.all(['30px Anton', '200 88px Lexend', '600 88px Lexend', '300 26px Lexend'].map((f) => document.fonts.load(f)));
+  const load = (src) => new Promise((ok, err) => { const i = new Image(); i.onload = () => ok(i); i.onerror = err; i.src = src; });
+  const [torre, baixa, lacta] = await Promise.all(['torre', 'baixa', 'lacta'].map((id) => load(`/codice-display-universal/${id}-poster.webp`)));
+  const c = Object.assign(document.createElement('canvas'), { width: 1200, height: 630 });
+  const x = c.getContext('2d');
+  x.fillStyle = '#F3F4EE'; x.fillRect(0, 0, 1200, 630);
+  const glow = x.createRadialGradient(880, 420, 20, 880, 420, 360);
+  glow.addColorStop(0, 'rgba(255,255,255,1)'); glow.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = glow; x.fillRect(520, 0, 680, 630);
+  // três configurações compostas para a miniatura (cada poster tem enquadramento próprio, não é escala real)
+  const draw = (img, cx, h) => { const w = (img.width / img.height) * h; x.drawImage(img, cx - w / 2, 630 - h + 10, w, h); };
+  draw(torre, 656, 410); draw(baixa, 1032, 320); draw(lacta, 878, 555);
+
+  x.fillStyle = '#0E1110'; x.font = '30px Anton'; x.fillText('75', 72, 92);
+  const w75 = x.measureText('75').width; x.fillStyle = '#A6D934'; x.fillText('LAB', 72 + w75 + 2, 92);
+  x.fillStyle = '#A6D934'; x.fillRect(72, 184, 34, 3);
+  x.fillStyle = '#0E1110'; x.font = '22px Anton'; x.letterSpacing = '3px'; x.fillText('CÓDICE', 118, 194); x.letterSpacing = '0px';
+  x.font = '200 88px Lexend'; x.fillText('DISPLAY', 66, 290);
+  x.font = '600 88px Lexend'; x.fillText('UNIVERSAL', 66, 380);
+  x.fillStyle = '#54594E'; x.font = '300 26px Lexend';
+  x.fillText('Seis configurações e três marcas,', 72, 440); x.fillText('em tamanho real no seu espaço.', 72, 476);
+  x.fillStyle = '#C0EE4E'; x.beginPath(); x.roundRect(72, 520, 290, 58, 29); x.fill();
+  x.fillStyle = '#0E1110'; x.font = '20px Anton'; x.letterSpacing = '2px'; x.fillText('ESCOLHA E VEJA EM AR', 98, 557);
+  const blob = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.88));
+  log(await (await fetch(`/__save?path=${encodeURIComponent('codice-display-universal/og.jpg')}`, { method: 'POST', body: blob })).text());
+  log('PRONTO');
+} catch (e) { log('ERRO: ' + (e.stack || e)); }
+</script>

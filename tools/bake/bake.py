@@ -18,6 +18,10 @@ LUZ_AMOSTRAS = int(opt("luz-amostras", 512))
 LUZ_MINIMA = float(opt("luz-minima", 0.0))
 # ganho do mapa de luz: superfície branca tem de ler branca, como no render do cliente
 LUZ_GANHO = float(opt("luz-ganho", 1.0))
+# modo "combinado": assa a imagem completa do Cycles (cor + luz + reflexo + emissão) num passe só.
+# É o que faz superfície brilhante (eletrodoméstico, metal pintado) ler igual ao render; o modo padrão
+# (cor × luz) mantém a arte mais limpa em peça fosca.
+MODO = opt("modo", "separado")
 PASTA = bpy.path.abspath("//bake")
 os.makedirs(PASTA, exist_ok=True)
 
@@ -91,6 +95,31 @@ def suavizar(a, sigma):
         a = np.apply_along_axis(lambda v: np.convolve(np.pad(v, r, mode='edge'), k, mode='valid'), eixo, a)
     return a
 
+def vidro_nao_bloqueia():
+    """Vidro e acrílico barram a luz no bake e a peça atrás deles sai escura (a luz que atravessa
+    vidro é cáustica, e o passe difuso não pega). Durante o bake eles viram transparentes puros."""
+    n = 0
+    for m in bpy.data.materials:
+        if not m.use_nodes: continue
+        nt = m.node_tree
+        tipos = {x.type for x in nt.nodes}
+        transm = False
+        for x in nt.nodes:
+            if x.type == 'BSDF_PRINCIPLED':
+                t = x.inputs.get("Transmission Weight"); a = x.inputs.get("Alpha")
+                if (t is not None and not t.is_linked and t.default_value > 0.2) or (a is not None and not a.is_linked and a.default_value < 0.9):
+                    transm = True
+        if not (tipos & {'BSDF_GLASS', 'BSDF_REFRACTION', 'BSDF_TRANSPARENT'} or transm): continue
+        saida = next((x for x in nt.nodes if x.type == 'OUTPUT_MATERIAL'), None)
+        if not saida: continue
+        tr = nt.nodes.new("ShaderNodeBsdfTransparent")
+        for l in list(saida.inputs['Surface'].links): nt.links.remove(l)
+        nt.links.new(tr.outputs[0], saida.inputs['Surface'])
+        n += 1
+    log("vidro/acrílico transparente para o bake:", n)
+
+vidro_nao_bloqueia()
+
 # metal não tem cor difusa: no bake ele sairia preto (ex.: estantes azuis). Zera o metálico para a cor entrar na textura.
 for m in bpy.data.materials:
     if not m.use_nodes: continue
@@ -125,6 +154,9 @@ atlas = [o for o in sc.objects if o.type == 'MESH' and o.name.startswith("ATLAS_
 for o in atlas:
     px = int(o.get("atlas_px", 4096))
     log(o.name, px, "px", len(o.data.polygons), "faces")
+    def st(n, a):
+        a = a[..., :3]; nz = (a.max(-1) > 1e-6).mean()
+        log(f"  STAT {n}: media={a.mean():.4f} max={a.max():.3f} preenchido={nz*100:.1f}%")
     o.data.uv_layers.active = o.data.uv_layers["bake"]
     o.data.uv_layers["UVMap"].active_render = True
     bpy.ops.object.select_all(action='DESELECT')
@@ -132,14 +164,30 @@ for o in atlas:
 
     if APENAS_RUG:
         salvar_rugosidade(o, px); continue
+    if MODO == "combinado":
+        # COMBINED exige os passes de luz explícitos; com GLOSSY a superfície brilhante
+        # (eletrodoméstico) sai como no render, não só com a luz difusa
+        comb = bake(o, 'COMBINED', {'DIRECT', 'INDIRECT', 'DIFFUSE', 'GLOSSY', 'TRANSMISSION', 'EMIT'},
+                    px, LUZ_AMOSTRAS, 16 if px >= 4096 else 8)
+        C = pixels(comb)[..., :3]
+        if LUZ_GANHO != 1.0: C = C * LUZ_GANHO
+        st("combinado", C)
+        out = bpy.data.images.new(f"{o.name}_final", px, px, alpha=False, float_buffer=True)
+        out.colorspace_settings.name = 'Linear Rec.709'
+        out.pixels.foreach_set(np.dstack([C, np.ones(C.shape[:2], np.float32)]).ravel().astype(np.float32))
+        s = sc.render.image_settings
+        s.file_format = 'JPEG'; s.quality = 92; s.color_mode = 'RGB'
+        caminho = os.path.join(PASTA, f"{o.name}.jpg")
+        out.save_render(caminho, scene=sc)
+        log("  salvo", caminho, os.path.getsize(caminho) // 1024, "KB")
+        salvar_rugosidade(o, px)
+        for img in (comb, out): bpy.data.images.remove(img)
+        continue
     cor = bake(o, 'DIFFUSE', {'COLOR'}, px, 8, 16 if px >= 4096 else 8)
     emi = bake(o, 'EMIT', set(), px, 4, 16 if px >= 4096 else 8)
     luz_px = LUZ_PX if px >= 4096 else LUZ_PX // 2
     luz = bake_luz(o, luz_px, LUZ_AMOSTRAS)
 
-    def st(n, a):
-        a = a[..., :3]; nz = (a.max(-1) > 1e-6).mean()
-        log(f"  STAT {n}: media={a.mean():.4f} max={a.max():.3f} preenchido={nz*100:.1f}%")
     st("cor", pixels(cor)); st("emissao", pixels(emi)); st("luz", pixels(luz))
     # luz: suaviza no tamanho do bake e amplia para o tamanho do atlas
     L = pixels(luz)[..., :3]

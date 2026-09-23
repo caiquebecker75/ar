@@ -33,9 +33,11 @@ def material_assado(nome, imagem, rugosidade=None):
 acrilico = bpy.data.materials.new("ACRILICO")
 acrilico.use_nodes = True
 pa = next(n for n in acrilico.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
-pa.inputs["Base Color"].default_value = (0.92, 0.95, 1.0, 1)
-pa.inputs["Alpha"].default_value = 0.22
-pa.inputs["Roughness"].default_value = 0.05
+pa.inputs["Base Color"].default_value = (0.95, 0.96, 0.98, 1)
+# acrílico leitoso (o do módulo Panasonic tem rugosidade 0,5): vidro liso deixava ver a peça de trás
+# escura, e no render é o painel que clareia a cena
+pa.inputs["Alpha"].default_value = 0.55
+pa.inputs["Roughness"].default_value = 0.5
 acrilico.surface_render_method = 'BLENDED'
 
 def translucido(m):
