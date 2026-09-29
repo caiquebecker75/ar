@@ -10,6 +10,7 @@
     <iframe src="https://projetos.75lab.com.br/ar/ftw-vitrine/embed.html" style="width:100%;height:100%;border:0"
             allow="fullscreen; xr-spatial-tracking" loading="lazy"></iframe>
   Parametros: ?produto=creatina (abre nele) | ?modo=todos (grade) | ?escala=real | ?fundo=escuro
+              ?cabecalho=0 (esconde o titulo, para quando a pagina de fora ja tem um)
   Um produto por vez; gira com o dedo ou o mouse. O botao "Todos" mostra o portfolio em grade.
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -191,6 +192,7 @@ const $ = (s) => document.querySelector(s);
 const app = $('#app'), stage = $('#stage');
 $('#total').textContent = String(PROD.length).padStart(2, '0');
 if (P.get('fundo') === 'escuro') document.body.classList.add('escuro');
+if (P.get('cabecalho') === '0') document.querySelector('.top').hidden = true;
 
 let atual = Math.max(0, PROD.findIndex((p) => p.id === P.get('produto')));
 let modo = P.get('modo') === 'todos' ? 'todos' : 'vitrine';
