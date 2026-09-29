@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vitrine virtual FTW</title>
+<meta name="robots" content="noindex">
+<!--
+  Vitrine para INCORPORAR em apresentacao (iframe). Ocupa 100% do iframe.
+    <iframe src="https://projetos.75lab.com.br/ar/ftw-vitrine/embed.html" style="width:100%;height:100%;border:0"
+            allow="fullscreen; xr-spatial-tracking" loading="lazy"></iframe>
+  Parametros: ?produto=creatina (abre nele) | ?modo=todos (grade) | ?escala=real | ?fundo=escuro
+  Um produto por vez; gira com o dedo ou o mouse. O botao "Todos" mostra o portfolio em grade.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script type="module" src="../vendor/model-viewer.min.js"></script>
+<script defer src="../vendor/qrcode.min.js"></script>
+<script src="produtos.js"></script>
+<style>
+:root{
+  --ink:#050505; --paper:#F2F1E9; --paper2:#E7E5DA; --red:#E1091E;
+  --line:rgba(5,5,5,.16); --soft:rgba(5,5,5,.58);
+  --fd:'Big Shoulders Display','Arial Narrow',Impact,sans-serif;
+  --ft:'Space Grotesk',ui-sans-serif,system-ui,sans-serif;
+  --fm:'Space Mono',ui-monospace,Menlo,monospace;
+  --gap:clamp(10px,2.2vmin,22px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--ft);overflow:hidden;
+  -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+body.escuro{background:var(--ink);color:var(--paper);--line:rgba(242,241,233,.2);--soft:rgba(242,241,233,.62)}
+button,a{font:inherit;color:inherit;cursor:pointer;border:0;background:none;text-decoration:none}
+[hidden]{display:none!important}
+.app{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto;padding:var(--gap) calc(var(--gap)*1.25);gap:calc(var(--gap)*.5)}
+
+/* ---------- topo: marca ---------- */
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.eyebrow{font-family:var(--fm);font-weight:700;font-size:clamp(9px,1.4vmin,11.5px);letter-spacing:.2em;
+  text-transform:uppercase;color:var(--soft);display:flex;align-items:center;gap:9px}
+.eyebrow i{width:20px;height:3px;background:var(--red);transform:skewX(-13deg)}
+h1{font-family:var(--fd);font-weight:900;text-transform:uppercase;letter-spacing:-.025em;
+  font-size:clamp(19px,4vmin,38px);line-height:1.02;margin-top:3px}
+h1 em{font-style:normal;color:var(--red)}
+.ctrl{display:flex;align-items:center;gap:8px}
+.seg{display:inline-flex;border:2px solid var(--line)}
+.seg button{font-family:var(--fm);font-weight:700;font-size:clamp(9.5px,1.5vmin,11.5px);letter-spacing:.14em;
+  text-transform:uppercase;padding:8px 13px;border-right:2px solid var(--line);color:var(--soft);white-space:nowrap}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--red);color:#fff}
+.real{display:inline-flex;align-items:center;gap:8px;font-family:var(--fm);font-weight:700;
+  font-size:clamp(9.5px,1.5vmin,11.5px);letter-spacing:.12em;text-transform:uppercase;color:var(--soft);
+  border:2px solid var(--line);padding:6px 12px 6px 7px}
+.real .sw{width:28px;height:16px;background:var(--line);position:relative;transition:background .22s}
+.real .sw::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;background:var(--paper);
+  transition:transform .22s}
+body.escuro .real .sw::after{background:var(--ink)}
+.real[aria-pressed="true"]{color:inherit;border-color:var(--red)}
+.real[aria-pressed="true"] .sw{background:var(--red)}
+.real[aria-pressed="true"] .sw::after{transform:translateX(12px);background:#fff}
+
+/* ---------- palco ---------- */
+.stage{position:relative;min-height:0}
+.slot{position:absolute;top:0;left:50%;height:100%;width:min(70%,96vh);
+  transform:translateX(calc(-50% + var(--x,0px))) scale(var(--s,1));opacity:var(--o,1);z-index:var(--z,1);
+  transition:transform .7s cubic-bezier(.2,.8,.2,1),opacity .45s ease}
+.slot model-viewer{width:100%;height:100%;background:transparent;--poster-color:transparent;--progress-bar-height:0px}
+.slot:not(.on) model-viewer{cursor:pointer}
+.slot .cap{display:none}
+.chao{position:absolute;left:10%;right:10%;bottom:6%;height:2px;background:var(--line)}
+.dica{position:absolute;left:50%;bottom:2%;transform:translateX(-50%);display:flex;align-items:center;gap:7px;
+  font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);
+  pointer-events:none;transition:opacity .4s}
+.dica svg{width:14px;height:14px}
+
+/* grade: todos os produtos ---------- */
+.app.todos .stage{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(140px,22%),1fr));
+  grid-auto-rows:1fr;gap:6px;align-content:center}
+.app.todos .slot{position:relative;left:auto;top:auto;width:auto;height:auto;transform:none!important;
+  opacity:1!important;display:flex;flex-direction:column;border:2px solid transparent;min-height:0}
+.app.todos .slot:hover{border-color:var(--red)}
+.app.todos .slot model-viewer{flex:1;min-height:0}
+.app.todos .slot .cap{display:block;text-align:center;padding:5px 4px 7px}
+.app.todos .slot .cap b{display:block;font-family:var(--fd);font-weight:900;text-transform:uppercase;
+  font-size:clamp(11px,1.7vmin,15px);letter-spacing:-.015em;line-height:1.06}
+.app.todos .slot .cap small{font-family:var(--fm);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--red)}
+.app.todos .chao,.app.todos .dica{display:none}
+
+/* ---------- base: produto e navegacao ---------- */
+.base{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  border-top:2px solid var(--line);padding-top:calc(var(--gap)*.6)}
+.info{display:grid;gap:3px;min-width:min(340px,100%)}
+.info .num{font-family:var(--fm);font-weight:700;font-size:10px;letter-spacing:.18em;color:var(--red)}
+.info .nome{font-family:var(--fd);font-weight:900;text-transform:uppercase;letter-spacing:-.02em;
+  font-size:clamp(17px,3vmin,27px);line-height:1.04}
+.info .desc{font-size:clamp(11.5px,1.7vmin,14px);line-height:1.4;color:var(--soft);max-width:54ch}
+.info .med{font-family:var(--fm);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft)}
+.acoes{display:flex;align-items:center;gap:8px;position:relative}
+.nav{width:32px;height:32px;border:2px solid var(--line);display:grid;place-items:center;transition:.18s}
+.nav:hover{background:var(--red);border-color:var(--red);color:#fff}
+.nav svg{width:13px;height:13px}
+.thumbs{display:flex;gap:4px;overflow-x:auto;max-width:min(42vw,420px);scrollbar-width:none}
+.thumbs::-webkit-scrollbar{display:none}
+.thumbs button{width:42px;height:42px;flex:0 0 42px;border:2px solid transparent;background:var(--paper2);padding:2px}
+body.escuro .thumbs button{background:rgba(242,241,233,.08)}
+.thumbs button img{width:100%;height:100%;object-fit:contain;display:block}
+.thumbs button[aria-current="true"]{border-color:var(--red)}
+.ar{display:inline-flex;align-items:center;gap:8px;font-family:var(--fm);font-weight:700;font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;background:var(--red);color:#fff;padding:10px 16px;white-space:nowrap}
+.ar:hover{background:var(--ink);color:var(--paper)}
+.ar svg{width:15px;height:15px}
+.pop{position:absolute;right:0;bottom:46px;background:var(--paper);border:2px solid var(--ink);padding:12px;
+  display:flex;gap:12px;align-items:center;width:min(300px,80vw);z-index:9}
+body.escuro .pop{background:var(--ink);border-color:var(--paper)}
+.pop .qr{width:96px;height:96px;flex:0 0 96px;background:#fff;padding:5px}
+.pop .qr canvas,.pop .qr img{width:100%;height:100%;display:block}
+.pop strong{font-family:var(--fd);font-weight:900;text-transform:uppercase;font-size:16px;letter-spacing:-.01em;display:block}
+.pop p{font-size:11.5px;line-height:1.35;color:var(--soft);margin-top:3px}
+@media (max-width:680px){
+  .thumbs{max-width:100%;order:3}
+  .base{gap:10px}
+  .info .desc{display:none}
+}
+@media (prefers-reduced-motion:reduce){.slot{transition:none}}
+</style>
+</head>
+<body>
+<main class="app" id="app">
+  <header class="top">
+    <div>
+      <div class="eyebrow"><i></i>FTW · Feito para Vencer</div>
+      <h1>O portfólio da FTW <em>em 3D</em></h1>
+    </div>
+    <div class="ctrl">
+      <div class="seg" role="group" aria-label="Como ver o portfólio">
+        <button type="button" data-modo="vitrine" aria-pressed="true">Um a um</button>
+        <button type="button" data-modo="todos" aria-pressed="false">Todos</button>
+      </div>
+      <button type="button" class="real" id="real" aria-pressed="false"
+              title="Mesma distância para todos: compare o tamanho real das embalagens">
+        <span class="sw"></span>Tamanho real</button>
+    </div>
+  </header>
+
+  <section class="stage" id="stage" aria-roledescription="carrossel">
+    <div class="chao"></div>
+    <div class="dica" id="dica">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>
+      Arraste para girar a embalagem
+    </div>
+  </section>
+
+  <section class="base">
+    <div class="info" aria-live="polite">
+      <span class="num"><b id="n">01</b> / <span id="total">11</span> · <span id="cat"></span></span>
+      <span class="nome" id="nome"></span>
+      <span class="desc" id="desc"></span>
+      <span class="med" id="med"></span>
+    </div>
+    <div class="acoes">
+      <button class="nav" id="prev" type="button" aria-label="Produto anterior">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="thumbs" id="thumbs" role="group" aria-label="Escolha o produto"></div>
+      <button class="nav" id="next" type="button" aria-label="Próximo produto">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+      <a class="ar" id="ar" href="./" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/>
+          <path d="M12 6.6l4.6 2.7v5.4L12 17.4l-4.6-2.7V9.3z"/><path d="M7.4 9.3 12 12l4.6-2.7M12 12v5.4"/></svg>
+        <span id="arTxt">Ver no balcão</span></a>
+      <div class="pop" id="pop" hidden>
+        <div class="qr" id="qr"></div>
+        <div><strong>Aponte o celular</strong>
+          <p>A câmera abre a embalagem em tamanho real, em cima da sua mesa ou do balcão da loja.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script type="module">
+const PROD = window.FTW_PRODUTOS;
+const P = new URLSearchParams(location.search);
+const PUBLICO = (id) => `https://projetos.75lab.com.br/ar/ftw-vitrine/?produto=${id}`;
+const movel = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+  || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const $ = (s) => document.querySelector(s);
+const app = $('#app'), stage = $('#stage');
+$('#total').textContent = String(PROD.length).padStart(2, '0');
+if (P.get('fundo') === 'escuro') document.body.classList.add('escuro');
+
+let atual = Math.max(0, PROD.findIndex((p) => p.id === P.get('produto')));
+let modo = P.get('modo') === 'todos' ? 'todos' : 'vitrine';
+let real = P.get('escala') === 'real';
+
+const slots = PROD.map((p, i) => {
+  const s = document.createElement('div');
+  s.className = 'slot';
+  s.innerHTML = `<model-viewer src="${p.id}.glb?v=1" ios-src="${p.id}.usdz?v=1"
+    poster="${p.id}-poster.webp?v=1" alt="${p.nome} da FTW em 3D"
+    camera-controls disable-zoom disable-pan touch-action="pan-y" interaction-prompt="none"
+    camera-orbit="-18deg 80deg auto" min-camera-orbit="auto 25deg auto" max-camera-orbit="auto 95deg 3m"
+    field-of-view="23deg" shadow-intensity="1" shadow-softness="0.85"
+    environment-image="neutral" exposure="0.92" loading="eager" reveal="auto"></model-viewer>
+    <div class="cap"><b>${p.nome.replace(/ \d.*$/, '')}</b><small>${p.cat}</small></div>`;
+  let x0 = 0, y0 = 0;
+  s.addEventListener('pointerdown', (e) => { x0 = e.clientX; y0 = e.clientY; }, true);
+  s.addEventListener('pointerup', (e) => {
+    if (Math.hypot(e.clientX - x0, e.clientY - y0) > 6) { esconderDica(); return; }
+    if (i !== atual) ir(i);
+    else if (modo === 'todos') trocarModo('vitrine');
+  }, true);
+  stage.appendChild(s);
+  return s;
+});
+
+const thumbs = PROD.map((p, i) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.title = p.nome; b.setAttribute('aria-label', p.nome);
+  b.innerHTML = `<img src="${p.id}-poster.webp?v=1" alt="">`;
+  b.addEventListener('click', () => ir(i));
+  $('#thumbs').appendChild(b);
+  return b;
+});
+
+function arrumar() {
+  const n = PROD.length, w = stage.clientWidth;
+  slots.forEach((s, i) => {
+    if (modo === 'todos') {
+      s.style.cssText = ''; s.classList.toggle('on', i === atual);
+      s.style.pointerEvents = '';
+      return;
+    }
+    let d = i - atual;
+    if (d > n / 2) d -= n;
+    if (d < -n / 2) d += n;
+    const a = Math.abs(d);
+    s.style.setProperty('--x', `${Math.sign(d) * (a ? 0.62 : 0) * w}px`);
+    s.style.setProperty('--s', a ? 0.86 : 1);
+    s.style.setProperty('--o', a ? 0 : 1);
+    s.style.setProperty('--z', 10 - a);
+    s.style.pointerEvents = a ? 'none' : '';
+    s.classList.toggle('on', a === 0);
+  });
+}
+
+function escala() {
+  // tamanho real: mesma distancia de camera para todos, para comparar as embalagens
+  slots.forEach((s) => {
+    const mv = s.querySelector('model-viewer');
+    if (real) { mv.setAttribute('camera-orbit', '-18deg 80deg 0.62m'); mv.setAttribute('field-of-view', '22deg'); }
+    else { mv.setAttribute('camera-orbit', '-18deg 80deg auto'); mv.setAttribute('field-of-view', '26deg'); }
+  });
+  $('#real').setAttribute('aria-pressed', String(real));
+}
+
+function pintar() {
+  const p = PROD[atual];
+  $('#n').textContent = String(atual + 1).padStart(2, '0');
+  $('#cat').textContent = p.cat;
+  $('#nome').textContent = p.nome;
+  $('#desc').textContent = p.desc;
+  $('#med').textContent = `Diâmetro × altura de referência: ${p.med}`;
+  thumbs.forEach((b, i) => b.setAttribute('aria-current', String(i === atual)));
+  thumbs[atual].scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+  const mv = slots[atual].querySelector('model-viewer');
+  const a = $('#ar');
+  if (movel) { a.href = '#'; a.onclick = (e) => { e.preventDefault(); mv.activateAR(); }; $('#pop').hidden = true; }
+  else { a.href = '#'; a.onclick = (e) => { e.preventDefault(); qr(); }; }
+}
+
+let qrPronto = null;
+function qr() {
+  const pop = $('#pop');
+  if (!pop.hidden) { pop.hidden = true; return; }
+  const url = PUBLICO(PROD[atual].id);
+  if (qrPronto !== url) {
+    $('#qr').innerHTML = '';
+    if (window.QRCode) { new window.QRCode($('#qr'), { text: url, width: 180, height: 180, correctLevel: 1 }); qrPronto = url; }
+  }
+  pop.hidden = false;
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.acoes')) $('#pop').hidden = true;
+});
+
+let dicaFora = false;
+function esconderDica() { if (!dicaFora) { dicaFora = true; $('#dica').style.opacity = '0'; } }
+
+function ir(i) { atual = (i + PROD.length) % PROD.length; arrumar(); pintar(); $('#pop').hidden = true; }
+function trocarModo(m) {
+  modo = m; app.classList.toggle('todos', m === 'todos');
+  document.querySelectorAll('[data-modo]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.modo === m)));
+  arrumar();
+}
+
+document.querySelectorAll('[data-modo]').forEach((b) => b.addEventListener('click', () => trocarModo(b.dataset.modo)));
+$('#real').addEventListener('click', () => { real = !real; escala(); });
+$('#prev').addEventListener('click', () => ir(atual - 1));
+$('#next').addEventListener('click', () => ir(atual + 1));
+addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') ir(atual + 1);
+  else if (e.key === 'ArrowLeft') ir(atual - 1);
+});
+addEventListener('resize', arrumar);
+trocarModo(modo); escala(); arrumar(); pintar();
+setTimeout(esconderDica, 7000);
+</script>
+</body>
+</html>
