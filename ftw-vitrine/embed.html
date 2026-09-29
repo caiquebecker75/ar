@@ -37,6 +37,7 @@ body.escuro{background:var(--ink);color:var(--paper);--line:rgba(242,241,233,.2)
 button,a{font:inherit;color:inherit;cursor:pointer;border:0;background:none;text-decoration:none}
 [hidden]{display:none!important}
 .app{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto;padding:var(--gap) calc(var(--gap)*1.25);gap:calc(var(--gap)*.5)}
+.app.sem-topo{grid-template-rows:minmax(0,1fr) auto}
 
 /* ---------- topo: marca ---------- */
 .top{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
@@ -205,7 +206,10 @@ const $ = (s) => document.querySelector(s);
 const app = $('#app'), stage = $('#stage');
 $('#total').textContent = String(PROD.length).padStart(2, '0');
 if (P.get('fundo') === 'escuro') document.body.classList.add('escuro');
-if (P.get('cabecalho') === '0') document.querySelector('.top').hidden = true;
+if (P.get('cabecalho') === '0') {
+  document.querySelector('.top').hidden = true;
+  app.classList.add('sem-topo');   // o header sai do grid: as faixas mudam de tres para duas
+}
 
 let atual = Math.max(0, PROD.findIndex((p) => p.id === P.get('produto')));
 let modo = P.get('modo') === 'todos' ? 'todos' : 'vitrine';
