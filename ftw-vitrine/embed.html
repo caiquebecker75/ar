@@ -125,6 +125,19 @@ body.escuro .pop{background:var(--ink);border-color:var(--paper)}
   .base{gap:10px}
   .info .desc{display:none}
 }
+/* incorporado numa apresentacao a altura e curta: o pe nao pode comer o palco */
+@media (max-height:600px){
+  .app{gap:6px;padding:8px 12px}
+  .base{flex-wrap:nowrap;align-items:center;padding-top:7px;gap:10px}
+  .info{min-width:0;flex:1}
+  .info .desc{display:none}
+  .info .nome{font-size:clamp(14px,2.4vmin,19px)}
+  .thumbs button{width:34px;height:34px;flex:0 0 34px}
+  .ar{padding:8px 12px;font-size:10px}
+  .nav{width:26px;height:26px}
+  .dica{display:none}
+  h1{font-size:clamp(15px,3vmin,22px)}
+}
 @media (prefers-reduced-motion:reduce){.slot{transition:none}}
 </style>
 </head>
