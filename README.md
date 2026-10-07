@@ -222,7 +222,11 @@ cada defeito abaixo só apareceu nessa comparação.
     Para achar esse tipo de coisa: `BAKE_DEBUG=1` grava cor e luz separadas (`<atlas>_cor.npy`, `_luz.npy`).
 13. **Fita de LED longa** vira ilha em laço: `--pack-forma=CONCAVE` (por caixa, o laço come o atlas). A luz assada
     usa suavização normalizada pela máscara das ilhas (o preto de fora não vaza para ilha pequena).
-14. O Blender às vezes trava ao abrir a cena (nó Realize Instances com relações quebradas): o `prep.sh` mata e
+14. **Memória do iPhone:** cada textura 4096 ocupa ~85 MB de memória de vídeo. Com 17 atlas em 4096 o Safari do
+    iPhone fechava a aba ("Um problema ocorreu repetidamente"). `texturas-web.mjs` deixa a cor em 2048 e a
+    rugosidade em 512 (~400 MB): GLB de 20 MB e USDZ de 55 MB. Somar a memória de textura antes de publicar
+    (o script imprime `memoria_textura_mb`; o GLB antigo do stand da NGV dá ~1,7 GB e também merece revisão).
+15. O Blender às vezes trava ao abrir a cena (nó Realize Instances com relações quebradas): o `prep.sh` mata e
     tenta de novo se a cena não for avaliada em 90 s.
 
 ## Luz assada (padrão de qualidade: igual ao "Viewport Shading: Rendered" do Blender)
