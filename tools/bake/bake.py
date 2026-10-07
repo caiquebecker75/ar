@@ -101,6 +101,7 @@ def vidro_nao_bloqueia():
     n = 0
     for m in bpy.data.materials:
         if not m.use_nodes: continue
+        if m.get("recorte"): continue   # folha com recorte (prep_blend --recorte): faz sombra recortada, não é vidro
         nt = m.node_tree
         tipos = {x.type for x in nt.nodes}
         transm = False
@@ -150,6 +151,60 @@ def salvar_rugosidade(o, px):
     log(f"  rugosidade média {float(r[..., 0].mean()):.2f}", caminho_r)
     bpy.data.images.remove(rug); bpy.data.images.remove(rb)
 
+def fonte_alfa(m):
+    """Socket que dá a opacidade da folha: entrada Alpha do Principled ou o fator de um Mix com Transparent BSDF.
+    Devolve (socket, inverter) ou (None, valor fixo)."""
+    nt = m.node_tree
+    for x in nt.nodes:
+        if x.type == 'MIX_SHADER':
+            a, b = x.inputs[1], x.inputs[2]
+            ta = a.is_linked and a.links[0].from_node.type == 'BSDF_TRANSPARENT'
+            tb = b.is_linked and b.links[0].from_node.type == 'BSDF_TRANSPARENT'
+            if (ta or tb) and x.inputs[0].is_linked:
+                return x.inputs[0].links[0].from_socket, tb   # Transparent na 2a entrada: opacidade = 1 - fator
+    for x in nt.nodes:
+        if x.type == 'BSDF_PRINCIPLED' and x.inputs['Alpha'].is_linked:
+            return x.inputs['Alpha'].links[0].from_socket, False
+    return None, 1.0
+
+def bake_alfa(obj, px):
+    """Assa a opacidade das folhas (EMIT) no UV de bake: branco = folha, preto = recorte."""
+    guarda = [s.material for s in obj.material_slots]
+    temps = []
+    for s in obj.material_slots:
+        m = s.material
+        if not m: continue
+        t = m.copy(); temps.append(t); nt = t.node_tree
+        saida = next(x for x in nt.nodes if x.type == 'OUTPUT_MATERIAL' and x.is_active_output) if any(x.type == 'OUTPUT_MATERIAL' and x.is_active_output for x in nt.nodes) else next(x for x in nt.nodes if x.type == 'OUTPUT_MATERIAL')
+        em = nt.nodes.new("ShaderNodeEmission")
+        sock, inv = fonte_alfa(m) if m.get("recorte") else (None, 1.0)
+        # o socket veio do material original: acha o equivalente na cópia pelo nome do nó
+        if sock is not None:
+            no = nt.nodes[sock.node.name]; sk = no.outputs[sock.identifier] if sock.identifier in no.outputs else no.outputs[sock.name]
+            if inv:
+                mt = nt.nodes.new("ShaderNodeMath"); mt.operation = 'SUBTRACT'; mt.inputs[0].default_value = 1.0
+                nt.links.new(sk, mt.inputs[1]); sk = mt.outputs[0]
+            nt.links.new(sk, em.inputs['Color'])
+        else:
+            em.inputs['Color'].default_value = (1, 1, 1, 1)
+        em.inputs['Strength'].default_value = 1.0
+        for l in list(saida.inputs['Surface'].links): nt.links.remove(l)
+        nt.links.new(em.outputs[0], saida.inputs['Surface'])
+        s.material = t
+    try:
+        img = bake(obj, 'EMIT', set(), px, 1, 16 if px >= 4096 else 8)
+    finally:
+        for s, m in zip(obj.material_slots, guarda): s.material = m
+        for t in temps: bpy.data.materials.remove(t)
+    A = pixels(img)[..., 0]
+    st8 = bpy.data.images.new(f"{obj.name}_alfa8", px, px, alpha=False, float_buffer=False)
+    st8.colorspace_settings.name = 'Non-Color'
+    st8.pixels.foreach_set(np.dstack([A, A, A, np.ones_like(A)]).clip(0, 1).ravel().astype(np.float32))
+    caminho = os.path.join(PASTA, f"{obj.name}_alfa.png")
+    st8.filepath_raw = caminho; st8.file_format = 'PNG'; st8.save()
+    log(f"  alfa: {float((A > 0.5).mean()) * 100:.0f}% opaco", caminho)
+    bpy.data.images.remove(img); bpy.data.images.remove(st8)
+
 atlas = [o for o in sc.objects if o.type == 'MESH' and o.name.startswith("ATLAS_") and (not SO or o.name in SO.split(","))]
 for o in atlas:
     px = int(o.get("atlas_px", 4096))
@@ -158,7 +213,8 @@ for o in atlas:
         a = a[..., :3]; nz = (a.max(-1) > 1e-6).mean()
         log(f"  STAT {n}: media={a.mean():.4f} max={a.max():.3f} preenchido={nz*100:.1f}%")
     o.data.uv_layers.active = o.data.uv_layers["bake"]
-    o.data.uv_layers["UVMap"].active_render = True
+    # UV original (o dos materiais): o primeiro que não é o de bake. Nem sempre se chama "UVMap" (asset comprado)
+    (o.data.uv_layers.get("UVMap") or next(u for u in o.data.uv_layers if u.name != "bake")).active_render = True
     bpy.ops.object.select_all(action='DESELECT')
     o.select_set(True); bpy.context.view_layer.objects.active = o
 
@@ -191,7 +247,12 @@ for o in atlas:
     st("cor", pixels(cor)); st("emissao", pixels(emi)); st("luz", pixels(luz))
     # luz: suaviza no tamanho do bake e amplia para o tamanho do atlas
     L = pixels(luz)[..., :3]
-    L = np.stack([suavizar(L[..., c], 1.4) for c in range(3)], -1)
+    # suavização normalizada: borra luz e máscara das ilhas e divide. Sem isso o preto de fora das ilhas
+    # vaza para dentro das pequenas (no atlas com fita de LED do stand Alltak, o mostruário saiu preto)
+    msk = (L.max(-1) > 1e-6).astype(np.float32)
+    mb = suavizar(msk, 1.4)
+    L = np.stack([suavizar(L[..., c] * msk, 1.4) for c in range(3)], -1) / np.maximum(mb, 1e-4)[..., None]
+    L = np.where(mb[..., None] > 1e-3, L, 0)   # vale também na faixa vizinha: a ampliação não puxa preto na borda
     luz.pixels.foreach_set(np.dstack([L, np.ones(L.shape[:2])]).ravel().astype(np.float32))
     luz.scale(px, px)
     L = pixels(luz)[..., :3]
@@ -199,6 +260,10 @@ for o in atlas:
 
     if LUZ_GANHO != 1.0: L = L * LUZ_GANHO
     if LUZ_MINIMA > 0: L = np.maximum(L, LUZ_MINIMA)
+    if os.environ.get("BAKE_DEBUG"):
+        # depuração: grava cor e luz separadas (np.save) para achar qual das duas zera um trecho
+        np.save(os.path.join(PASTA, f"{o.name}_cor.npy"), pixels(cor)[..., :3].astype(np.float16))
+        np.save(os.path.join(PASTA, f"{o.name}_luz.npy"), L.astype(np.float16))
     final = pixels(cor)[..., :3] * L + pixels(emi)[..., :3]
     out = bpy.data.images.new(f"{o.name}_final", px, px, alpha=False, float_buffer=True)
     out.colorspace_settings.name = 'Linear Rec.709'
@@ -211,6 +276,7 @@ for o in atlas:
     log("  salvo", caminho, os.path.getsize(caminho) // 1024, "KB")
 
     salvar_rugosidade(o, px)
+    if o.get("recorte"): bake_alfa(o, px)
     for img in (cor, emi, luz, out): bpy.data.images.remove(img)
 
 log("fim")

@@ -17,7 +17,10 @@ usdc = os.path.join(tmp, "modelo.usdc")
 bpy.ops.wm.usd_export(filepath=usdc, selected_objects_only=False, export_materials=True,
     generate_preview_surface=True, export_textures_mode='NEW', convert_orientation=True,
     export_global_forward_selection='NEGATIVE_Z', export_global_up_selection='Y',
-    export_animation=False, export_uvmaps=True, export_normals=False)
+    export_animation=False, export_uvmaps=True,
+    # --normais: superfície curva grande (fita da testeira) sem normal sai facetada no Quick Look, porque parte
+    # da cor do material assado depende da luz do lugar (BAKE_COR_AMBIENTE)
+    export_normals="--normais" in _args)
 
 # Ajuste que o exportador do Blender não faz: acrílico com transparência (ele grava opacidade 1).
 # Os materiais assados mantêm rugosidade e reflexo: no AR o ambiente real reflete no balcão, no acrílico etc.
@@ -27,6 +30,18 @@ for prim in st.Traverse():
     sh = UsdShade.Shader(prim)
     if not sh or sh.GetIdAttr().Get() != "UsdPreviewSurface": continue
     sh.CreateInput("metallic", Sdf.ValueTypeNames.Float).Set(0.0)
+    if "BAKE_folha" in str(prim.GetPath()):
+        # folha (prep_blend --recorte): opacidade = alfa da textura de cor, com corte (Quick Look: opacityThreshold)
+        fonte = None
+        for nome in ("diffuseColor", "emissiveColor"):
+            ent = sh.GetInput(nome)
+            fonte = ent.GetConnectedSource() if ent and ent.HasConnectedSource() else None
+            if fonte: break
+        if fonte:
+            tex = UsdShade.Shader(fonte[0].GetPrim())
+            tex.CreateOutput("a", Sdf.ValueTypeNames.Float)
+            sh.CreateInput("opacity", Sdf.ValueTypeNames.Float).ConnectToSource(tex.ConnectableAPI(), "a")
+            sh.CreateInput("opacityThreshold", Sdf.ValueTypeNames.Float).Set(0.5)
     if "ACRILICO" in str(prim.GetPath()):
         sh.CreateInput("opacity", Sdf.ValueTypeNames.Float).Set(0.22)
         sh.CreateInput("roughness", Sdf.ValueTypeNames.Float).Set(0.05)

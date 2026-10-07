@@ -259,6 +259,10 @@ function closedOutward(prim) {
   for (const c of edges.values()) if (c !== 2) return false;
   return volume > 0;
 }
+// --verso-so=REGEX: verso só nos materiais cujo nome casa (ambiente grande com luz assada: quase tudo é sólido
+// com espessura e só a folhagem com recorte precisa dos dois lados; duplicar tudo dobraria 900 mil triângulos)
+const VERSO_SO = process.argv.find((a) => a.startsWith('--verso-so='))?.split('=').slice(1).join('=');
+if (VERSO_SO) for (const m of root.listMaterials()) if (!new RegExp(VERSO_SO).test(m.getName())) m.setDoubleSided(false);
 const doubleSided = NO_VERSO ? [] : root.listMaterials().filter((m) => m.getDoubleSided());
 const versoStats = { comVerso: 0, fechadas: 0 };
 for (const mesh of bakedMeshes()) for (const prim of mesh.listPrimitives()) {

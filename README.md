@@ -24,6 +24,7 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `mars-display-polionda/` | Mars Petcare, Display Polionda Whiskas & Pedigree (4 prateleiras, com produtos) | 147 × 33 × 45 cm |
 | `panasonic-modulo-lavanderia/` | Panasonic, Módulo de Lavanderia (projeto P09426 R06, com tela de LED e as duas lavadoras) | 145 × 178 × 99 cm |
 | `ngv-stand-conexao-farma/` | NGV Ecossistema, stand Conexão Farma 2027 (Abradilan) | 3 × 8 × 5 m (ambiente inteiro) |
+| `alltak-stand-revest-facil/` | Alltak, stand Revest Fácil (projeto P09626 R02): com testeira (`display`) e sem testeira (`sem-testeira`), luz assada, folhagem com recorte, modo imersivo | 6,8 × 12 × 7 m |
 | `savencia-clipstrip-frescatino/` | Savencia, Clip Strip Frescatino | 70 × 10 × 6 cm |
 | `savencia-display-pp-polenguinho/` | Savencia, Display PP Polenguinho (Update) | 140 × 18 × 24 cm |
 | `savencia-display-m-polenguinho/` | Savencia, Display M Polenguinho (Update, largo, sem produtos) | 140 × 36 × 24 cm |
@@ -181,6 +182,48 @@ O stand da NGV veio do Blender com ~2,7 milhões de triângulos e 170 MB. O que 
    o modelo com a geometria real (paredes, portas, pessoas) e não há parâmetro para desligar. Uma cúpula
    virtual em volta do stand não resolve: as paredes reais estão mais perto que ela e aparecem por cima.
    O parâmetro `&file=` do `usdz.html` ficou dessa tentativa (converte `<file>.glb` → `<file>.usdz`).
+
+## Stand do .blend com arquivos linkados: o que aprendemos no stand Alltak Revest Fácil
+
+Cena do projetista com 5 `.blend` linkados (mostruário, balcões, mesas), assets comprados e 9,5 milhões de
+triângulos. Receita completa em `.work/alltak-stand/` (`pre.py`, `prep.sh`, `finaliza.sh`). Sempre conferir o
+`prep.blend` com um render do Cycles pela câmera do projetista **antes** do bake (`render_check.py`, `closeup.py`):
+cada defeito abaixo só apareceu nessa comparação.
+
+1. **Versão do Blender:** abrir com a mesma versão que salvou (`bpy.data.version`). O 5.2 fica em
+   `/Volumes/hd caique becker/Mac Caique/Apps/Blender-5.2/`.
+2. **Avaliar como no RENDER, não como na viewport:** o `prep_blend.py` usa um motor de render "falso" que recebe o
+   depsgraph de render (esconder no render dentro de coleção linkada, modificador só de render).
+3. **`new_from_object(preserve_all_data_layers=True)` reavalia os modificadores** numa cópia e erra: o boolean do
+   recorte da cartela não acontece, o array de nós vai para outro lugar e o UV muda. Na captura, `False`.
+   Já ao aplicar a redução (malha simples + decimate) é o contrário: sem `True` só o UV ativo é interpolado.
+4. **Coordenadas que dependem do objeto** (`tools/bake/coords_originais.py`): Texture Coordinate Object e
+   Generated, textura procedural sem vetor ligado e Geometry > Random Per Island (cores das cartelas) viram atributos
+   gravados antes de juntar o atlas. O Random Per Island replica o algoritmo do Cycles (teste pixel a pixel: idêntico).
+5. **UV de render com outro nome** (`automap`, `LayerUV_0`): o atlas junta camadas pelo nome. O UV que a peça usa no
+   render passa a se chamar `UVMap` (`normalizar_uv`), senão sai folha branca e mármore sem desenho.
+6. **Peça duplicada no mesmo lugar** (coleção instanciada que puxa a peça por dois caminhos): no render não aparece,
+   em malha as duas se sombreiam (pontas escuras na testeira). A captura descarta duplicatas exatas.
+7. **Dissolução planar em superfície curva subdividida** junta tudo em polígonos enormes e não planos (madeira
+   preta e quadriculada). Com `--colapso-densidade=15000`, só peça densa (planta, ferramenta, banqueta) é reduzida;
+   a redução final é do `compacta-glb` (erro limitado, não fecha furo).
+8. **Caminho relativo das bibliotecas** quebra quando o `prep.blend` fica atrás de um symlink (`~/ar-75lab` aponta
+   para o HD): o Cycles desenha o xadrez de imagem faltando. O `prep_blend` grava caminhos absolutos e reais.
+9. **Folhagem com recorte** (`--recorte=REGEX`): atlas próprio, alfa assado (`bake.py`), textura RGBA com
+   alphaMode MASK (`export.py`), `texturas-alfa.mjs` (PNG com paleta, 2048) e `opacityThreshold` no USDZ. Raleio
+   por área (`--folha-tri-m2`), nunca menos que o limite por área (fronde de palmeira é uma parte só).
+10. **Recorte em grade de 25 cm** (refazer UV por costuras) picota painéis curvos e o bake sai manchado:
+    `--refazer-uv-abaixo=0.15`.
+11. **Tamanho:** `draco-glb.mjs` no GLB da web (o model-viewer e o Scene Viewer leem Draco; o modo imersivo usa
+    `vendor/three/.../DRACOLoader.js`). No USDZ, `--verso-so=BAKE_folha` no `prepare-glb` (só folha ganha verso).
+12. **Peça espelhada (escala negativa) como primeira do atlas:** as outras entram com a normal para dentro e o bake de
+    luz sai preto (no render o Cycles desenha o verso e esconde o defeito). O `prep_blend` aplica a matriz em cada
+    malha antes de juntar (atlas com transformação identidade), invertendo a normal quando a matriz espelha.
+    Para achar esse tipo de coisa: `BAKE_DEBUG=1` grava cor e luz separadas (`<atlas>_cor.npy`, `_luz.npy`).
+13. **Fita de LED longa** vira ilha em laço: `--pack-forma=CONCAVE` (por caixa, o laço come o atlas). A luz assada
+    usa suavização normalizada pela máscara das ilhas (o preto de fora não vaza para ilha pequena).
+14. O Blender às vezes trava ao abrir a cena (nó Realize Instances com relações quebradas): o `prep.sh` mata e
+    tenta de novo se a cena não for avaliada em 90 s.
 
 ## Luz assada (padrão de qualidade: igual ao "Viewport Shading: Rendered" do Blender)
 

@@ -13,7 +13,7 @@ sc = bpy.context.scene
 # aparecer cinza. 0 = só emissão (comportamento antigo).
 COR_AMBIENTE = float(os.environ.get("BAKE_COR_AMBIENTE", "0.45"))
 
-def material_assado(nome, imagem, rugosidade=None):
+def material_assado(nome, imagem, rugosidade=None, recorte=False):
     m = bpy.data.materials.new(nome)
     m.use_nodes = True
     nt = m.node_tree
@@ -39,7 +39,25 @@ def material_assado(nome, imagem, rugosidade=None):
         tr = nt.nodes.new("ShaderNodeTexImage"); tr.image = rugosidade
         nt.links.new(uv.outputs["UV"], tr.inputs["Vector"])
         nt.links.new(tr.outputs["Color"], p.inputs["Roughness"])
+    if recorte:
+        # folha (prep_blend --recorte): alfa da própria textura -> Round -> Alpha = alphaMode MASK (corte 0,5) no glTF
+        rd = nt.nodes.new("ShaderNodeMath"); rd.operation = 'ROUND'
+        nt.links.new(tex.outputs["Alpha"], rd.inputs[0]); nt.links.new(rd.outputs[0], p.inputs["Alpha"])
+        m.use_backface_culling = False
     return m
+
+def com_alfa(jpg, png, nome):
+    """Junta a cor assada (JPEG) e o alfa assado (PNG cinza) numa textura RGBA PNG."""
+    import numpy as np
+    def px(img):
+        a = np.empty(img.size[0] * img.size[1] * 4, dtype=np.float32); img.pixels.foreach_get(a); return a.reshape(-1, 4)
+    a = bpy.data.images.load(png); a.colorspace_settings.name = 'Non-Color'
+    c = px(jpg); c[:, 3] = px(a)[:, 0]
+    out = bpy.data.images.new(nome, jpg.size[0], jpg.size[1], alpha=True)
+    out.pixels.foreach_set(c.ravel())
+    out.filepath_raw = os.path.join(PASTA, "bake", nome + ".png"); out.file_format = 'PNG'; out.save()
+    bpy.data.images.remove(a)
+    return out
 
 acrilico = bpy.data.materials.new("ACRILICO")
 acrilico.use_nodes = True
@@ -55,6 +73,7 @@ def translucido(m):
     """Vidro e acrílico não têm cor difusa: no bake saem pretos. Reconhece pelo material original
     (transmissão ou alfa), além do nome antigo Material.009 do stand da NGV."""
     if not m: return False
+    if m.get("recorte"): return False   # folha com recorte: vai como textura com alfa, não como acrílico
     if m.name.startswith("Material.009"): return True
     if not m.use_nodes: return False
     # vidro puro (Glass/Refraction/Transparent BSDF) não tem cor difusa nenhuma
@@ -83,7 +102,10 @@ for o in list(sc.objects):
     caminho = os.path.join(PASTA, "bake", f"{o.name}.jpg")
     img = bpy.data.images.load(caminho)
     cr = os.path.join(PASTA, "bake", f"{o.name}_rug.png")
-    assado = material_assado(f"BAKE_{o.name[6:]}", img, bpy.data.images.load(cr) if os.path.exists(cr) else None)
+    ca = os.path.join(PASTA, "bake", f"{o.name}_alfa.png")
+    rec = bool(o.get("recorte")) and os.path.exists(ca)
+    if rec: img = com_alfa(img, ca, f"{o.name}_rgba")
+    assado = material_assado(f"BAKE_{o.name[6:]}", img, bpy.data.images.load(cr) if os.path.exists(cr) else None, recorte=rec)
     for slot in o.material_slots:
         slot.material = acrilico if translucido(slot.material) else assado
     # só o UV de bake segue para o GLB

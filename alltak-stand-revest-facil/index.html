@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stand Alltak Revest Fácil | AR 75 LAB</title>
+<meta name="description" content="Entre no stand Alltak Revest Fácil em realidade aumentada, em tamanho real.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F3F4EE">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://projetos.75lab.com.br/ar/alltak-stand-revest-facil/">
+<meta property="og:title" content="Stand Alltak Revest Fácil">
+<meta property="og:description" content="Toque para entrar no stand em realidade aumentada, em tamanho real.">
+<meta property="og:image" content="https://projetos.75lab.com.br/ar/alltak-stand-revest-facil/og.jpg?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%23C0EE4E'/%3E%3Cg stroke='%230E1110' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5.9 8.5l12.2 7M18.1 8.5l-12.2 7'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Lexend:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/ar.css?v=3">
+<style>
+  /* modo imersivo: link secundário abaixo do botão principal */
+  .imersivo { margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; }
+  .imersivo svg { width: 20px; height: 20px; flex: none; }
+  .imersivo-nota { font-size: 12px; font-weight: 300; line-height: 1.4; color: var(--ink3); text-align: center; margin-top: 6px; }
+</style>
+<script>(function(){if(location.protocol==='http:'&&!/^(localhost|127\.)/.test(location.hostname))location.replace('https://'+location.host+location.pathname+location.search+location.hash);var u=navigator.userAgent,m=/Android|iPhone|iPad|iPod/i.test(u)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);document.documentElement.classList.add(m?'is-mobile':'is-desktop')})()</script>
+<script type="module" src="../vendor/model-viewer.min.js"></script>
+<script defer src="../vendor/qrcode.min.js"></script>
+<script type="module" src="../assets/ar.js?v=3"></script>
+<!-- modelos desta página: o primeiro é o que abre sem ?modelo= -->
+<script type="application/json" id="modelos">
+[
+  { "id": "testeira", "nome": "stand com testeira", "alt": "Stand Alltak Revest Fácil com a testeira suspensa, em 3D",
+    "src": "display.glb?v=1", "ios": "display.usdz?v=1", "poster": "display-poster.webp?v=1" },
+  { "id": "sem-testeira", "nome": "stand sem testeira", "alt": "Stand Alltak Revest Fácil sem a testeira, para ver de cima, em 3D",
+    "src": "sem-testeira.glb?v=1", "ios": "sem-testeira.usdz?v=1", "poster": "sem-testeira-poster.webp?v=1",
+    "camera": { "orbita": "-20deg 35deg auto" } }
+]
+</script>
+</head>
+<body>
+<main class="app">
+  <header class="top">
+    <div class="brand">75<em>LAB</em></div>
+    <div class="tag">Realidade aumentada</div>
+  </header>
+
+  <section class="intro">
+    <div class="eyebrow">Alltak · Revest Fácil</div>
+    <h1>Stand <b>Alltak</b></h1>
+    <div class="dims" aria-label="Medidas">
+      <span>Frente<b>12 m</b></span><span>Profundidade<b>7 m</b></span><span>Altura<b>6,8 m</b></span>
+    </div>
+    <div class="modelos" role="group" aria-label="Escolha a versão do stand">
+      <button type="button" data-modelo="testeira" aria-pressed="true" class="on">
+        <img src="display-poster.webp?v=1" alt="" width="40" height="50">
+        <span><b>Com testeira</b><small>como no evento</small></span>
+      </button>
+      <button type="button" data-modelo="sem-testeira" aria-pressed="false">
+        <img src="sem-testeira-poster.webp?v=1" alt="" width="40" height="50">
+        <span><b>Sem testeira</b><small>para ver de cima</small></span>
+      </button>
+    </div>
+  </section>
+
+  <section class="stage">
+    <model-viewer
+      alt="Stand Alltak Revest Fácil em 3D"
+      ar ar-modes="webxr scene-viewer quick-look" ar-scale="auto" ar-placement="floor" xr-environment
+      camera-controls auto-rotate auto-rotate-delay="3000" rotation-per-second="8deg"
+      camera-orbit="-25deg 68deg auto" min-camera-orbit="auto 0deg auto" max-camera-orbit="auto 88deg auto"
+      interaction-prompt="none" shadow-intensity="0.8" shadow-softness="1"
+      environment-image="../assets/hdr/abandoned-hall.hdr" exposure="1" tone-mapping="none" loading="eager">
+      <button slot="ar-button" hidden></button>
+      <div slot="progress-bar"></div>
+      <div slot="ar-prompt" class="ar-prompt">Aponte para o <b>chão</b> e mova o celular devagar</div>
+    </model-viewer>
+    <div class="drag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>Arraste para girar · pinça para aproximar</div>
+    <div class="progress"><i></i></div>
+  </section>
+
+  <section class="dock">
+    <div id="panel-ar">
+      <button class="cta" id="cta" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M12 6.6l4.6 2.7v5.4L12 17.4l-4.6-2.7V9.3z"/><path d="M7.4 9.3 12 12l4.6-2.7M12 12v5.4"/></svg>
+        <span>Ver no meu espaço</span>
+      </button>
+      <p class="hint">Abre em <b>tamanho real</b>. Faça <b>pinça</b> para diminuir e ver o stand como maquete.</p>
+      <a class="ghost imersivo" href="imersivo.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>Modo imersivo</span>
+      </a>
+      <p class="imersivo-nota">Sem câmera: só o stand em 3D, sem a sala em volta.</p>
+    </div>
+
+    <div id="panel-noar" hidden>
+      <div class="note">
+        <strong>Abra no navegador</strong>
+        Para entrar no stand em realidade aumentada, abra este link no <b>Safari</b> (iPhone) ou no <b>Chrome</b> (Android).
+      </div>
+      <button class="ghost" id="copy" type="button">Copiar link</button>
+      <a class="ghost imersivo" href="imersivo.html"><span>Modo imersivo</span></a>
+    </div>
+
+    <div id="panel-desktop" hidden>
+      <div class="qrcard">
+        <div class="qr" id="qr"></div>
+        <div>
+          <strong>Entre no stand</strong>
+          <p>Aponte a câmera do celular para o código e escolha <b>Ver no meu espaço</b> ou <b>Modo imersivo</b>.</p>
+        </div>
+      </div>
+      <ol class="steps">
+        <li><span>1</span>Abra o link no celular, iPhone ou Android. O arquivo é grande: prefira Wi-Fi.</li>
+        <li><span>2</span>Ver no meu espaço: o stand aparece em tamanho real no chão. Com pinça, diminua para ver como maquete.</li>
+        <li><span>3</span>Sem testeira: a versão para olhar o stand de cima, como a planta.</li>
+      </ol>
+      <a class="ghost imersivo" href="imersivo.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>Abrir o modo imersivo aqui</span>
+      </a>
+    </div>
+
+    <div id="panel-erro" hidden>
+      <div class="note"><strong>Não carregou</strong>Não foi possível carregar o stand. Verifique a conexão e recarregue a página.</div>
+    </div>
+  </section>
+
+  <footer class="foot">Projeto 75 LAB para Alltak · Revest Fácil · Visualização em realidade aumentada</footer>
+</main>
+<div class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
