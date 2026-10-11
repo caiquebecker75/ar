@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Projeto 75 LAB para Nutrire · Monello Power no ponto de venda</title>
+<meta name="description" content="Peças de ponto de venda do projeto Monello Power no ponto de venda para Nutrire em 3D e em realidade aumentada, em tamanho real.">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="Projeto 75 LAB para Nutrire">
+<meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-chao%2Fdisplay-chao-hero-1600.jpg?alt=media&amp;token=dc0c34bc-600a-4a00-961f-e3e132a85afd">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Space+Grotesk:wght@400;500;600&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+<script type="module" src="../vendor/model-viewer.min.js"></script>
+<script src="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fcomum%2Fqrcode.min.js?alt=media&amp;token=b21c42c4-3443-46f3-879e-1cf1572bfcc6"></script>
+<style>
+  :root { --ink: #050505; --ink2: #3a3a3d; --paper: #F2F1E9; --paper2: #E7E5DA; --lime: #C0EE4E; --teal: #01A290; --linha: rgba(5,5,5,.16); --pad: clamp(16px, 4vw, 40px); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--paper); color: var(--ink); font: 16px/1.5 'Space Grotesk', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
+  body { overflow-x: hidden; }
+  button { font: inherit; color: inherit; cursor: pointer; background: none; border: 0; }
+  a { color: inherit; }
+  .mono { font-family: 'Space Mono', ui-monospace, monospace; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: 12px; }
+  header.topo { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px var(--pad); border-bottom: 2px solid var(--linha); }
+  .marca75 { font-family: 'Big Shoulders Display', Impact, sans-serif; font-weight: 900; font-size: 26px; letter-spacing: -.01em; line-height: 1; }
+  .marca75 span { background: var(--lime); padding: 0 6px; }
+  header.topo img { height: 30px; max-width: 150px; object-fit: contain; background: var(--ink); padding: 5px 8px; }
+  .intro { padding: 18px var(--pad) 4px; max-width: 1400px; margin: 0 auto; }
+  .eyebrow { color: var(--ink2); }
+  .eyebrow b { color: var(--teal); }
+  h1 { font-family: 'Big Shoulders Display', Impact, sans-serif; font-weight: 900; text-transform: uppercase; font-size: clamp(36px, 6.2vw, 64px); line-height: 1.04; letter-spacing: -.02em; margin-top: 6px; }
+  h1 em { font-style: normal; color: var(--teal); }
+  .intro p { max-width: 640px; margin-top: 8px; color: var(--ink2); }
+  .pecas { display: flex; gap: 10px; overflow-x: auto; padding: 14px var(--pad) 6px; scroll-snap-type: x mandatory; max-width: 1400px; margin: 0 auto; scrollbar-width: thin; }
+  .pecas button { flex: 0 0 auto; width: 148px; scroll-snap-align: start; text-align: left; background: #fff; border: 2px solid var(--linha); padding: 6px; transition: transform .15s, background .15s; }
+  .pecas button img { width: 100%; height: 150px; object-fit: cover; display: block; background: var(--paper2); }
+  .pecas button b { display: block; font-family: 'Big Shoulders Display', Impact, sans-serif; font-weight: 800; text-transform: uppercase; font-size: 18px; line-height: 1.05; margin-top: 6px; }
+  .pecas button small { display: block; font-size: 12px; color: var(--ink2); margin-top: 2px; }
+  .pecas button.on { border-color: var(--ink); background: var(--lime); }
+  .pecas button:hover { transform: translate(-2px, -2px); }
+  main { display: grid; gap: 18px; padding: 10px var(--pad) 26px; max-width: 1400px; margin: 0 auto; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 980px) { main { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: start; } }
+  .palco { position: relative; border: 2px solid var(--ink); background: #fff; }
+  .abas { display: flex; border-bottom: 2px solid var(--ink); }
+  .abas button { flex: 1; padding: 12px 6px; min-height: 48px; border-right: 2px solid var(--ink); }
+  .abas button:last-child { border-right: 0; }
+  .abas button.on { background: var(--ink); color: var(--lime); }
+  .vista { display: none; }
+  .vista.on { display: block; }
+  model-viewer { width: 100%; height: min(66vh, 640px); min-height: 380px; background: #EDECE6; --poster-color: #EDECE6; }
+  .vista img, .vista video { width: 100%; height: min(66vh, 640px); min-height: 380px; object-fit: contain; display: block; background: #EDECE6; }
+  .ar-botao { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); background: var(--lime); color: var(--ink); border: 2px solid var(--ink); padding: 12px 18px; min-height: 48px; white-space: nowrap; }
+  .ar-botao:hover { transform: translate(calc(-50% - 2px), -2px); }
+  .dica { font-size: 13px; color: var(--ink2); padding: 10px 12px; border-top: 2px solid var(--linha); }
+  aside { display: grid; gap: 14px; }
+  aside h2 { font-family: 'Big Shoulders Display', Impact, sans-serif; font-weight: 900; text-transform: uppercase; font-size: clamp(34px, 5vw, 56px); line-height: 1.04; }
+  .ficha { display: grid; grid-template-columns: minmax(0, 1fr); border: 2px solid var(--linha); background: #fff; }
+  .ficha div { padding: 10px 12px; border-bottom: 2px solid var(--linha); }
+  .ficha div:last-child { border-bottom: 0; }
+  .ficha .mono { color: var(--ink2); display: block; margin-bottom: 2px; }
+  .botoes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .botao { display: inline-flex; align-items: center; gap: 8px; border: 2px solid var(--ink); padding: 12px 16px; min-height: 48px; text-decoration: none; background: #fff; }
+  .botao:hover { background: var(--lime); transform: translate(-2px, -2px); }
+  .qr { display: none; gap: 14px; align-items: center; border: 2px dashed var(--linha); padding: 12px; background: #fff; }
+  .qr div:first-child { width: 132px; height: 132px; flex: none; }
+  .qr svg { width: 132px; height: 132px; display: block; }
+  @media (min-width: 980px) { .qr { display: flex; } }
+  .aviso { background: #fff; border-left: 6px solid var(--lime); padding: 12px 14px; }
+  footer { border-top: 2px solid var(--linha); padding: 22px var(--pad) calc(26px + env(safe-area-inset-bottom)); display: grid; gap: 10px; font-size: 14px; color: var(--ink2); max-width: 1400px; margin: 0 auto; }
+  footer .whats { justify-self: start; background: var(--ink); color: var(--lime); text-decoration: none; }
+  footer .whats:hover { background: var(--lime); color: var(--ink); }
+</style>
+</head>
+<body>
+<header class="topo"><div class="marca75">75 <span>LAB</span></div><img src="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fcomum%2Flogo.png?alt=media&amp;token=a5bd2739-ae08-46db-a54c-a8f66b11ddb9" alt="Nutrire"></header>
+<section class="intro">
+  <div class="eyebrow mono"><b>(AR)</b> Projeto 75 LAB para Nutrire</div>
+  <h1>Monello Power no ponto de venda <em>em tamanho real</em></h1>
+  <p>O kit que explica o Power em 3 segundos na gôndola e no balcão. Escolha a peça, gire em 3D e veja no seu ponto de venda pelo celular, em tamanho real.</p>
+</section>
+
+<nav class="pecas" id="pecas" aria-label="Peças do projeto">
+  <button data-peca="display-chao" class="on"><img src="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-chao%2Fdisplay-chao-hero-1600.jpg?alt=media&amp;token=dc0c34bc-600a-4a00-961f-e3e132a85afd" alt="Display de chão" loading="lazy"><b>Display de chão</b><small>60 x 160 x 40 cm</small></button>
+  <button data-peca="display-balcao"><img src="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-balcao%2Fdisplay-balcao-hero-1600.jpg?alt=media&amp;token=fd476053-3c88-46b3-95c8-238c93749256" alt="Display de balcão" loading="lazy"><b>Display de balcão</b><small>40 x 50 x 30 cm</small></button>
+  <button data-peca="ponta-gondola"><img src="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fponta-gondola%2Fponta-gondola-hero-1600.jpg?alt=media&amp;token=22e21254-15f8-42d6-b514-bda0f353361c" alt="Ponta de gôndola" loading="lazy"><b>Ponta de gôndola</b><small>120 x 200 x 60 cm</small></button>
+  <button data-peca="testeira"><img src="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Ftesteira%2Ftesteira-hero-1600.jpg?alt=media&amp;token=ff6fdad1-6c89-481b-9c5e-60245d448036" alt="Testeira de gôndola" loading="lazy"><b>Testeira de gôndola</b><small>100 x 25 cm</small></button>
+  <button data-peca="stopper"><img src="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fstopper%2Fstopper-hero-1600.jpg?alt=media&amp;token=34122fec-700e-4462-b2d1-67ab9069d6f8" alt="Stopper" loading="lazy"><b>Stopper</b><small>12 x 30 cm</small></button>
+  <button data-peca="wobbler"><img src="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fwobbler%2Fwobbler-hero-1600.jpg?alt=media&amp;token=379bc2cc-989b-49fb-9a3b-e964f6d0a31f" alt="Wobbler" loading="lazy"><b>Wobbler</b><small>10 cm de diâmetro</small></button>
+  <button data-peca="adesivo-chao"><img src="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fadesivo-chao%2Fadesivo-chao-hero-1600.jpg?alt=media&amp;token=4eb5da2c-0adb-4ca8-b764-8171d9986e9d" alt="Adesivo de chão" loading="lazy"><b>Adesivo de chão</b><small>60 cm de diâmetro</small></button>
+</nav>
+<main>
+  <section class="palco">
+    <div class="abas" role="tablist">
+      <button class="mono on" data-aba="ar">3D e AR</button>
+      <button class="mono" data-aba="foto">Foto na loja</button>
+      <button class="mono" data-aba="video">Giro</button>
+    </div>
+    <div class="vista on" data-vista="ar">
+      <model-viewer id="mv" src="display-chao.glb?v=1" ios-src="display-chao.usdz?v=1" poster="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-chao%2Fdisplay-chao-poster.webp?alt=media&amp;token=290d60dc-71af-4799-9873-3a8a0c907116" alt="Display de chão em 3D"
+        ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor" camera-controls touch-action="pan-y"
+        camera-orbit="-30deg 78deg auto" environment-image="supermercado.hdr?v=1" tone-mapping="neutral" exposure="1" shadow-intensity="1" shadow-softness="0.8"
+        interaction-prompt="auto" loading="eager">
+        <button slot="ar-button" class="ar-botao mono">Ver no meu espaço →</button>
+      </model-viewer>
+      <div class="dica">Arraste para girar, use dois dedos para aproximar. No celular, toque em "Ver no meu espaço" e aponte para o chão.</div>
+    </div>
+    <div class="vista" data-vista="foto"><a id="fotoLink" href="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-chao%2Fdisplay-chao-hero.jpg?alt=media&amp;token=a04d408e-5042-4019-8c8a-a4637d50396c" target="_blank" rel="noopener"><img id="foto" src="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-chao%2Fdisplay-chao-hero-1600.jpg?alt=media&amp;token=dc0c34bc-600a-4a00-961f-e3e132a85afd" alt="Display de chão instalada na loja"></a></div>
+    <div class="vista" data-vista="video"><video id="video" src="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-chao%2Fdisplay-chao-video.mp4?alt=media&amp;token=8e0a6de8-31c7-4852-83db-2f80e25726ca" poster="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-chao%2Fdisplay-chao-capa-video.jpg?alt=media&amp;token=98f49d95-beba-4c6c-8532-bcc32de7e097" muted loop playsinline preload="none" controls></video></div>
+  </section>
+  <aside>
+    <h2 id="nome">Display de chão</h2>
+    <p id="descricao">Estrutura com 3 bandejas para os sacos do Power e header com o conceito, em papelão ondulado onda BC. Volume e destaque no Natal nas redes.</p>
+    <div class="ficha">
+      <div><span class="mono">Medidas (L x A x P)</span><span id="medidas">60 x 160 x 40 cm</span></div>
+      <div id="linhaMaterial"><span class="mono">Material</span><span id="material">Papelão ondulado onda BC, impressão com verniz</span></div>
+      <div id="linhaQtd"><span class="mono">Quantidade</span><span id="quantidade">60</span></div>
+    </div>
+    <div class="botoes">
+      <a class="botao mono" id="baixarFoto" href="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-chao%2Fdisplay-chao-hero.jpg?alt=media&amp;token=a04d408e-5042-4019-8c8a-a4637d50396c" target="_blank" rel="noopener">Foto em alta →</a>
+      <a class="botao mono" id="baixarVideo" href="https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-chao%2Fdisplay-chao-video.mp4?alt=media&amp;token=8e0a6de8-31c7-4852-83db-2f80e25726ca" target="_blank" rel="noopener">Vídeo MP4 →</a>
+    </div>
+    <div class="qr"><div id="qr"></div><div><b>No computador?</b><br>Aponte a câmera do celular para abrir esta peça em realidade aumentada.</div></div>
+  </aside>
+</main>
+<footer>
+  <div><b>75 LAB</b> · Estratégia, design e produção para o ponto de venda.</div>
+  <div>CENU · Centro Empresarial das Nações Unidas, Torre Norte, Av. das Nações Unidas, 12.901, Brooklin, São Paulo, SP</div>
+  <a class="botao mono whats" href="https://wa.me/5511986765634" target="_blank" rel="noopener">Falar com a 75 LAB no WhatsApp →</a>
+</footer>
+<script>
+(function () {
+  var PECAS = [{"id":"display-chao","nome":"Display de chão","medidas":"60 x 160 x 40 cm","material":"Papelão ondulado onda BC, impressão com verniz","quantidade":60,"descricao":"Estrutura com 3 bandejas para os sacos do Power e header com o conceito, em papelão ondulado onda BC. Volume e destaque no Natal nas redes.","glb":"display-chao.glb?v=1","usdz":"display-chao.usdz?v=1","poster":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-chao%2Fdisplay-chao-poster.webp?alt=media&token=290d60dc-71af-4799-9873-3a8a0c907116","hero":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-chao%2Fdisplay-chao-hero-1600.jpg?alt=media&token=dc0c34bc-600a-4a00-961f-e3e132a85afd","heroGrande":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-chao%2Fdisplay-chao-hero.jpg?alt=media&token=a04d408e-5042-4019-8c8a-a4637d50396c","video":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-chao%2Fdisplay-chao-video.mp4?alt=media&token=8e0a6de8-31c7-4852-83db-2f80e25726ca","capa":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-chao%2Fdisplay-chao-capa-video.jpg?alt=media&token=98f49d95-beba-4c6c-8532-bcc32de7e097","gondola":false},{"id":"display-balcao","nome":"Display de balcão","medidas":"40 x 50 x 30 cm","material":"Papelão microondulado onda E, impressão com verniz","quantidade":440,"descricao":"Explicador do Power para o balcão do pet shop independente, com porta-folheto e QR. Papelão microondulado, montagem por encaixe.","glb":"display-balcao.glb?v=1","usdz":"display-balcao.usdz?v=1","poster":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-balcao%2Fdisplay-balcao-poster.webp?alt=media&token=c236d68e-a52c-4fd9-a294-c91a16156f0b","hero":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-balcao%2Fdisplay-balcao-hero-1600.jpg?alt=media&token=fd476053-3c88-46b3-95c8-238c93749256","heroGrande":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-balcao%2Fdisplay-balcao-hero.jpg?alt=media&token=b0dbb5e0-d85e-46ca-bc31-221643c1340c","video":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-balcao%2Fdisplay-balcao-video.mp4?alt=media&token=2642278c-1e4f-4324-b07d-48f7493b5629","capa":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fdisplay-balcao%2Fdisplay-balcao-capa-video.jpg?alt=media&token=9c91de87-2306-4fe5-8a88-e05da9c2e7fe","gondola":false},{"id":"ponta-gondola","nome":"Ponta de gôndola","medidas":"120 x 200 x 60 cm","material":"Poliestireno (PS) impresso","quantidade":60,"descricao":"Vestimenta da ponta negociada com a rede: header 120 x 50, faixa de base 120 x 30 e 2 stoppers laterais, em PS impresso.","glb":"ponta-gondola.glb?v=1","usdz":"ponta-gondola.usdz?v=1","poster":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fponta-gondola%2Fponta-gondola-poster.webp?alt=media&token=f1f0e178-0fbe-4faa-b163-7168f13f54cc","hero":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fponta-gondola%2Fponta-gondola-hero-1600.jpg?alt=media&token=22e21254-15f8-42d6-b514-bda0f353361c","heroGrande":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fponta-gondola%2Fponta-gondola-hero.jpg?alt=media&token=b7bb9f3f-c03e-48fa-a709-fe18646721bf","video":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fponta-gondola%2Fponta-gondola-video.mp4?alt=media&token=e84d2e50-5d4a-4a85-ab16-62b556fae028","capa":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fponta-gondola%2Fponta-gondola-capa-video.jpg?alt=media&token=6f3c6cc1-e26a-443e-9e4f-724124d1e9d7","gondola":false},{"id":"testeira","nome":"Testeira de gôndola","medidas":"100 x 25 cm","material":"Poliestireno (PS) impresso","quantidade":300,"descricao":"Placa no topo do módulo com o conceito, para marcar o bloco funcional de longe. PS 2 mm, verniz fosco, 2 presilhas.","glb":"testeira.glb?v=1","usdz":"testeira.usdz?v=1","poster":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Ftesteira%2Ftesteira-poster.webp?alt=media&token=28f1eaa1-e5dd-46ec-9135-db988d34df3c","hero":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Ftesteira%2Ftesteira-hero-1600.jpg?alt=media&token=ff6fdad1-6c89-481b-9c5e-60245d448036","heroGrande":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Ftesteira%2Ftesteira-hero.jpg?alt=media&token=6e064617-ae32-4986-ae6f-c67c722a76e5","video":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Ftesteira%2Ftesteira-video.mp4?alt=media&token=0b3b9722-474a-4ac5-811a-f3a524ba35dc","capa":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Ftesteira%2Ftesteira-capa-video.jpg?alt=media&token=03339383-4450-464d-941b-a2b4f8b2437c","gondola":true},{"id":"stopper","nome":"Stopper","medidas":"12 x 30 cm","material":"Poliestireno (PS) impresso","quantidade":920,"descricao":"Placa perpendicular à prateleira com os 3 benefícios, frente e verso, presa na canaleta de preço com aba em L.","glb":"stopper.glb?v=1","usdz":"stopper.usdz?v=1","poster":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fstopper%2Fstopper-poster.webp?alt=media&token=6b578255-9016-457b-9cbf-c814ec8523ad","hero":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fstopper%2Fstopper-hero-1600.jpg?alt=media&token=34122fec-700e-4462-b2d1-67ab9069d6f8","heroGrande":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fstopper%2Fstopper-hero.jpg?alt=media&token=ace8cd44-5990-4280-b2da-786a2516db88","video":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fstopper%2Fstopper-video.mp4?alt=media&token=25a0a1fd-8eed-439a-9a67-bb78e0bb4c22","capa":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fstopper%2Fstopper-capa-video.jpg?alt=media&token=ab07d103-6763-4ac4-9fc1-f5d6da3eea3b","gondola":true},{"id":"wobbler","nome":"Wobbler","medidas":"10 cm de diâmetro","material":"Poliestireno (PS) impresso","quantidade":1720,"descricao":"Peça pequena com haste flexível de PET e o QR que leva o tutor à calculadora de quantidade.","glb":"wobbler.glb?v=1","usdz":"wobbler.usdz?v=1","poster":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fwobbler%2Fwobbler-poster.webp?alt=media&token=9c1feb9c-8a91-4fdb-acb5-7f7021bbb33c","hero":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fwobbler%2Fwobbler-hero-1600.jpg?alt=media&token=379bc2cc-989b-49fb-9a3b-e964f6d0a31f","heroGrande":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fwobbler%2Fwobbler-hero.jpg?alt=media&token=42d864a1-2c3d-422d-9e55-7de5e1c9edff","video":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fwobbler%2Fwobbler-video.mp4?alt=media&token=8c150ca6-4f31-49e2-94fd-b4518ffdb114","capa":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fwobbler%2Fwobbler-capa-video.jpg?alt=media&token=05501ffa-e4ec-4ea1-873d-39df6552ded4","gondola":true},{"id":"adesivo-chao","nome":"Adesivo de chão","medidas":"60 cm de diâmetro","material":"Vinil adesivo com laminação antiderrapante","quantidade":300,"descricao":"Círculo no piso em frente ao bloco, que guia o tutor até a gôndola certa. Vinil removível com laminação antiderrapante.","glb":"adesivo-chao.glb?v=1","usdz":"adesivo-chao.usdz?v=1","poster":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fadesivo-chao%2Fadesivo-chao-poster.webp?alt=media&token=258d90d7-d788-4025-9f30-fa1be1771202","hero":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fadesivo-chao%2Fadesivo-chao-hero-1600.jpg?alt=media&token=4eb5da2c-0adb-4ca8-b764-8171d9986e9d","heroGrande":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fadesivo-chao%2Fadesivo-chao-hero.jpg?alt=media&token=ef4a406c-1da9-41ac-a2c7-2fb225675fe8","video":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fadesivo-chao%2Fadesivo-chao-video.mp4?alt=media&token=8ed9d952-32da-4fe0-9577-972127d28be8","capa":"https://firebasestorage.googleapis.com/v0/b/gen-lang-client-0855446481.firebasestorage.app/o/agencia%2Fprosp_nutrire-monello-select-by-monello-e-birbo_20261011%2Far-pdv%2Fnutrire-1b913d%2Fadesivo-chao%2Fadesivo-chao-capa-video.jpg?alt=media&token=3d78936d-51bb-4153-ab5b-90ca5588d678","gondola":true}];
+  var URL_PAGINA = "https://projetos.75lab.com.br/ar/nutrire-pecas-pdv/";
+  var mv = document.getElementById('mv');
+  if (!mv) return;
+  function qs(s) { return document.querySelector(s); }
+  function qr(id) {
+    try {
+      var u = new URL(URL_PAGINA); if (id) u.searchParams.set('peca', id);
+      var q = qrcode(0, 'M'); q.addData(u.toString()); q.make();
+      qs('#qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
+    } catch (e) {}
+  }
+  function aba(nome) {
+    document.querySelectorAll('.abas button').forEach(function (b) { b.classList.toggle('on', b.dataset.aba === nome); });
+    document.querySelectorAll('.vista').forEach(function (v) { v.classList.toggle('on', v.dataset.vista === nome); });
+    var v = qs('#video');
+    if (nome === 'video') { v.preload = 'auto'; v.play().catch(function () {}); } else { v.pause(); }
+  }
+  function mostrar(id) {
+    var p = PECAS.filter(function (x) { return x.id === id; })[0] || PECAS[0];
+    document.querySelectorAll('#pecas button').forEach(function (b) { b.classList.toggle('on', b.dataset.peca === p.id); });
+    mv.poster = p.poster; mv.src = p.glb;
+    if (p.usdz) mv.setAttribute('ios-src', p.usdz); else mv.removeAttribute('ios-src');
+    mv.alt = p.nome + ' em 3D';
+    qs('#nome').textContent = p.nome; qs('#descricao').textContent = p.descricao; qs('#medidas').textContent = p.medidas;
+    qs('#material').textContent = p.material; qs('#linhaMaterial').hidden = !p.material;
+    qs('#quantidade').textContent = p.quantidade ? Number(p.quantidade).toLocaleString('pt-BR') : ''; qs('#linhaQtd').hidden = !p.quantidade;
+    qs('#foto').src = p.hero; qs('#fotoLink').href = p.heroGrande; qs('#baixarFoto').href = p.heroGrande;
+    var v = qs('#video'); v.pause(); v.src = p.video; v.poster = p.capa; qs('#baixarVideo').href = p.video;
+    qr(p.id);
+    try { var u = new URL(location.href); u.searchParams.set('peca', p.id); history.replaceState(null, '', u.toString()); } catch (e) {}
+  }
+  document.querySelectorAll('#pecas button').forEach(function (b) { b.addEventListener('click', function () { mostrar(b.dataset.peca); aba('ar'); }); });
+  document.querySelectorAll('.abas button').forEach(function (b) { b.addEventListener('click', function () { aba(b.dataset.aba); }); });
+  var inicial = new URLSearchParams(location.search).get('peca');
+  mostrar(inicial || PECAS[0].id);
+})();
+</script>
+</body>
+</html>
