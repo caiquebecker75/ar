@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Display de balcão Snickers | AR 75 LAB</title>
-<meta name="description" content="Veja o display de balcão Snickers (prisma com bandeja para 12 barras de 45 g) em realidade aumentada e em tamanho real, em PS com dobra quente ou em polionda.">
+<title>Separador de compras Snickers | AR 75 LAB</title>
+<meta name="description" content="Veja o separador de compras Snickers (30 cm, 3 colunas de barras de 45 g com trava, logo do supermercado e etiqueta de preço) em realidade aumentada e em tamanho real, em PS com dobra quente ou em polionda.">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#F3F4EE">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://projetos.75lab.com.br/ar/mars-snickers-display-balcao/">
-<meta property="og:title" content="Display de balcão Snickers">
-<meta property="og:description" content="Toque para ver o display em realidade aumentada, em tamanho real, no balcão do caixa. Duas versões: PS com dobra quente e polionda.">
-<meta property="og:image" content="https://projetos.75lab.com.br/ar/mars-snickers-display-balcao/og.jpg?v=1">
+<meta property="og:title" content="Separador de compras Snickers">
+<meta property="og:description" content="Toque para ver o separador de compras em realidade aumentada, em tamanho real, na esteira do caixa. Duas versões: PS com dobra quente e polionda.">
+<meta property="og:image" content="https://projetos.75lab.com.br/ar/mars-snickers-display-balcao/og.jpg?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -25,8 +25,8 @@
 <script defer src="../vendor/qrcode.min.js"></script>
 <script type="application/json" id="modelos">
 [
-  { "id": "ps", "nome": "PS com dobra quente", "alt": "Display de balcão Snickers em PS com dobra quente, em 3D", "src": "ps.glb?v=1", "ios": "ps.usdz?v=1", "poster": "ps-poster.webp?v=1" },
-  { "id": "polionda", "nome": "Polionda", "alt": "Display de balcão Snickers em polionda, em 3D", "src": "polionda.glb?v=1", "ios": "polionda.usdz?v=1", "poster": "polionda-poster.webp?v=1" }
+  { "id": "ps", "nome": "PS com dobra quente", "alt": "Separador de compras Snickers em PS com dobra quente, em 3D", "src": "ps.glb?v=2", "ios": "ps.usdz?v=2", "poster": "ps-poster.webp?v=2" },
+  { "id": "polionda", "nome": "Polionda", "alt": "Separador de compras Snickers em polionda, em 3D", "src": "polionda.glb?v=2", "ios": "polionda.usdz?v=2", "poster": "polionda-poster.webp?v=2" }
 ]
 </script>
 <script type="module" src="../assets/ar.js?v=3"></script>
@@ -39,17 +39,17 @@
   </header>
 
   <section class="intro">
-    <div class="eyebrow">Snickers 45 g · display de balcão</div>
-    <h1>Display de balcão <b>Snickers</b></h1>
+    <div class="eyebrow">Snickers 45 g · Renato Supermercado</div>
+    <h1>Separador de compras <b>Snickers</b></h1>
     <div class="modelos" role="group" aria-label="Escolha o material">
-      <button type="button" data-modelo="ps" aria-pressed="true" class="on"><img src="ps-poster.webp?v=1" alt="" width="40" height="50"><span><b>PS com dobra quente</b><small>48 x 25,5 x 12,6 cm</small></span></button>
-      <button type="button" data-modelo="polionda" aria-pressed="false"><img src="polionda-poster.webp?v=1" alt="" width="40" height="50"><span><b>Polionda</b><small>48 x 25,5 x 12,5 cm</small></span></button>
+      <button type="button" data-modelo="ps" aria-pressed="true" class="on"><img src="ps-poster.webp?v=2" alt="" width="40" height="50"><span><b>PS com dobra quente</b><small>30 x 24,8 x 18,7 cm</small></span></button>
+      <button type="button" data-modelo="polionda" aria-pressed="false"><img src="polionda-poster.webp?v=2" alt="" width="40" height="50"><span><b>Polionda</b><small>30 x 24,8 x 18,6 cm</small></span></button>
     </div>
   </section>
 
   <section class="stage">
     <model-viewer
-      alt="Display de balcão Snickers em 3D"
+      alt="Separador de compras Snickers em 3D"
       ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor" xr-environment
       camera-controls auto-rotate auto-rotate-delay="2500" rotation-per-second="14deg"
       camera-orbit="-32deg 68deg auto" min-camera-orbit="auto 25deg auto" max-camera-orbit="auto 92deg auto"
@@ -57,7 +57,7 @@
       environment-image="../assets/hdr/supermercado.hdr" tone-mapping="none" exposure="1" loading="eager">
       <button slot="ar-button" hidden></button>
       <div slot="progress-bar"></div>
-      <div slot="ar-prompt" class="ar-prompt">Aponte para o <b>balcão</b>, a mesa ou a prateleira e mova o celular devagar</div>
+      <div slot="ar-prompt" class="ar-prompt">Aponte para a <b>esteira do caixa</b>, o balcão ou uma mesa e mova o celular devagar</div>
     </model-viewer>
     <div class="drag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>Arraste para girar</div>
     <div class="progress"><i></i></div>
@@ -69,10 +69,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M12 6.6l4.6 2.7v5.4L12 17.4l-4.6-2.7V9.3z"/><path d="M7.4 9.3 12 12l4.6-2.7M12 12v5.4"/></svg>
         <span>Ver no meu espaço</span>
       </button>
-      <p class="hint">Em <b>tamanho real</b>. Aponte a câmera para o balcão do caixa ou uma mesa e mova o celular devagar.</p>
+      <p class="hint">Em <b>tamanho real</b>. Aponte a câmera para a esteira do caixa ou uma mesa e mova o celular devagar.</p>
     </div>
     <div id="panel-noar" hidden>
-      <div class="note"><strong>Abra no navegador</strong>Para ver o display em realidade aumentada, abra este link no <b>Safari</b> (iPhone) ou no <b>Chrome</b> (Android).</div>
+      <div class="note"><strong>Abra no navegador</strong>Para ver o separador em realidade aumentada, abra este link no <b>Safari</b> (iPhone) ou no <b>Chrome</b> (Android).</div>
       <button class="ghost" id="copy" type="button">Copiar link</button>
     </div>
     <div id="panel-desktop" hidden>
@@ -82,14 +82,14 @@
       </div>
       <ol class="steps">
         <li><span>1</span>Abra o link no celular, iPhone ou Android.</li>
-        <li><span>2</span>Aponte para o balcão do caixa ou uma mesa e mova o aparelho devagar.</li>
-        <li><span>3</span>O display aparece em tamanho real, com as 12 barras: chegue perto e veja de todos os lados.</li>
+        <li><span>2</span>Aponte para a esteira do caixa ou uma mesa e mova o aparelho devagar.</li>
+        <li><span>3</span>O separador aparece em tamanho real, com as 3 barras travadas: chegue perto e veja de todos os lados.</li>
       </ol>
     </div>
-    <div id="panel-erro" hidden><div class="note"><strong>Não carregou</strong>Não foi possível carregar o display. Verifique a conexão e recarregue a página.</div></div>
+    <div id="panel-erro" hidden><div class="note"><strong>Não carregou</strong>Não foi possível carregar o separador. Verifique a conexão e recarregue a página.</div></div>
   </section>
 
-  <footer class="foot">Projeto 75 LAB para Snickers · Display de balcão em PS com dobra quente ou polionda · Visualização em realidade aumentada</footer>
+  <footer class="foot">Projeto 75 LAB para Snickers e Renato Supermercado · Separador de compras em PS com dobra quente ou polionda · Visualização em realidade aumentada</footer>
 </main>
 <div class="toast" role="status" aria-live="polite"></div>
 </body>
