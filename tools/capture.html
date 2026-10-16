@@ -107,7 +107,7 @@ try {
   x.font = '300 26px Lexend'; x.letterSpacing = '0px'; x.fillStyle = '#54594E';
   if (varios) {
     const nomes = modelos.map((m) => m.nome);
-    x.fillText(`Tamanhos ${nomes.slice(0, -1).join(', ')} e ${nomes.at(-1)}, em realidade`, 72, 440);
+    x.fillText(`${P.get("rotulo") || "Tamanhos"} ${nomes.slice(0, -1).join(', ')} e ${nomes.at(-1)}, em realidade`, 72, 440);
     x.fillText('aumentada e em tamanho real.', 72, 476);
   } else {
     x.fillText('Veja em realidade aumentada,', 72, 440);
