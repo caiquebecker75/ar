@@ -33,6 +33,7 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `savencia-gravitacional-frescatino/` | Savencia, Gravitacional Frescatino (com 4 embalagens) | 39 × 8,5 × 5 cm |
 | `savencia-frame-glorifier-frescatino/` | Savencia, Frame Glorifier Frescatino (ventosas, AR de parede) | 18 × 20 cm |
 | `semp-split-hw/` | SEMP, quinze peças de PDV do lançamento Split HW numa página: sete com 3D do Modo (`ilha`, `portico`, `backdrop`, `cubo`, `poster-cinta`, `berco`, `regua`) e oito montadas da arte 2D (`placa`, `topper`, `orelha`, `tapete`, `aerea`, `adam-lama`, `adam-poster-caixa`, `adam-testeira`) + `embed.html` | de 10 × 47 × 6 cm (régua) a 340 × 306 × 60 cm (pórtico) |
+| `mars-snickers-display-balcao/` | Snickers, display de balcão (prisma com bandeja e 12 barras de 45 g): `ps` (PS com dobra quente) e `polionda`, numa página, montado no Blender pela mesma geometria do projeto executivo | 48 × 25,5 × 12,6 cm |
 | `codice-displays/` | Códice, oito displays numa página (`?modelo=essencial`, `sense`, `media`, `ilha`, `painel`, `vitrine`, `categoria`, `multiuso`) | medidas de referência, de 195 × 74 × 52 cm a 202 × 104 × 55 cm |
 | `codice-display-universal/` | Códice, Display Universal (projeto NEO001): seis configurações do mesmo módulo (`?modelo=torre`, `duplo`, `ilha`, `ilha-frentes`, `baixa`, `baixa-aereo`), três exemplos de marca (`lacta`, `bis`, `pedigree-whiskas`) e o módulo inteligente da base (`brain`) | de 20 × 13 × 5 cm (módulo inteligente) a 112 × 112 × 170 cm (ilha de 4 módulos) |
 
@@ -42,6 +43,15 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 > `codice-displays/<id>.glb` → `tools/usdz.html?slug=codice-displays&file=<id>` + `usdz-compact.py` →
 > `tools/codice/shots.html` (posters) → `tools/codice/og.html` (miniatura; o `capture.html` com oito modelos
 > fica ilegível). As medidas são de referência, não de fabricação.
+
+> **Display de balcão Snickers:** não havia 3D. A peça foi redesenhada para fabricação num modelo paramétrico
+> (`~/snickers-display-triangular/ferramentas/modelo.py`) que gera o projeto executivo (DXF/PDF), a arte nos
+> planificados e a cena do Blender (`blender_cena.py --modo=ar`). Luz assada com `tools/bake` em modo `--blend`.
+> **Pegadinha:** produto com logo pequeno (as 12 barras) no atlas pequeno de 2048 sai com o logo borrado. As barras
+> continuam na cena do bake (a sombra delas fica gravada no display), mas saem do atlas antes do `export.py`
+> (`tira_barras.py`) e voltam no GLB com a textura original da embalagem e um escurecimento por fila (`ar_barras.py`).
+> Roteiro completo: `ferramentas/ar_pipeline.sh <ps|polionda>`. Miniatura: `capture.html?...&rotulo=Versões`
+> (quando os modelos são versões e não tamanhos).
 
 > **Display Universal da Códice (NEO001):** veio do Modo, nove `.lxo` da pasta AR do Drive do projeto, montados
 > com `tools/modo/auto_lxo.py` (configs em `.work/universal/`, `gen.py` gera os `ar.json`). Escala 0,03532 m por
