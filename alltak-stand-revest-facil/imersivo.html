@@ -94,6 +94,9 @@
   }
   .cta[disabled] { background: var(--rule); color: var(--ink3); box-shadow: none; cursor: progress; }
   .voltar { display: block; text-align: center; margin-top: 14px; font-size: 13px; font-weight: 300; color: var(--ink2); }
+  a.brand { color: inherit; text-decoration: none; }
+  .site { display: block; width: max-content; margin: 18px auto 0; font-size: 12px; letter-spacing: .2px; color: var(--ink3); text-decoration: none; border-bottom: 1px solid var(--rule); padding-bottom: 2px; }
+  .site:hover { color: var(--ink); border-color: var(--ink); }
 </style>
 <script type="importmap">
 { "imports": {
@@ -113,13 +116,14 @@
 
 <section class="entrada">
   <div class="box">
-    <div class="brand">75<em>LAB</em></div>
+    <a class="brand" href="https://75lab.com.br" target="_blank" rel="noopener">75<em>LAB</em></a>
     <div class="eyebrow">Alltak · Revest Fácil</div>
     <h1>Modo <b>imersivo</b></h1>
     <p id="explica">Só o stand, sem a sala em volta. <b>Mova o celular</b> para olhar ao redor e use o <b>controle na tela</b> para andar.</p>
     <div class="barra"><i></i></div>
     <button class="cta" id="entrar" type="button" disabled>Carregando</button>
     <a class="voltar" href="./">Voltar para o AR</a>
+    <a class="site" href="https://75lab.com.br" target="_blank" rel="noopener">75lab.com.br</a>
   </div>
 </section>
 
