@@ -188,4 +188,12 @@ a.brand:hover em { color: var(--lime-d); }
 .site:hover { color: var(--ink); border-color: var(--ink); }
 .foot a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--rule); }
 .foot a:hover { color: var(--ink); }
-@media (min-width: 900px) { .is-desktop .site { display: none; } }
+/* no computador o painel pode passar da dobra: o endereço vai para o topo, ao lado da marca */
+@media (min-width: 900px) {
+  .is-desktop .site { display: none; }
+  .is-desktop a.brand::after {
+    content: "75lab.com.br"; font-family: 'Lexend', system-ui, sans-serif; font-size: 12px; font-weight: 400; letter-spacing: .2px;
+    color: var(--ink3); margin-left: 14px; padding-left: 14px; border-left: 1px solid var(--rule);
+  }
+  .is-desktop a.brand:hover::after { color: var(--ink); }
+}
