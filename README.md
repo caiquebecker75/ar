@@ -193,6 +193,20 @@ O stand da NGV veio do Blender com ~2,7 milhões de triângulos e 170 MB. O que 
    virtual em volta do stand não resolve: as paredes reais estão mais perto que ela e aparecem por cima.
    O parâmetro `&file=` do `usdz.html` ficou dessa tentativa (converte `<file>.glb` → `<file>.usdz`).
 
+**Versão V4 do stand NGV (out/2026):** veio do Blender já exportado em GLB, com 469 MB e 15 milhões de
+triângulos (subdivisão aplicada). Chegou a 26 MB / 620 mil triângulos (web) e 46 MB (USDZ) assim:
+
+- `prepare-glb.mjs` com `--rotate-y=-90` e os limites do item 2 (o mesmo giro da versão anterior: a gôndola
+  Brazmix fica ao fundo, à esquerda). O USDZ sai de uma segunda passada mais dura (`--max-tri=400 --simplify-error=0.05`).
+- Puffs, prateleiras, base e a gancheira de arame não simplificam no `prepare-glb`: as arestas duras e as costuras
+  de UV duplicam os vértices e travam o meshopt. Nelas: tirar a normal, soldar pela posição, simplificar a ~25% e
+  recalcular normais suaves. A gancheira (tinta lisa) perde também o UV e fica com a cor média da textura (116 → 23 mil).
+- Os quatro cabos do anel aéreo (`Vert.001`–`004`, até 6,2 m) saem: o modelo volta a ter 3,25 m e o enquadramento
+  não encolhe o stand.
+- Web: `compacta-glb.mjs <ent> <sai> 1 0` (só quantiza). Sem macOS, o USDZ foi compactado em Node no lugar do
+  `usdz-compact.py`: PNG → JPEG e números do `.usda` arredondados (pontos e UV com 4 casas, normais com 3),
+  pacote refeito sem compressão e alinhado em 64 bytes (186 → 46 MB).
+
 ## Stand do .blend com arquivos linkados: o que aprendemos no stand Alltak Revest Fácil
 
 Cena do projetista com 5 `.blend` linkados (mostruário, balcões, mesas), assets comprados e 9,5 milhões de
