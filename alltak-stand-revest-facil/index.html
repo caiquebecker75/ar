@@ -11,7 +11,7 @@
 <meta property="og:url" content="https://projetos.75lab.com.br/ar/alltak-stand-revest-facil/">
 <meta property="og:title" content="Stand Alltak Revest Fácil">
 <meta property="og:description" content="Toque para entrar no stand em realidade aumentada, em tamanho real.">
-<meta property="og:image" content="https://projetos.75lab.com.br/ar/alltak-stand-revest-facil/og.jpg?v=1">
+<meta property="og:image" content="https://projetos.75lab.com.br/ar/alltak-stand-revest-facil/og.jpg?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -33,9 +33,14 @@
 <!-- modelos desta página: o primeiro é o que abre sem ?modelo= -->
 <script type="application/json" id="modelos">
 [
-  { "id": "testeira", "nome": "stand com testeira", "alt": "Stand Alltak Revest Fácil com a testeira suspensa, em 3D",
+  { "id": "r05", "nome": "revisão 5 com testeira", "alt": "Stand Alltak Revest Fácil, revisão 5, com a testeira suspensa, em 3D",
+    "src": "r05.glb?v=1", "ios": "r05.usdz?v=1", "poster": "r05-poster.webp?v=1" },
+  { "id": "r05-sem-testeira", "nome": "revisão 5 sem testeira", "alt": "Stand Alltak Revest Fácil, revisão 5, sem a testeira, para ver de cima, em 3D",
+    "src": "r05-sem-testeira.glb?v=1", "ios": "r05-sem-testeira.usdz?v=1", "poster": "r05-sem-testeira-poster.webp?v=1",
+    "camera": { "orbita": "-20deg 35deg auto" } },
+  { "id": "testeira", "nome": "revisão 2 com testeira", "alt": "Stand Alltak Revest Fácil, revisão 2, com a testeira suspensa, em 3D",
     "src": "display.glb?v=2", "ios": "display.usdz?v=2", "poster": "display-poster.webp?v=1" },
-  { "id": "sem-testeira", "nome": "stand sem testeira", "alt": "Stand Alltak Revest Fácil sem a testeira, para ver de cima, em 3D",
+  { "id": "sem-testeira", "nome": "revisão 2 sem testeira", "alt": "Stand Alltak Revest Fácil, revisão 2, sem a testeira, para ver de cima, em 3D",
     "src": "sem-testeira.glb?v=2", "ios": "sem-testeira.usdz?v=2", "poster": "sem-testeira-poster.webp?v=1",
     "camera": { "orbita": "-20deg 35deg auto" } }
 ]
@@ -55,13 +60,21 @@
       <span>Frente<b>12 m</b></span><span>Profundidade<b>7 m</b></span><span>Altura<b>6,8 m</b></span>
     </div>
     <div class="modelos" role="group" aria-label="Escolha a versão do stand">
-      <button type="button" data-modelo="testeira" aria-pressed="true" class="on">
+      <button type="button" data-modelo="r05" aria-pressed="true" class="on">
+        <img src="r05-poster.webp?v=1" alt="" width="40" height="50">
+        <span><b>R05 com testeira</b><small>revisão mais nova</small></span>
+      </button>
+      <button type="button" data-modelo="r05-sem-testeira" aria-pressed="false">
+        <img src="r05-sem-testeira-poster.webp?v=1" alt="" width="40" height="50">
+        <span><b>R05 sem testeira</b><small>para ver de cima</small></span>
+      </button>
+      <button type="button" data-modelo="testeira" aria-pressed="false">
         <img src="display-poster.webp?v=1" alt="" width="40" height="50">
-        <span><b>Com testeira</b><small>como no evento</small></span>
+        <span><b>R02 com testeira</b><small>revisão anterior</small></span>
       </button>
       <button type="button" data-modelo="sem-testeira" aria-pressed="false">
         <img src="sem-testeira-poster.webp?v=1" alt="" width="40" height="50">
-        <span><b>Sem testeira</b><small>para ver de cima</small></span>
+        <span><b>R02 sem testeira</b><small>para ver de cima</small></span>
       </button>
     </div>
   </section>
@@ -116,7 +129,7 @@
       <ol class="steps">
         <li><span>1</span>Abra o link no celular, iPhone ou Android. O arquivo é grande: prefira Wi-Fi.</li>
         <li><span>2</span>Ver no meu espaço: o stand aparece em tamanho real no chão. Com pinça, diminua para ver como maquete.</li>
-        <li><span>3</span>Sem testeira: a versão para olhar o stand de cima, como a planta.</li>
+        <li><span>3</span>Escolha a revisão do projeto (R05 é a mais nova). Sem testeira: para olhar o stand de cima, como a planta.</li>
       </ol>
       <a class="ghost imersivo" href="imersivo.html">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -133,5 +146,13 @@
   <footer class="foot">Projeto 75 LAB para Alltak · Revest Fácil · Visualização em realidade aumentada · <a href="https://75lab.com.br" target="_blank" rel="noopener">75lab.com.br</a></footer>
 </main>
 <div class="toast" role="status" aria-live="polite"></div>
+<script>
+// o modo imersivo abre a mesma versão escolhida na página
+(function () {
+  function atualizar(id) { document.querySelectorAll('a.imersivo').forEach(function (a) { a.href = 'imersivo.html' + (id ? '?modelo=' + id : ''); }); }
+  atualizar(new URLSearchParams(location.search).get('modelo'));
+  document.querySelectorAll('[data-modelo]').forEach(function (b) { b.addEventListener('click', function () { atualizar(b.dataset.modelo); }); });
+})();
+</script>
 </body>
 </html>

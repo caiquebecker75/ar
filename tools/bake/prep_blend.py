@@ -116,6 +116,18 @@ for orig, _is_inst, _pai, _mw, me in _capturas:
         bpy.data.meshes.remove(me); continue
     if orig.name in fora or (_pai is not None and _pai.name in fora):
         bpy.data.meshes.remove(me); continue
+    # material de arquivo linkado que não veio (Paleta de Materiais, Blocos Steck...): troca por cor neutra
+    for _i, _m in enumerate(me.materials):
+        if _m is not None and getattr(_m, "is_missing", False):
+            _nome = "FALTANDO_preto" if "preto" in _m.name.lower() or "black" in _m.name.lower() else "FALTANDO_cinza"
+            _sub = bpy.data.materials.get(_nome)
+            if _sub is None:
+                _sub = bpy.data.materials.new(_nome); _sub.use_nodes = True
+                _bs = next(n for n in _sub.node_tree.nodes if n.type == 'BSDF_PRINCIPLED')
+                _c = 0.02 if _nome.endswith("preto") else 0.08
+                _bs.inputs["Base Color"].default_value = (_c, _c, _c, 1); _bs.inputs["Roughness"].default_value = 0.5
+                log("material ausente trocado:", repr(_m.name), "->", _nome)
+            me.materials[_i] = _sub
     o = bpy.data.objects.new(orig.name, me)
     o.matrix_world = _mw
     col.objects.link(o); novos += 1
@@ -183,6 +195,24 @@ if RECORTE:
             bmesh.ops.delete(bm, geom=fs, context='FACES'); bm.to_mesh(alvo_o.data); bm.free()
         meshes.append(f); separados += 1
     log("objetos com folha separada:", separados, "| objetos de recorte:", sum(1 for o in meshes if o.get("recorte")))
+# ---------- peça pesada com vários materiais: um objeto por material ----------
+# Vaso + planta no mesmo objeto (alecrim da R05): a folhagem densa leva o objeto inteiro para o colapso e o
+# vaso vira dente de serra. Separado por material, o vaso fica leve e intacto e só a planta é reduzida.
+separados_mat = 0
+for o in list(meshes):
+    if o.get("recorte") or len(o.data.materials) < 2: continue
+    if sum(len(p.vertices)-2 for p in o.data.polygons) < 20000: continue
+    usados = sorted({p.material_index for p in o.data.polygons})
+    if len(usados) < 2: continue
+    for k in usados[1:]:
+        c = o.copy(); c.data = o.data.copy(); c.name = f"{o.name}__m{k}"; col.objects.link(c)
+        bm = bmesh.new(); bm.from_mesh(c.data)
+        bmesh.ops.delete(bm, geom=[f for f in bm.faces if f.material_index != k], context='FACES'); bm.to_mesh(c.data); bm.free()
+        meshes.append(c); separados_mat += 1
+    bm = bmesh.new(); bm.from_mesh(o.data)
+    bmesh.ops.delete(bm, geom=[f for f in bm.faces if f.material_index != usados[0]], context='FACES'); bm.to_mesh(o.data); bm.free()
+log("peças pesadas separadas por material:", separados_mat)
+
 dg=bpy.context.evaluated_depsgraph_get()
 antes=depois=0
 soldados=0
@@ -230,9 +260,23 @@ for o in meshes:
     # com --colapso-densidade, peça leve (painel, móvel) não passa por redução nenhuma aqui: a dissolução planar
     # junta faces de superfície curva subdividida (cada vizinha difere < 4°) em polígonos enormes e não planos,
     # que dobram ao triangular (madeira do mostruário e do balcão saiu preta e quadriculada)
+    so_colapso = False
     if COLAPSO_DENS is not None and not o.get("recorte") and tri / max(_a, 1e-6) < COLAPSO_DENS:
-        alvo = tri
-    if tri>alvo:
+        # peça leve muito grande (painel curvo dos 4 mostruários da R05: 384 mil): só colapso, sem dissolução,
+        # mantendo ao menos 20% da malha; as outras peças leves ficam como estão
+        if tri > 50000: alvo = max(alvo, int(tri * 0.2)); so_colapso = True
+        else: alvo = tri
+    if tri>alvo and so_colapso:
+        m=o.modifiers.new("reduz",'DECIMATE'); m.ratio=alvo/tri; m.use_collapse_triangulate=True
+        bm=bmesh.new(); bm.from_mesh(o.data)
+        borda={v.index for e in bm.edges for v in e.verts
+               if len(e.link_faces)!=2 or e.link_faces[0].material_index!=e.link_faces[1].material_index}
+        nv=len(bm.verts); bm.free()
+        if borda and len(borda) < 0.25*nv:
+            vg=o.vertex_groups.new(name="ar_borda"); vg.add(list(borda), 1.0, 'REPLACE')
+            m.vertex_group="ar_borda"; m.invert_vertex_group=True; m.vertex_group_factor=100
+        aplicar(m)
+    elif tri>alvo:
         # 1) junta faces planas sem atravessar corte de UV/material (artes continuam no lugar, sem picotar a malha)
         m=o.modifiers.new("planar",'DECIMATE'); m.decimate_type='DISSOLVE'; m.angle_limit=math.radians(4)
         m.delimit={'MATERIAL','UV'}; aplicar(m)
@@ -357,14 +401,17 @@ for g,(objs,px,a) in grupos.items():
     (o.data.uv_layers.get("UVMap") or o.data.uv_layers[0]).active_render=True
     o.data.uv_layers.active=o.data.uv_layers["bake"]
     bpy.context.view_layer.objects.active=o; o.select_set(True)
-    bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT')
+    bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.reveal(select=True); bpy.ops.mesh.select_all(action='SELECT')
     # faces grandes/côncavas da dissolução planar quebram a área de UV: triangula antes
     bpy.ops.mesh.quads_convert_to_tris(quad_method='BEAUTY', ngon_method='BEAUTY')
     bpy.ops.uv.smart_project(angle_limit=math.radians(89), island_margin=0.0, area_weight=0.0, correct_aspect=False, scale_to_bounds=False)
     bpy.ops.object.mode_set(mode='OBJECT')
     ag=consertar_agulhas(o)
-    bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT')
-    bpy.ops.uv.pack_islands(rotate=True, margin_method="FRACTION", margin=1.5/px, shape_method=PACK_FORMA)
+    bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.reveal(select=True); bpy.ops.mesh.select_all(action='SELECT')
+    # mesma densidade de texel em todas as ilhas: folha de dracena saía com 40% do quadro para 0,02 m² e o
+    # empacotador transbordava o atlas de folhas (UV fora de 0..1)
+    bpy.ops.uv.average_islands_scale()
+    bpy.ops.uv.pack_islands(rotate=True, margin_method="FRACTION", margin=1.5/px, shape_method=(PACK_FORMA if not g.startswith("folha") else "AABB"))
     bpy.ops.object.mode_set(mode='OBJECT'); o.select_set(False)
     log("  ilhas-agulha refeitas:", ag)
     o["atlas_px"]=px
@@ -381,9 +428,9 @@ for g,(objs,px,a) in grupos.items():
         # ilhas sobrepostas (faces mínimas com escala de UV desproporcional): normaliza a escala e reempacota
         bpy.context.view_layer.objects.active=o; o.select_set(True)
         o.data.uv_layers.active=o.data.uv_layers["bake"]
-        bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.reveal(); bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.reveal(select=True); bpy.ops.mesh.select_all(action='SELECT')
         bpy.ops.uv.average_islands_scale()
-        bpy.ops.uv.pack_islands(rotate=True, margin_method="FRACTION", margin=1.5/px, shape_method=PACK_FORMA)
+        bpy.ops.uv.pack_islands(rotate=True, margin_method="FRACTION", margin=1.5/px, shape_method=(PACK_FORMA if not g.startswith("folha") else "AABB"))
         bpy.ops.object.mode_set(mode='OBJECT')
         o.select_set(False)
         antes_cob=cob; cob=cobertura(); log(f"  UV sobreposto: cobertura {antes_cob*100:.0f}% -> {cob*100:.0f}%")
@@ -402,19 +449,19 @@ for g,(objs,px,a) in grupos.items():
                 f0,f1=e.link_faces[0],e.link_faces[1]
                 e.seam = e.calc_face_angle(0) > math.radians(60) or cel(f0) != cel(f1)
             bmesh.update_edit_mesh(o.data)
-            bpy.ops.mesh.select_all(action='SELECT')
+            bpy.ops.mesh.reveal(select=True); bpy.ops.mesh.select_all(action='SELECT')
             bpy.ops.uv.unwrap(method='CONFORMAL', fill_holes=False, correct_aspect=False, margin=0.0)
             bpy.ops.uv.average_islands_scale()
             bpy.ops.object.mode_set(mode='OBJECT'); consertar_agulhas(o)
-            bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT')
-            bpy.ops.uv.pack_islands(rotate=True, margin_method="FRACTION", margin=1.5/px, shape_method=PACK_FORMA)
+            bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.reveal(select=True); bpy.ops.mesh.select_all(action='SELECT')
+            bpy.ops.uv.pack_islands(rotate=True, margin_method="FRACTION", margin=1.5/px, shape_method=(PACK_FORMA if not g.startswith("folha") else "AABB"))
             bpy.ops.object.mode_set(mode='OBJECT')
             cob=cobertura()
             log(f"  refeito com costuras a cada {CEL} m: cobertura {antes_cob*100:.0f}% -> {cob*100:.0f}%")
             if cob>=0.3: break
         if cob<0.2:
             # último recurso: Lightmap Pack (face a face, proporcional à área; feito para bake)
-            bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT')
+            bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.reveal(select=True); bpy.ops.mesh.select_all(action='SELECT')
             bpy.ops.uv.lightmap_pack(PREF_CONTEXT='ALL_FACES', PREF_PACK_IN_ONE=True, PREF_NEW_UVLAYER=False, PREF_BOX_DIV=12, PREF_MARGIN_DIV=0.1)
             bpy.ops.object.mode_set(mode='OBJECT')
             cob=cobertura(); log(f"  lightmap pack: cobertura {cob*100:.0f}%")
