@@ -35,6 +35,7 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `semp-split-hw/` | SEMP, quinze peças de PDV do lançamento Split HW numa página: sete com 3D do Modo (`ilha`, `portico`, `backdrop`, `cubo`, `poster-cinta`, `berco`, `regua`) e oito montadas da arte 2D (`placa`, `topper`, `orelha`, `tapete`, `aerea`, `adam-lama`, `adam-poster-caixa`, `adam-testeira`) + `embed.html` | de 10 × 47 × 6 cm (régua) a 340 × 306 × 60 cm (pórtico) |
 | `mars-snickers-display-balcao/` | Snickers, display de balcão (prisma com bandeja e 12 barras de 45 g): `ps` (PS com dobra quente) e `polionda`, numa página, montado no Blender pela mesma geometria do projeto executivo | 48 × 25,5 × 12,6 cm |
 | `pokemon-pecas-pdv/` | Pokémon, peças de PDV da Jornada do Treinador: três com 3D do Modo (`?modelo=cubo`, `balcao`, `clipstrip`) | de 17 × 1 × 91 cm (clip strip) a 67 × 57 × 59 cm (display de balcão) |
+| `pokemon-brandwall-epic-liberdade/` | Pokémon, Brandwall da Epic Game Liberdade (POK-26-007): base em meia-lua, 5 totens com cúpulas de acrílico, proteção perimetral em acrílico cristal e parede em camadas (planta, Charmander, flores), montado no Blender pelo modelo do projeto executivo, luz assada com as artes fora do atlas | 309 × 376 × 188 cm |
 | `codice-displays/` | Códice, oito displays numa página (`?modelo=essencial`, `sense`, `media`, `ilha`, `painel`, `vitrine`, `categoria`, `multiuso`) | medidas de referência, de 195 × 74 × 52 cm a 202 × 104 × 55 cm |
 | `codice-display-universal/` | Códice, Display Universal (projeto NEO001): seis configurações do mesmo módulo (`?modelo=torre`, `duplo`, `ilha`, `ilha-frentes`, `baixa`, `baixa-aereo`), três exemplos de marca (`lacta`, `bis`, `pedigree-whiskas`) e o módulo inteligente da base (`brain`) | de 20 × 13 × 5 cm (módulo inteligente) a 112 × 112 × 170 cm (ilha de 4 módulos) |
 
@@ -53,6 +54,17 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 > (`tira_barras.py`) e voltam no GLB com a textura original da embalagem e um escurecimento por fila (`ar_barras.py`).
 > Roteiro completo: `ferramentas/ar_pipeline.sh <ps|polionda>`. Miniatura: `capture.html?...&rotulo=Versões`
 > (quando os modelos são versões e não tamanhos).
+
+> **Brandwall Pokémon (Epic Game Liberdade):** cena montada no Blender pelo modelo do executivo
+> (`~/pokemon-brandwall-epic-liberdade/ferramentas/blender_cena.py --modo=ar`). As faces de arte (parede, moldura,
+> recortes, logo, faixa) ficam em objetos `ARTEOBJ_*` e NÃO entram no atlas: `ar_luz_arte.py` assa a luz difusa pela
+> UV da própria arte e multiplica pela arte em alta (fica nítida e com a sombra dos recortes); `ar_repoe.py` junta isso
+> ao `assado.glb` com o acrílico em transmissão (opacidade 8% no USDZ, `ar_usdz.py`). Roteiro: `ferramentas/ar_pipeline.sh`.
+> **Pegadinhas:** o `prep.py` põe o HDR com força 1, então o pipeline passa um HDR já multiplicado por 0,3 (o mesmo
+> mundo do render) e a cena leva a mesma exposição do render; sem isso a luz média passava de 3 e a arte desbotava.
+> Piso só para o bake como CURVA 2D (o `prep.py` só junta MESH e o `export.py` descarta o resto): sem ele o cone creme,
+> virado para baixo, ficava cáqui. Salvar o `.blend` com `relative_remap=False`: pelo atalho do HD o caminho relativo
+> das imagens quebrava (imagem 0 x 0 no bake).
 
 > **Display Universal da Códice (NEO001):** veio do Modo, nove `.lxo` da pasta AR do Drive do projeto, montados
 > com `tools/modo/auto_lxo.py` (configs em `.work/universal/`, `gen.py` gera os `ar.json`). Escala 0,03532 m por
