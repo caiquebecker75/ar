@@ -36,6 +36,10 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `mars-snickers-display-balcao/` | Snickers, display de balcão (prisma com bandeja e 12 barras de 45 g): `ps` (PS com dobra quente) e `polionda`, numa página, montado no Blender pela mesma geometria do projeto executivo | 48 × 25,5 × 12,6 cm |
 | `pokemon-pecas-pdv/` | Pokémon, peças de PDV da Jornada do Treinador: três com 3D do Modo (`?modelo=cubo`, `balcao`, `clipstrip`) | de 17 × 1 × 91 cm (clip strip) a 67 × 57 × 59 cm (display de balcão) |
 | `pokemon-brandwall-epic-liberdade/` | Pokémon, Brandwall da Epic Game Liberdade (POK-26-007): base em meia-lua, 5 totens com cúpulas de acrílico, proteção perimetral em acrílico cristal e parede em camadas (planta, Charmander, flores), montado no Blender pelo modelo do projeto executivo, luz assada com as artes fora do atlas | 309 × 376 × 188 cm |
+| `arcor-7belo/` | Arcor, 7Belo: 15 peças de PDV (leves, médias e pesadas) numa página, 3D e arte do ChatGPT | de 15 x 15 cm (wobbler) a 400 x 320 cm (fachada) |
+| `arcor-butter-toffees/` | Arcor, Butter Toffees: 15 peças de PDV (leves, médias e pesadas) numa página, 3D e arte do ChatGPT | de 15 x 15 cm (wobbler) a 400 x 320 cm (fachada) |
+| `arcor-rocklets/` | Arcor, Rocklets: 15 peças de PDV (leves, médias e pesadas) numa página, 3D e arte do ChatGPT | de 15 x 15 cm (wobbler) a 400 x 320 cm (fachada) |
+| `arcor-tortuguita/` | Arcor, Tortuguita: 15 peças de PDV (leves, médias e pesadas) numa página, 3D e arte do ChatGPT | de 15 x 15 cm (wobbler) a 400 x 320 cm (fachada) |
 | `codice-displays/` | Códice, oito displays numa página (`?modelo=essencial`, `sense`, `media`, `ilha`, `painel`, `vitrine`, `categoria`, `multiuso`) | medidas de referência, de 195 × 74 × 52 cm a 202 × 104 × 55 cm |
 | `codice-display-universal/` | Códice, Display Universal (projeto NEO001): seis configurações do mesmo módulo (`?modelo=torre`, `duplo`, `ilha`, `ilha-frentes`, `baixa`, `baixa-aereo`), três exemplos de marca (`lacta`, `bis`, `pedigree-whiskas`) e o módulo inteligente da base (`brain`) | de 20 × 13 × 5 cm (módulo inteligente) a 112 × 112 × 170 cm (ilha de 4 módulos) |
 
