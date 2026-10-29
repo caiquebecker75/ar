@@ -110,7 +110,7 @@ function escolher(m) {
 }
 document.querySelectorAll('[data-modelo]').forEach((b) =>
   b.addEventListener('click', () => escolher(modelos.find((m) => m.id === b.dataset.modelo))));
-escolher(modelos.find((m) => m.id === new URLSearchParams(location.search).get('modelo')) || modelos[0]);
+escolher(modelos.find((m) => m.id === (new URLSearchParams(location.search).get('modelo') || new URLSearchParams(location.search).get('peca'))) || modelos[0]);
 
 if (!isMobile) {
   show('desktop');

@@ -1,0 +1,18 @@
+[
+ {
+  "id": "p004",
+  "codigo": "P004",
+  "nome": "Cubo Premium sem mesa",
+  "canal": "DTC",
+  "placement": "floor",
+  "glb": "https://projetos.75lab.com.br/ar/havaianas-sao-joao-2027/p004.glb?v=1",
+  "usdz": "https://projetos.75lab.com.br/ar/havaianas-sao-joao-2027/p004.usdz?v=1",
+  "poster": "https://projetos.75lab.com.br/ar/havaianas-sao-joao-2027/p004-poster.webp?v=1",
+  "pagina": "https://projetos.75lab.com.br/ar/havaianas-sao-joao-2027/?peca=p004",
+  "medidas_cm": [
+   103.0,
+   165.0,
+   63.5
+  ]
+ }
+]

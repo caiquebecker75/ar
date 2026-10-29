@@ -65,8 +65,9 @@ pa = next(n for n in acrilico.node_tree.nodes if n.type == "BSDF_PRINCIPLED")
 pa.inputs["Base Color"].default_value = (0.95, 0.96, 0.98, 1)
 # acrílico leitoso (o do módulo Panasonic tem rugosidade 0,5): vidro liso deixava ver a peça de trás
 # escura, e no render é o painel que clareia a cena
-pa.inputs["Alpha"].default_value = 0.55
-pa.inputs["Roughness"].default_value = 0.5
+pa.inputs["Alpha"].default_value = float(os.environ.get("ACRILICO_ALFA", 0.55))
+pa.inputs["Roughness"].default_value = float(os.environ.get("ACRILICO_RUG", 0.5))
+# acrílico cristal (suportes de chinelo Havaianas): ACRILICO_ALFA=0.12 ACRILICO_RUG=0.05, quase invisível como no render
 acrilico.surface_render_method = 'BLENDED'
 
 def translucido(m):

@@ -338,6 +338,7 @@ for nome, filtro, alvo, px in [("grande", lambda d: d>=1.5, ATLAS_M2[0], 4096), 
 if folhas:
     for i,(a,objs) in enumerate(bins(folhas, ATLAS_FOLHA_M2)):
         grupos[f"folha{i+1}"]=(objs, 4096, a)
+grupos={g:v for g,v in grupos.items() if v[0]}   # sem peça grande (display pequeno): grupo vazio quebrava o atlas
 for g,(objs,px,a) in grupos.items(): log(f"atlas {g}: {len(objs)} objetos, {a:.1f} m2, {px}px")
 
 
