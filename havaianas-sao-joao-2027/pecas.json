@@ -14,5 +14,53 @@
    165.0,
    63.5
   ]
+ },
+ {
+  "id": "p005",
+  "codigo": "P005",
+  "nome": "Palete Standard",
+  "canal": "DTC",
+  "placement": "floor",
+  "glb": "https://projetos.75lab.com.br/ar/havaianas-sao-joao-2027/p005.glb?v=1",
+  "usdz": "https://projetos.75lab.com.br/ar/havaianas-sao-joao-2027/p005.usdz?v=1",
+  "poster": "https://projetos.75lab.com.br/ar/havaianas-sao-joao-2027/p005-poster.webp?v=1",
+  "pagina": "https://projetos.75lab.com.br/ar/havaianas-sao-joao-2027/?peca=p005",
+  "medidas_cm": [
+   88.0,
+   120.2,
+   60.1
+  ]
+ },
+ {
+  "id": "p007",
+  "codigo": "P007",
+  "nome": "Cubos Light",
+  "canal": "DTC",
+  "placement": "floor",
+  "glb": "https://projetos.75lab.com.br/ar/havaianas-sao-joao-2027/p007.glb?v=1",
+  "usdz": "https://projetos.75lab.com.br/ar/havaianas-sao-joao-2027/p007.usdz?v=1",
+  "poster": "https://projetos.75lab.com.br/ar/havaianas-sao-joao-2027/p007-poster.webp?v=1",
+  "pagina": "https://projetos.75lab.com.br/ar/havaianas-sao-joao-2027/?peca=p007",
+  "medidas_cm": [
+   122.0,
+   115.0,
+   56.0
+  ]
+ },
+ {
+  "id": "p012",
+  "codigo": "P012",
+  "nome": "Bandeja expositora Premium",
+  "canal": "DTC",
+  "placement": "floor",
+  "glb": "https://projetos.75lab.com.br/ar/havaianas-sao-joao-2027/p012.glb?v=1",
+  "usdz": "https://projetos.75lab.com.br/ar/havaianas-sao-joao-2027/p012.usdz?v=1",
+  "poster": "https://projetos.75lab.com.br/ar/havaianas-sao-joao-2027/p012-poster.webp?v=1",
+  "pagina": "https://projetos.75lab.com.br/ar/havaianas-sao-joao-2027/?peca=p012",
+  "medidas_cm": [
+   94.0,
+   64.0,
+   41.4
+  ]
  }
 ]
