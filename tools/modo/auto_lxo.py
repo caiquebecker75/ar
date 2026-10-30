@@ -14,7 +14,8 @@
 #   "incluir_camadas": [3],                                  # força camada escondida a entrar
 #   "cores": { "Branco": [0.95, 0.95, 0.95] },               # sobrescreve cor de um grupo (linear)
 #   "sem_textura": ["Testeira2"],                            # ignora imagem do grupo e usa só a cor
-#   "decimar_tags": { "Black": 0.1 }                          # reduz só as faces desse grupo (ex.: estrutura de tubos)
+#   "decimar_tags": { "Black": 0.1 },                         # reduz só as faces desse grupo (ex.: estrutura de tubos)
+#   "decimar_camadas": { "17": 0.06 }                        # reduz uma camada inteira (vale também para as instâncias dela)
 # }
 import bpy, bmesh, mathutils, os, struct, json, math, re, unicodedata, difflib
 
@@ -221,6 +222,7 @@ excl_tags = set(C.get('excluir_tags', [])) | {'Shadow Catcher'}
 DEC = C.get('decimar_tags', {})
 meshes = [it for it in items if it['type'] == 'mesh']
 objetos = []; est = {}
+por_camada = {}; mundo_camada = {}   # id do mesh → objetos criados e matriz, para as instâncias
 for k, (it, L) in enumerate(zip(meshes, layers)):
     vis = it['ch'].get('visible')
     if k in C.get('excluir_camadas', []): continue
@@ -228,6 +230,7 @@ for k, (it, L) in enumerate(zip(meshes, layers)):
     pts, polys, ptag, vmap, vmad = geometria(L)
     if not polys: continue
     Mx = mundo_de(it['id']); espelha = Mx.to_3x3().determinant() < 0
+    mundo_camada[it['id']] = Mx
     alvos = {}   # '' = malha da camada; grupos de decimar_tags ficam em malha própria
     def alvo(key):
         if key not in alvos:
@@ -300,19 +303,43 @@ for k, (it, L) in enumerate(zip(meshes, layers)):
             mod = ob_.modifiers.new('reduz', 'DECIMATE'); mod.ratio = DEC[key]
             bpy.ops.object.modifier_apply(modifier='reduz')
             print('DECIMAR', key, antes, '->', len(ob_.data.polygons))
-        objetos.append(ob_)
+        rz = C.get('decimar_camadas', {}).get(str(k), C.get('decimar_camadas', {}).get(k))
+        if rz:
+            antes = len(me.polygons); bpy.context.view_layer.objects.active = ob_
+            mod = ob_.modifiers.new('reduz', 'DECIMATE'); mod.ratio = rz
+            bpy.ops.object.modifier_apply(modifier='reduz')
+            print('DECIMAR camada', k, antes, '->', len(ob_.data.polygons))
+        objetos.append(ob_); por_camada.setdefault(it['id'], []).append(ob_)
         print(f'CAMADA {k} {L["name"]!r} {key or ""} faces={A_["n"]} espelha={espelha}')
+
+# ---------- instâncias (meshInst): a mesma malha repetida pela cena ----------
+# a geometria da camada já está no espaço do glTF; CONV leva o espaço do Modo para ele,
+# então a instância é a camada movida por CONV · Minst · Morigem⁻¹ · CONV⁻¹
+CONV = mathutils.Matrix(((M, 0, 0, 0), (0, 0, -M, 0), (0, M, 0, 0), (0, 0, 0, 1)))
+for it in items:
+    if it['type'] != 'meshInst' or not ligado(it): continue
+    if it['ch'].get('visible') in ('allOff', 'off'): continue
+    src = next((l[1] for l in it['links'] if l[0] == 'source'), None)
+    if src not in por_camada: continue
+    R = CONV @ mundo_de(it['id']) @ mundo_camada[src].inverted() @ CONV.inverted()
+    for o in por_camada[src]:
+        ob2 = bpy.data.objects.new(f"{o.name}-inst{it['id']}", o.data)   # mesma malha, só outra posição
+        ob2.matrix_world = R @ o.matrix_world
+        bpy.context.scene.collection.objects.link(ob2); objetos.append(ob2)
+    print(f"INSTANCIA {it['id']} {it['name']!r} da camada id{src}")
 
 for tg, p in decisao.items():
     print('GRUPO', repr(tg), 'img=', p['img'], 'proj=', p['loc'] and p['loc']['proj'], 'cor=', [round(c, 3) for c in p['cor']], 'lumi=', p['lumi'], 'modo=', p['arquivo'] and os.path.basename(p['arquivo']))
 
 # frente da peça em +Z do glTF (−Y do Blender): "girar_y" em graus, sentido anti-horário visto de cima
 if C.get('girar_y'):
-    for o in objetos: o.data.transform(mathutils.Matrix.Rotation(math.radians(C['girar_y']), 4, 'Z'))
+    giro = mathutils.Matrix.Rotation(math.radians(C['girar_y']), 4, 'Z')
+    for o in objetos: o.matrix_world = giro @ o.matrix_world
 # origem no centro da base (todas as malhas juntas)
 bb =[o.matrix_world @ mathutils.Vector(c) for o in objetos for c in o.bound_box]
 cx = (min(p.x for p in bb) + max(p.x for p in bb)) / 2; cy = (min(p.y for p in bb) + max(p.y for p in bb)) / 2; z0 = min(p.z for p in bb)
-for o in objetos: o.data.transform(mathutils.Matrix.Translation((-cx, -cy, -z0)))
+desloca = mathutils.Matrix.Translation((-cx, -cy, -z0))
+for o in objetos: o.matrix_world = desloca @ o.matrix_world
 dims = [max(p.x for p in bb) - min(p.x for p in bb), max(p.y for p in bb) - min(p.y for p in bb), max(p.z for p in bb) - min(p.z for p in bb)]
 print('TRIS por grupo', est)
 print('DIMS cm (L x P x A)', [round(x * 100, 1) for x in dims])
