@@ -42,6 +42,7 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `arcor-tortuguita/` | Arcor, Tortuguita: 15 peças de PDV (leves, médias e pesadas) numa página, 3D e arte do ChatGPT | de 15 x 15 cm (wobbler) a 400 x 320 cm (fachada) |
 | `codice-displays/` | Códice, oito displays numa página (`?modelo=essencial`, `sense`, `media`, `ilha`, `painel`, `vitrine`, `categoria`, `multiuso`) | medidas de referência, de 195 × 74 × 52 cm a 202 × 104 × 55 cm |
 | `codice-display-universal/` | Códice, Display Universal (projeto NEO001): seis configurações do mesmo módulo (`?modelo=torre`, `duplo`, `ilha`, `ilha-frentes`, `baixa`, `baixa-aereo`), três exemplos de marca (`lacta`, `bis`, `pedigree-whiskas`) e o módulo inteligente da base (`brain`) | de 20 × 13 × 5 cm (módulo inteligente) a 112 × 112 × 170 cm (ilha de 4 módulos) |
+| `ngv-displays/` | NGV, campanha **displays NGV** (Display Universal, projeto NEO001): um módulo por marca (`?modelo=vitalitabs`, `dellares`, `bellafio`, `savedent`) e a ilha de quatro módulos com as quatro marcas (`ilha`) | 62 × 65 × 170 cm (módulo) e 112 × 112 × 170 cm (ilha) |
 
 > **Códice:** não havia arquivo 3D dos displays. Os modelos foram montados em three.js a partir dos renders
 > do deck comercial, com as texturas desenhadas em canvas (logotipo, painel perfurado, tela do pacote Media).
@@ -93,6 +94,24 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 > direto do arquivo (formato IFF parecido com o LWO: `PNTS`, `POLS`, `PTAG`, `VMAP/VMAD`), com o Z invertido,
 > e montada no Blender por script. Cuidado: a cena pode trazer malhas escondidas de outros projetos
 > (canal `visible` = `allOff`), e texturas com projeção cúbica ignoram o UV (refazer como projeção planar).
+
+## Gôndola com bandejas aramadas: o que aprendemos nas peças de PDV da Panco
+
+Quatro `.blend` (Blender 5.2, metros: ilhas de 1 e 2 paletes, módulos cabeceira e central) e dois `.lxo` do Mauricio
+(cubos e pórtico, montados com `auto_lxo.py`). Roteiro em `.work/panco/` (`pre.py`, `imp.py`, `normais.py`, `run.sh`, `fin.sh`).
+Os seis passam pelo mesmo caminho: `pre.py` → `prep_blend.py --atlas-arte=3 --refazer-uv-abaixo=0.05` → `normais.py` → `bake.py --luz-px=2048`.
+
+1. **Cena sem luz** (mundo cinza escuro, ACES): o `pre.py` põe o HDR de estúdio `interior.exr` e Filmic High Contrast 0,5,
+   igual ao `prep.py` com GLB. Os `.lxo` entram pelo mesmo caminho (`imp.py` importa o `raw.glb` e separa por material).
+2. **Atlas de arte próprio** (`--atlas-arte`): com milhares de ilhas de arame a cobertura do atlas comum cai para 12% e a
+   arte lateral de 1,24 m ficava com ~700 px. As peças com imagem vão para atlas de 4096 só delas (70 a 80% de cobertura).
+   Na estrutura de arame o recorte em grade e o Lightmap Pack picotam a luz em triângulos: `--refazer-uv-abaixo=0.05` mantém o Smart UV.
+3. **Normal para dentro** em painéis do projeto: no Cycles não aparece, mas a luz assada sai preta (só 6% do atlas de arte
+   recebia luz). `normais.py` recalcula para fora em cada peça do atlas antes do bake.
+4. **Arte sem fundo** (testeira do módulo central: a face da arte e as bordas, sem a de trás): o verso mostrava a arte
+   espelhada. O `pre.py` fecha com uma face de PS cru na espessura da peça.
+5. Instâncias de coleção (bandejas aramadas, base de gôndola) e curvas viram malha na captura do `prep_blend`; o `pre.py`
+   só deixa as curvas com 8 lados por arame e reduz os parafusos `Bolt` (5,5 mil triângulos cada) a 6%.
 
 ## Como publicar um display novo
 
