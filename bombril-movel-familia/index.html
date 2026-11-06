@@ -24,6 +24,16 @@
 <script type="module" src="../vendor/model-viewer.min.js"></script>
 <script defer src="../vendor/qrcode.min.js"></script>
 <script type="module" src="../assets/ar.js?v=8"></script>
+<script type="application/json" id="modelos">
+[
+  { "id": "bombril", "nome": "Móvel Família Bombril", "alt": "Móvel Família na versão Bombril, em 3D", "src": "display.glb?v=2", "ios": "display.usdz?v=3", "poster": "poster.webp?v=1" },
+  { "id": "marcas", "nome": "Móvel Família Marcas", "alt": "Móvel Família na versão Marcas, com Mon Bijou e Limpol nas laterais, em 3D", "src": "display-marcas.glb?v=1", "ios": "display-marcas.usdz?v=2", "poster": "poster-marcas.webp?v=1", "camera": { "orbita": "154deg 76deg auto" } },
+  { "id": "nichos", "nome": "Móvel Família Marcas + Nicho", "alt": "Móvel Família com os nichos de Sapólio e Kalipto na frente, em 3D", "src": "display-nichos.glb?v=1", "ios": "display-nichos.usdz?v=2", "poster": "poster-nichos.webp?v=1", "camera": { "orbita": "154deg 76deg auto" } },
+  { "id": "recuada", "nome": "Móvel Família Nicho Recuado", "alt": "Móvel Família com os nichos na base recuada, em 3D", "src": "display-recuada.glb?v=1", "ios": "display-recuada.usdz?v=2", "poster": "poster-recuada.webp?v=1", "camera": { "orbita": "154deg 76deg auto" } },
+  { "id": "limpol", "nome": "Móvel Família Limpol", "alt": "Móvel Família na versão Limpol Perfumes, em 3D", "src": "display-limpol.glb?v=1", "ios": "display-limpol.usdz?v=2", "poster": "poster-limpol.webp?v=1" },
+  { "id": "envelopado", "nome": "Móvel Família Limpol Envelopado", "alt": "Móvel Família envelopado em Limpol Perfumes, em 3D", "src": "display-envelopado.glb?v=2", "ios": "display-envelopado.usdz?v=2", "poster": "poster-envelopado.webp?v=1" }
+]
+</script>
 </head>
 <body>
 <main class="app">
@@ -33,10 +43,36 @@
   </header>
 
   <section class="intro">
-    <div class="eyebrow">Bombril · Peça CORE</div>
+    <div class="eyebrow">Bombril · Peça CORE · 6 versões</div>
     <h1>Móvel <b>Família</b></h1>
     <div class="dims" aria-label="Medidas">
       <span>Altura<b>233 cm</b></span><span>Largura<b>220 cm</b></span><span>Profundidade<b>109 cm</b></span>
+    </div>
+    <div class="modelos" role="group" aria-label="Escolha a versão do móvel">
+      <button type="button" data-modelo="bombril" aria-pressed="true" class="on">
+        <img src="poster.webp?v=1" alt="" width="40" height="50">
+        <span><b>Bombril</b><small>lã de aço e esponjas</small></span>
+      </button>
+      <button type="button" data-modelo="marcas" aria-pressed="false">
+        <img src="poster-marcas.webp?v=1" alt="" width="40" height="50">
+        <span><b>Marcas</b><small>Mon Bijou e Limpol</small></span>
+      </button>
+      <button type="button" data-modelo="nichos" aria-pressed="false">
+        <img src="poster-nichos.webp?v=1" alt="" width="40" height="50">
+        <span><b>Marcas + Nicho</b><small>Sapólio e Kalipto</small></span>
+      </button>
+      <button type="button" data-modelo="recuada" aria-pressed="false">
+        <img src="poster-recuada.webp?v=1" alt="" width="40" height="50">
+        <span><b>Nicho Recuado</b><small>base recuada</small></span>
+      </button>
+      <button type="button" data-modelo="limpol" aria-pressed="false">
+        <img src="poster-limpol.webp?v=1" alt="" width="40" height="50">
+        <span><b>Limpol</b><small>Limpol Perfumes</small></span>
+      </button>
+      <button type="button" data-modelo="envelopado" aria-pressed="false">
+        <img src="poster-envelopado.webp?v=1" alt="" width="40" height="50">
+        <span><b>Limpol Envelopado</b><small>móvel inteiro Limpol</small></span>
+      </button>
     </div>
   </section>
 
