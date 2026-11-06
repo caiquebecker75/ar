@@ -44,6 +44,7 @@ A escala fica travada (`ar-scale="fixed"`): o cliente não consegue aumentar nem
 | `codice-displays/` | Códice, oito displays numa página (`?modelo=essencial`, `sense`, `media`, `ilha`, `painel`, `vitrine`, `categoria`, `multiuso`) | medidas de referência, de 195 × 74 × 52 cm a 202 × 104 × 55 cm |
 | `codice-display-universal/` | Códice, Display Universal (projeto NEO001): seis configurações do mesmo módulo (`?modelo=torre`, `duplo`, `ilha`, `ilha-frentes`, `baixa`, `baixa-aereo`), três exemplos de marca (`lacta`, `bis`, `pedigree-whiskas`) e o módulo inteligente da base (`brain`) | de 20 × 13 × 5 cm (módulo inteligente) a 112 × 112 × 170 cm (ilha de 4 módulos) |
 | `ngv-displays/` | NGV, campanha **displays NGV** (Display Universal, projeto NEO001): um módulo por marca (`?modelo=vitalitabs`, `dellares`, `bellafio`, `savedent`) e a ilha de quatro módulos com as quatro marcas (`ilha`) | 62 × 65 × 170 cm (módulo) e 112 × 112 × 170 cm (ilha) |
+| `bombril-pdv-leve-<marca>/` | Bombril, PDV leve (BOM002): uma página por marca (`aco`, `sint`, `limpol`, `monbijou`, `qlustro`, `kalipto`, `sapolio`), com 8 ou 9 peças cada (`?modelo=testeira`, `stopper`, `regua`, `wobbler`, `adesivo`, `display-chao`, `display-balcao`, `mobile`, `clipstrip`); material real (PBR), não assado | de 100 × 4 cm (régua) a 50 × 40 × 179 cm (display de chão) |
 
 > **Códice:** não havia arquivo 3D dos displays. Os modelos foram montados em three.js a partir dos renders
 > do deck comercial, com as texturas desenhadas em canvas (logotipo, painel perfurado, tela do pacote Media).
@@ -352,3 +353,16 @@ O que já deu errado e está resolvido nos scripts:
 - Acrílico: na web, `KHR_materials_transmission` + IOR 1,49 (vidro físico, reflete o HDR). No iPhone o Quick Look ignora
   transmissão: variante com opacidade 6% (`tools/scala/ios-acrilico.mjs`); com 12 a 14% já aparece um véu branco.
 - Texturas com transparência: `--keep-alpha` no `prepare-glb` mantém PNG (o padrão achata em JPEG com fundo branco).
+
+## PDV leve Bombril: material real (PBR) em vez de luz assada
+
+Peças impressas (PS, papelão, vinil) com verniz localizado: o cliente pediu cor viva e o reflexo do verniz mudando
+quando a peça se mexe. A luz assada (emissão) deixava a cor lavada e o reflexo parado. Aqui o GLB sai direto do
+Blender com material real: arte na cor-base (resolução original, até 4096), rugosidade por acabamento, verniz como
+clearcoat (`KHR_materials_clearcoat`, que o Quick Look também lê) e PET em transparência. Na página:
+`environment-image="../assets/hdr/supermercado.hdr" tone-mapping="neutral" exposure="1"`.
+Roteiro no projeto: `scripts/build_ar.py --pbr` (peça isolada, malha real, relevos procedurais removidos) →
+`prepare-glb --no-verso` (peças são sólidas) → `compacta-glb 1 0` → `tools/bake/usdz.py --normais` → `usdz-compact.py`.
+**Pegadinha:** o produto em relevo (grade 120 × 48 por frasco) dava 3,7 milhões de triângulos e USDZ de 150 MB no
+display de chão com 150 frascos; reduzir a grade para ~16 × 34 e cortar as faces fora da silhueta (alfa em MASK no
+recorte) leva a 265 mil triângulos e 12 MB.
