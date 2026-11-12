@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Separador Snickers 20 cm</title>
+<meta name="description" content="75 LAB · Separador de compras Snickers de 19 cm para o Renato Supermercado: 5 barras, PS 2 mm. Capa interativa e AR em tamanho real.">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="Separador de compras Snickers · 20 cm">
+<meta property="og:description" content="Veja o display abastecido, vazio, montando e desmontando, e coloque em tamanho real no caixa com o AR.">
+<meta property="og:image" content="https://projetos.75lab.com.br/ar/mars-snickers-separador-20cm/poster.webp?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Lexend:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script type="importmap">
+{ "imports": {
+  "three": "../../vendor/three/three.module.min.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.183.0/examples/jsm/"
+} }
+</script>
+<script type="module" src="../../vendor/model-viewer.min.js"></script>
+<script defer src="../../vendor/qrcode.min.js"></script>
+<style>
+/* Identidade Snickers: chocolate, amendoim, azul e vermelho do logo. Anton nos títulos (mesma família condensada da campanha), Lexend no texto (75 LAB). */
+:root{
+  --choc:#2a1209; --choc-2:#3b1a0c; --choc-3:#552612; --cream:#f7efe4; --cream-2:#efe3d3;
+  --peanut:#e9a046; --blue:#24308a; --red:#e2231a; --ink:#2a1209; --muted:#7a5a48; --line:#e2d3bf;
+  --display:"Anton","Impact","Arial Narrow",sans-serif; --body:"Lexend",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);font:400 16px/1.55 var(--body)}
+a{color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px))}
+/* barra superior */
+nav.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--choc) 94%,transparent);backdrop-filter:blur(8px);color:var(--cream)}
+nav.top .wrap{display:flex;align-items:center;gap:18px;padding-block:10px}
+.brand{font:600 15px var(--body);letter-spacing:.02em;text-decoration:none;margin-right:auto;white-space:nowrap}
+.brand em{font-style:normal;color:var(--peanut)}
+nav.top a.pg{font:500 12px var(--body);letter-spacing:.12em;text-transform:uppercase;text-decoration:none;opacity:.7;padding:6px 0;border-bottom:2px solid transparent;white-space:nowrap}
+nav.top a.pg.on{opacity:1;border-color:var(--peanut)}
+nav.top a.pg span{color:var(--peanut);margin-right:6px}
+/* páginas */
+section.page{min-height:calc(100svh - 48px);padding-block:36px 48px;display:flex;align-items:center}
+section.page > .wrap{width:100%}
+.eyebrow{font:500 12px var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+h1,h2{font-family:var(--display);font-weight:400;text-transform:uppercase;line-height:.92;margin:.2em 0 .3em;letter-spacing:.005em}
+h1{font-size:clamp(46px,7vw,92px)}
+h1 b,h2 b{font-weight:400;color:var(--red)}
+h2{font-size:clamp(38px,5vw,68px)}
+.lead{color:var(--muted);max-width:30em;margin:0 0 18px}
+/* capa */
+.cover{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:28px;align-items:center}
+.specs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:6px 0 24px;max-width:470px}
+.specs div{border-top:2px solid var(--ink);padding-top:6px}
+.specs b{display:block;font:400 30px/1.05 var(--display);font-variant-numeric:tabular-nums}
+.specs small{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.stage{position:relative;aspect-ratio:6/5;border-radius:26px;overflow:hidden;background:radial-gradient(70% 60% at 50% 62%,#fffaf3 0%,var(--cream-2) 75%);touch-action:pan-y}
+.stage canvas{display:block;width:100%;height:100%;cursor:grab}
+.stage canvas:active{cursor:grabbing}
+.stage .tag{position:absolute;left:16px;top:14px;font:500 11px var(--body);letter-spacing:.12em;text-transform:uppercase;background:var(--choc);color:var(--cream);padding:5px 11px;border-radius:999px}
+.stage .hint{position:absolute;right:16px;top:14px;font-size:12px;color:var(--muted)}
+.stage .load{position:absolute;inset:0;display:grid;place-items:center;font-size:14px;color:var(--muted)}
+/* botões de estado */
+.states{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chip{font:500 14px var(--body);border:2px solid var(--choc);background:transparent;color:var(--choc);border-radius:999px;padding:9px 16px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:background .15s,color .15s}
+.chip svg{width:16px;height:16px}
+.chip:hover{background:color-mix(in srgb,var(--choc) 8%,transparent)}
+.chip[aria-pressed="true"]{background:var(--choc);color:var(--cream)}
+.chip:focus-visible,.btn:focus-visible,nav a:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.timeline{max-width:470px}
+.timeline input{width:100%;accent-color:var(--red)}
+.timeline .marks{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.04em;color:var(--muted);margin-top:2px}
+.etapa{font-size:14px;margin:10px 0 0;min-height:1.6em}
+.etapa b{color:var(--red);font-weight:500}
+/* página AR */
+.arpage{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:28px;align-items:center}
+.arpage model-viewer{width:100%;aspect-ratio:6/5;border-radius:26px;background:radial-gradient(70% 60% at 50% 62%,#fffaf3 0%,var(--cream-2) 75%);--poster-color:transparent}
+.btn{font:500 17px var(--body);border:0;border-radius:999px;padding:14px 24px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;background:var(--red);color:#fff;box-shadow:0 3px 0 #9d150f;text-decoration:none}
+.btn svg{width:22px;height:22px}
+.btn[disabled]{opacity:.55;cursor:default}
+.qrcard{display:flex;gap:18px;align-items:center;background:#fff;border-radius:20px;padding:16px;max-width:440px;box-shadow:0 1px 0 var(--line)}
+.qrcard .qr{width:132px;flex:none}
+.qrcard .qr svg{width:100%;height:auto;display:block}
+.qrcard strong{display:block;font:400 22px var(--display);text-transform:uppercase;letter-spacing:.02em}
+.qrcard p{margin:4px 0 0;font-size:14px;color:var(--muted)}
+ol.steps{list-style:none;padding:0;margin:20px 0 0;display:grid;gap:10px;max-width:440px}
+ol.steps li{display:flex;gap:12px;font-size:14px;align-items:flex-start}
+ol.steps span{flex:none;width:24px;height:24px;border-radius:50%;background:var(--peanut);color:var(--choc);font:600 12px/24px var(--body);text-align:center}
+.medidas{display:flex;gap:18px;flex-wrap:wrap;margin:6px 0 20px;font-size:14px;color:var(--muted)}
+.medidas b{color:var(--ink);font-weight:500}
+.mobile-only{display:none}
+html.is-mobile .mobile-only{display:block}
+html.is-mobile .desktop-only{display:none}
+footer{background:var(--choc);color:color-mix(in srgb,var(--cream) 75%,transparent);font-size:12px;padding-block:18px}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (max-width:860px){
+  .cover,.arpage{grid-template-columns:minmax(0,1fr)}
+  .cover .stage{order:-1}
+  section.page{min-height:0}
+  .specs{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .specs b{font-size:24px}
+  nav.top a.pg{font-size:11px;letter-spacing:.08em}
+  nav.top .brand{font-size:13px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+<script>(function(){var u=navigator.userAgent,m=/Android|iPhone|iPad|iPod/i.test(u)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);document.documentElement.classList.add(m?'is-mobile':'is-desktop')})()</script>
+</head>
+<body>
+<nav class="top" aria-label="Páginas">
+  <div class="wrap">
+    <a class="brand" href="https://75lab.com.br" target="_blank" rel="noopener">75<em>LAB</em> · Snickers</a>
+    <a class="pg on" href="#capa"><span>01</span>Capa</a>
+    <a class="pg" href="#ar"><span>02</span>AR em tamanho real</a>
+  </div>
+</nav>
+
+<main>
+<section class="page" id="capa">
+  <div class="wrap cover">
+    <div>
+      <div class="eyebrow">Snickers · Renato Supermercado · revisão R02</div>
+      <h1>Separador de compras <b>Snickers</b></h1>
+      <p class="lead">A versão compacta pedida depois do protótipo: 5 barras lado a lado, sem espaço sobrando entre elas, e o logo do supermercado com a etiqueta de preço acima. Do outro lado, <b>Caixa fechado</b>.</p>
+      <div class="specs" aria-label="Medidas">
+        <div><b>19</b><small>cm largura</small></div>
+        <div><b>17,1</b><small>cm fundo</small></div>
+        <div><b>13</b><small>cm altura</small></div>
+        <div><b>5</b><small>barras</small></div>
+      </div>
+      <div class="states" role="group" aria-label="Mostrar o display">
+        <button class="chip" type="button" data-estado="abastecido" aria-pressed="true">Abastecido</button>
+        <button class="chip" type="button" data-estado="vazio" aria-pressed="false">Vazio</button>
+        <button class="chip" type="button" data-estado="montar" aria-pressed="false"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 5v14l12-7z"/></svg>Montando</button>
+        <button class="chip" type="button" data-estado="desmontar" aria-pressed="false"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 5v14L5 12z"/></svg>Desmontando</button>
+      </div>
+      <div class="timeline">
+        <label for="t" class="eyebrow">Montagem passo a passo</label>
+        <input id="t" type="range" min="0" max="4" step="0.01" value="4">
+        <div class="marks" aria-hidden="true"><span>Faca</span><span>Corpo</span><span>Laterais</span><span>Divisórias</span><span>Barras</span></div>
+        <p class="etapa" id="etapa" aria-live="polite"></p>
+      </div>
+    </div>
+    <div class="stage" id="stage">
+      <span class="tag">3D · medidas reais</span>
+      <span class="hint">Arraste para girar</span>
+      <div class="load" id="load">Carregando o 3D…</div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="ar" style="background:var(--cream-2)">
+  <div class="wrap arpage">
+    <model-viewer id="mv" src="../display.glb?v=1" ios-src="../display.usdz?v=1" poster="../poster.webp?v=1"
+      alt="Separador de compras Snickers de 19 cm em 3D"
+      ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor"
+      camera-controls auto-rotate auto-rotate-delay="2500" rotation-per-second="14deg"
+      camera-orbit="-32deg 66deg auto" min-camera-orbit="auto 25deg auto" max-camera-orbit="auto 92deg auto"
+      interaction-prompt="none" shadow-intensity="1" shadow-softness="0.9"
+      environment-image="../../assets/hdr/supermercado.hdr" tone-mapping="neutral" exposure="0.95" loading="lazy">
+      <button slot="ar-button" hidden></button>
+    </model-viewer>
+    <div>
+      <div class="eyebrow">Página 02 · realidade aumentada</div>
+      <h2>Veja no caixa, <b>em tamanho real</b></h2>
+      <p class="lead">O separador aparece com as medidas de fabricação, travado em escala 1:1. Dá para chegar perto e conferir as barras, o logo e a etiqueta de preço.</p>
+      <div class="medidas"><span><b>19</b> cm de largura</span><span><b>17,1</b> cm de fundo</span><span><b>13</b> cm de altura</span><span>PS <b>2 mm</b></span></div>
+      <div class="mobile-only">
+        <button class="btn" id="cta" type="button" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M12 6.6l4.6 2.7v5.4L12 17.4l-4.6-2.7V9.3z"/><path d="M7.4 9.3 12 12l4.6-2.7M12 12v5.4"/></svg>
+          <span>Ver no meu espaço</span>
+        </button>
+        <p class="lead" id="noar" hidden style="margin-top:12px">Para ver em realidade aumentada, abra este link no <b>Safari</b> (iPhone) ou no <b>Chrome</b> (Android).</p>
+      </div>
+      <div class="desktop-only">
+        <div class="qrcard">
+          <div class="qr" id="qr" aria-label="QR code do AR"></div>
+          <div><strong>Abra no celular</strong><p>Aponte a câmera para o código e toque em <b>Ver no meu espaço</b>.</p></div>
+        </div>
+      </div>
+      <ol class="steps">
+        <li><span>1</span>Abra o link no celular, iPhone ou Android.</li>
+        <li><span>2</span>Aponte para a esteira do caixa ou uma mesa e mova o aparelho devagar.</li>
+        <li><span>3</span>O separador aparece em tamanho real, com as 5 barras.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap"><span>Projeto 75 LAB para Snickers e Renato Supermercado · separador de compras 20 cm · R02</span><a href="https://75lab.com.br" target="_blank" rel="noopener">75lab.com.br</a></div></footer>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from '../../vendor/three/examples/jsm/loaders/GLTFLoader.js';
+import { RoomEnvironment } from '../../vendor/three/examples/jsm/environments/RoomEnvironment.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const $ = (s) => document.querySelector(s);
+const stage = $('#stage');
+const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---------- cena ----------
+const r = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+r.setPixelRatio(Math.min(devicePixelRatio, 2));
+r.toneMapping = THREE.NeutralToneMapping; r.toneMappingExposure = 0.95;
+r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
+stage.prepend(r.domElement);
+const scene = new THREE.Scene();
+scene.environment = new THREE.PMREMGenerator(r).fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.85;
+const sol = new THREE.DirectionalLight(0xffffff, 1.4);
+sol.position.set(0.35, 0.9, 0.5); sol.castShadow = true;
+sol.shadow.mapSize.set(2048, 2048); sol.shadow.radius = 6;
+Object.assign(sol.shadow.camera, { left: -0.45, right: 0.45, top: 0.45, bottom: -0.45, near: 0.1, far: 3 });
+scene.add(sol);
+const chao = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), new THREE.ShadowMaterial({ opacity: 0.16 }));
+chao.rotation.x = -Math.PI / 2; chao.receiveShadow = true; scene.add(chao);
+
+const cam = new THREE.PerspectiveCamera(28, 1, 0.01, 20);
+cam.position.set(0.36, 0.25, 0.46);
+const ctl = new OrbitControls(cam, r.domElement);
+ctl.enableDamping = true; ctl.enablePan = false; ctl.minDistance = 0.25; ctl.maxDistance = 2;
+ctl.maxPolarAngle = THREE.MathUtils.degToRad(88);
+ctl.target.set(0, 0.055, 0);
+ctl.autoRotate = !reduz; ctl.autoRotateSpeed = 0.6;
+ctl.addEventListener('start', () => { ctl.autoRotate = false; });
+
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  r.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage); resize();
+
+// ---------- modelo ----------
+const gltf = await new GLTFLoader().loadAsync('../display.glb?v=1');
+const model = gltf.scene; scene.add(model);
+model.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+$('#load').remove();
+const get = (n) => model.getObjectByName(n);
+const dobras = ['dobra_fundo', 'dobra_frente', 'dobra_aba', 'dobra_labio'].map(get);
+const aba = get('aba'), corpo = get('corpo');
+const laterais = ['lateral_dir', 'lateral_esq'].map(get);
+const divs = [1, 2, 3, 4].map((k) => get('divisoria_' + k));
+const barras = [1, 2, 3, 4, 5].map((k) => get('barra_' + k));
+
+const clamp = (v) => Math.min(1, Math.max(0, v));
+const ease = (t) => t * t * (3 - 2 * t);
+const ETAPAS = ['<b>Faca</b> · o corpo sai de uma peça só de PS 2 mm, impressa', '<b>Corpo</b> · dobra quente nas 4 dobras: face de trás, vértice, pé e lábio', '<b>Laterais</b> · encaixadas por dentro, face rente ao corpo', '<b>Divisórias</b> · 4 divisórias encaixadas no pé e no lábio, 5 vãos', '<b>Abastecido</b> · 5 barras Snickers, uma por vão'];
+let T = 4, comBarras = true;
+
+function aplica() {
+  const f = ease(clamp(T)), l = ease(clamp(T - 1)), d = ease(clamp(T - 2)), b = ease(clamp(T - 3));
+  dobras.forEach((g) => { g.rotation.x = g.userData.montado * f; });
+  aba.position.y = aba.userData.yMontado * f;
+  // faca aberta mostra o lado impresso: vira o corpo no começo da montagem
+  const vira = ease(clamp(1 - T * 2.5));
+  corpo.rotation.z = Math.PI * vira; corpo.position.y = 2 * vira;
+  laterais.forEach((g) => { g.position.x = g.userData.xMontado + g.userData.lado * (1 - l) * 150; });
+  divs.forEach((g, k) => { g.position.y = (1 - d) * (95 + k * 8); });
+  barras.forEach((g, k) => { g.visible = comBarras && T > 3; g.position.y = g.userData.yMontado + (1 - b) * (120 + k * 8); });
+  // enquadra: faca aberta é comprida para trás
+  const alvoZ = -0.15 * (1 - f), dist = 0.52 + 0.5 * (1 - f) + 0.1 * (1 - l);
+  return { alvoZ, dist };
+}
+const etapa = $('#etapa'), slider = $('#t');
+function textoEtapa() { etapa.innerHTML = ETAPAS[Math.min(4, Math.floor(T + 0.001))]; if (!comBarras && T >= 3) etapa.innerHTML = '<b>Vazio</b> · bandeja e divisórias à vista, prontas para abastecer'; }
+
+let anima = null;
+function vaiPara(alvo, ms) {
+  const de = T, t0 = performance.now();
+  if (reduz) ms = 1;
+  anima = (agora) => {
+    const p = clamp((agora - t0) / ms);
+    T = de + (alvo - de) * p; slider.value = T;
+    if (p >= 1) anima = null;
+  };
+}
+function marca(estado) { document.querySelectorAll('[data-estado]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.estado === estado))); }
+document.querySelectorAll('[data-estado]').forEach((b) => b.addEventListener('click', () => {
+  const e = b.dataset.estado; marca(e);
+  if (e === 'abastecido') { comBarras = true; if (T < 3) T = 3; vaiPara(4, 900); }
+  else if (e === 'vazio') { comBarras = true; vaiPara(3, 900); setTimeout(() => { if (b.getAttribute('aria-pressed') === 'true') comBarras = false; }, reduz ? 0 : 900); if (T <= 3) comBarras = false; }
+  else if (e === 'montar') { comBarras = true; T = 0; vaiPara(4, 7000); }
+  else if (e === 'desmontar') { comBarras = true; if (T < 1) T = 4; vaiPara(0, 7000); }
+}));
+slider.addEventListener('input', () => { anima = null; comBarras = true; T = +slider.value; marca(T >= 3.99 ? 'abastecido' : ''); });
+
+const alvo = new THREE.Vector3(), dir = new THREE.Vector3();
+let distAtual = cam.position.distanceTo(ctl.target);
+function loop(agora) {
+  if (anima) anima(agora);
+  const { alvoZ, dist } = aplica(); textoEtapa();
+  alvo.set(0, 0.055, alvoZ); ctl.target.lerp(alvo, 0.08);
+  distAtual += (dist - distAtual) * 0.06;
+  dir.subVectors(cam.position, ctl.target).normalize(); cam.position.copy(ctl.target).addScaledVector(dir, distAtual);
+  ctl.update(); r.render(scene, cam);
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+// a distância muda pelo zoom do usuário também
+ctl.addEventListener('end', () => { distAtual = cam.position.distanceTo(ctl.target); });
+
+// ---------- página AR ----------
+const mv = $('#mv'), cta = $('#cta');
+const link = new URL('./', location.href).href.replace(/apresentacao\/$/, '');
+window.addEventListener('load', () => {
+  if (window.qrcode && $('#qr')) { const q = qrcode(0, 'M'); q.addData(link); q.make(); $('#qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true, alt: 'QR code do AR' }); }
+});
+const ehMobile = document.documentElement.classList.contains('is-mobile');
+if (ehMobile) {
+  mv.setAttribute('loading', 'eager');
+  const libera = () => { cta.disabled = false; };
+  customElements.whenDefined('model-viewer').then(() => {
+    const t0 = performance.now();
+    (function v() { if (mv.canActivateAR) return libera(); if (performance.now() - t0 > 6000) { $('#noar').hidden = false; return; } setTimeout(v, 200); })();
+  });
+  cta.addEventListener('click', () => mv.activateAR());
+}
+
+// ---------- navegação ----------
+const pgs = [...document.querySelectorAll('nav a.pg')];
+new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) pgs.forEach((a) => a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id)); }), { threshold: 0.5 })
+  .observe($('#capa'));
+new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) pgs.forEach((a) => a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id)); }), { threshold: 0.5 })
+  .observe($('#ar'));
+</script>
+</body>
+</html>
