@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="75 LAB · Display de balcão 3 Mãos em polionda ou papelão: encaixável, sem cola, 3 peças numa faca só.">
+<meta name="robots" content="noindex">
+<meta name="versao" content="20261112134412">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Display de Balcão 3 Mãos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap">
+<style>
+/* Layout: capítulos empilhados em "palcos" creme, render sempre protagonista, texto técnico em coluna lateral. Identidade 3 Mãos (creme, marrom, roxo, amarelo, rosa). Look único e claro, de propósito. */
+:root{
+  --cream:#fbf3e6; --stage:#f3e8d6; --ink:#4a2622; --ink-soft:#7a5650; --roxo:#7f73b2; --roxo-deep:#5d5294;
+  --amarelo:#fcc546; --rosa:#f19dc2; --line:#e3d4be; --white:#fffaf2;
+  --display:"Fredoka","Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--cream)}
+/* barra de capítulos */
+nav.chap{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--cream) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav.chap .wrap{display:flex;align-items:center;gap:14px;padding-block:10px;flex-wrap:wrap}
+nav.chap .brand{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.02em;margin-right:auto;white-space:nowrap}
+nav.chap .brand span{color:var(--roxo)}
+nav.chap a{color:var(--ink-soft);text-decoration:none;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding:6px 2px;border-bottom:2px solid transparent}
+nav.chap a.on{color:var(--ink);border-color:var(--amarelo)}
+nav.chap a:focus-visible,button:focus-visible{outline:3px solid var(--roxo);outline-offset:2px;border-radius:6px}
+.btn{font-family:var(--display);font-weight:600;font-size:16px;border:0;border-radius:999px;padding:12px 22px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;text-decoration:none}
+.btn.primary{background:var(--roxo);color:var(--white);box-shadow:0 3px 0 var(--roxo-deep)}
+.btn.primary:hover{background:var(--roxo-deep)}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.btn.small{font-size:14px;padding:8px 16px}
+/* capa */
+.cover{padding-block:28px 40px}
+.cover .grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px;align-items:center}
+.eyebrow{font-family:var(--body);font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--roxo)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(44px,7vw,84px);line-height:.95;margin:.25em 0 .3em;text-wrap:balance}
+h1 em{font-style:normal;color:var(--roxo)}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(32px,4.4vw,52px);line-height:1;margin:0 0 .35em;text-wrap:balance}
+h3{font-family:var(--display);font-weight:600;font-size:20px;margin:0 0 .3em}
+.lead{font-size:18px;max-width:34em;color:var(--ink-soft)}
+.specs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:22px 0 26px;max-width:460px}
+.specs div{border-top:2px solid var(--ink);padding-top:6px}
+.specs b{display:block;font-family:var(--display);font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1}
+.specs small{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+.turn{position:relative;aspect-ratio:5/4;max-width:100%;background:radial-gradient(60% 48% at 50% 60%,var(--white),var(--stage) 70%);border-radius:28px;overflow:hidden;cursor:grab;touch-action:pan-y}
+.turn:active{cursor:grabbing}
+.turn img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}
+.turn .hint{position:absolute;left:16px;bottom:12px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);background:color-mix(in srgb,var(--white) 80%,transparent);padding:4px 10px;border-radius:999px}
+/* capítulos */
+section.ch{padding-block:56px;border-top:1px solid var(--line)}
+.ch-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.ch-head p{margin:0;max-width:36em;color:var(--ink-soft)}
+.num{font-family:var(--display);font-weight:600;color:var(--rosa);font-size:18px;display:block;margin-bottom:4px}
+.stage{background:radial-gradient(70% 55% at 50% 58%,var(--white),var(--stage) 75%);border-radius:28px;overflow:hidden;position:relative}
+.stage img{display:block;width:100%;height:auto}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:var(--body);font-weight:700;font-size:13px;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--cream)}
+.two{display:grid;grid-template-columns:minmax(0,8fr) minmax(0,4fr);gap:24px;align-items:start}
+.side{display:grid;gap:14px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:16px 18px}
+.card ul{margin:.3em 0 0;padding-left:1.1em}
+.card li{margin:.2em 0}
+.books{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.books li{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:10px;align-items:center;font-size:15px}
+.books li i{width:12px;height:12px;border-radius:3px;display:block}
+.books li span{color:var(--ink-soft);font-size:13px;font-variant-numeric:tabular-nums}
+.gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.gal figure{margin:0}
+.gal figcaption{font-size:14px;color:var(--ink-soft);margin-top:8px}
+.gal .stage{aspect-ratio:5/4}
+.gal .stage img{height:100%;object-fit:contain}
+.parts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}
+.parts .card b{font-family:var(--display);font-size:18px}
+.parts .card .dim{font-variant-numeric:tabular-nums;font-weight:700;color:var(--roxo-deep)}
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:22px;counter-reset:st}
+.steps figure{margin:0}
+.steps .stage{aspect-ratio:5/4;border-radius:16px}
+.steps .stage img{height:100%;object-fit:contain}
+.steps figcaption{font-size:13px;margin-top:6px;line-height:1.35}
+.steps figcaption::before{counter-increment:st;content:counter(st);font-family:var(--display);font-weight:700;color:var(--white);background:var(--roxo);border-radius:50%;width:22px;height:22px;display:inline-grid;place-items:center;margin-right:6px;font-size:13px}
+input[type=range]{width:100%;accent-color:var(--roxo)}
+.scrub{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;margin-top:12px}
+.scrub label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+/* fim */
+.end{padding-block:72px 64px;text-align:center;border-top:1px solid var(--line);background:var(--roxo);color:var(--white)}
+.end img{width:min(340px,70%);height:auto;margin:0 auto 10px;display:block;filter:drop-shadow(0 6px 0 rgba(0,0,0,.12))}
+.end p{font-family:var(--display);font-size:clamp(22px,3vw,32px);margin:.2em 0 1em}
+.end .credit{font-family:var(--body);font-size:13px;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+.end .btn.primary{background:var(--amarelo);color:var(--ink);box-shadow:0 3px 0 #d9a42b}
+/* executivo */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(40,22,20,.72);display:grid;place-items:center;padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet{background:var(--white);border-radius:20px;width:min(1240px,100%);max-height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden}
+.sheet header,.sheet footer{display:flex;align-items:center;gap:12px;padding:12px 16px;flex-wrap:wrap}
+.sheet header h3{margin:0 auto 0 0}
+.sheet .view{overflow:auto;background:#e9e2d6;display:grid;place-items:center;padding:12px}
+.sheet .view img{max-width:100%;height:auto;box-shadow:0 2px 14px rgba(0,0,0,.18);background:#fff}
+.sheet footer .pg{font-variant-numeric:tabular-nums;font-weight:700;margin-right:auto}
+.thumbs{display:flex;gap:6px;overflow-x:auto;padding:0 16px 12px}
+.thumbs button{border:2px solid transparent;padding:0;background:none;border-radius:6px;cursor:pointer;flex:0 0 auto}
+.thumbs button[aria-current="true"]{border-color:var(--roxo)}
+.thumbs img{width:90px;height:auto;display:block;border-radius:4px}
+@media (max-width:860px){
+  .cover .grid,.two{grid-template-columns:minmax(0,1fr)}
+  .gal,.parts{grid-template-columns:minmax(0,1fr)}
+  .steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+  nav.chap a.opt{display:none}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+
+<nav class="chap" aria-label="Capítulos">
+  <div class="wrap">
+    <div class="brand">3 Mãos <span>·</span> Display de balcão</div>
+    <a href="#capa" class="on">Capa</a>
+    <a href="#abastecido">Abastecido</a>
+    <a href="#vazio" class="opt">Sem produtos</a>
+    <a href="#explodido" class="opt">Explodido</a>
+    <button class="btn primary small" data-open-exec type="button">Executivo</button>
+  </div>
+</nav>
+
+<header class="cover" id="capa">
+  <div class="wrap grid">
+    <div>
+      <div class="eyebrow">3MA005 · Polionda ou papelão</div>
+      <h1>Display de balcão <em>3 Mãos</em></h1>
+      <p class="lead">Encaixável, sem cola. 3 peças numa faca só.</p>
+      <div class="specs" aria-label="Medidas do display montado">
+        <div><b>210</b><small>largura mm</small></div>
+        <div><b>163</b><small>profund. mm</small></div>
+        <div><b>295</b><small>altura mm</small></div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn primary" data-open-exec type="button">Executivo</button>
+        <a class="btn ghost" href="#abastecido">Abastecido</a>
+      </div>
+    </div>
+    <div class="turn" id="turn" role="img" aria-label="Display 3 Mãos abastecido girando 360 graus. Arraste para girar.">
+      <img id="turnImg" src="giro/g000.webp" alt="" draggable="false">
+      <span class="hint">Arraste para girar</span>
+    </div>
+  </div>
+</header>
+
+<section class="ch" id="abastecido">
+  <div class="wrap">
+    <div class="ch-head">
+      <div><span class="num">01</span><h2>Abastecido</h2></div>
+      <p>Livros grandes atrás, pocket books na frente, direto na base.</p>
+    </div>
+    <div class="two">
+      <div>
+        <div class="toolbar" role="group" aria-label="Abastecimento" style="margin-bottom:10px">
+          <button class="chip" aria-pressed="true" data-set="LIVROS-MAIORES" type="button">Livros maiores</button>
+          <button class="chip" aria-pressed="false" data-set="LIVROS-QUADRADOS" type="button">Livros quadrados</button>
+        </div>
+        <div class="stage"><img id="fillImg" src="stills/LIVROS-MAIORES-01.webp" alt="Display abastecido com livros maiores"></div>
+        <div class="toolbar" role="group" aria-label="Ângulo" style="margin-top:10px">
+          <button class="chip" aria-pressed="true" data-cam="01" type="button">3/4 direita</button>
+          <button class="chip" aria-pressed="false" data-cam="00" type="button">Frente</button>
+          <button class="chip" aria-pressed="false" data-cam="02" type="button">3/4 esquerda</button>
+          <button class="chip" aria-pressed="false" data-cam="03" type="button">De cima</button>
+        </div>
+      </div>
+      <aside class="side">
+        <div class="card">
+          <h3 id="setTitle">Livros maiores</h3>
+          <ul class="books" id="bookList"></ul>
+        </div>
+        <div class="card">
+          <h3>Substrato</h3>
+          <ul>
+            <li>Polionda 3 mm ou papelão microondulado.</li>
+            <li>Mesma faca e mesma arte.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Capacidade</h3>
+          <ul>
+            <li>Atrás: livros até 16 × 23 cm (régua: Café com Deus Pai).</li>
+            <li>Frente: 2 colunas de pocket books de até 10 × 14 cm.</li>
+            <li>Logo da testeira sempre acima dos livros.</li>
+          </ul>
+        </div>
+        <p style="font-size:13px;color:var(--ink-soft);margin:0">Capas reais de mercado, só para ilustrar. O abastecimento final segue o mix da 3 Mãos.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="vazio">
+  <div class="wrap">
+    <div class="ch-head">
+      <div><span class="num">02</span><h2>Sem produtos</h2></div>
+      <p>Moldura contínua por dentro. Laterais com logo e frase. Verso em branco.</p>
+    </div>
+    <div class="gal">
+      <figure><div class="stage"><img src="stills/VAZIO-01.webp" alt="Display vazio, 3/4 direita" loading="lazy"></div><figcaption>3/4 direita: lateral com logo e frase.</figcaption></figure>
+      <figure><div class="stage"><img src="stills/VAZIO-00.webp" alt="Display vazio, frente" loading="lazy"></div><figcaption>Frente: moldura em arco contínua até a base.</figcaption></figure>
+      <figure><div class="stage"><img src="stills/VAZIO-02.webp" alt="Display vazio, 3/4 esquerda" loading="lazy"></div><figcaption>3/4 esquerda.</figcaption></figure>
+      <figure><div class="stage"><img src="stills/VAZIO-close-testeira.webp" alt="Detalhe da testeira com faca especial" loading="lazy"></div><figcaption>Faca especial: as mãos do logo saem do recorte.</figcaption></figure>
+      <figure><div class="stage"><img src="stills/VAZIO-03.webp" alt="Display vazio visto de cima" loading="lazy"></div><figcaption>De cima: interior amarelo, base livre.</figcaption></figure>
+      <figure><div class="stage"><img src="stills/VAZIO-close-aba.webp" alt="Detalhe da aba de trava da frente" loading="lazy"></div><figcaption>Aba da frente atravessa a lateral e trava o corpo.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="explodido">
+  <div class="wrap">
+    <div class="ch-head">
+      <div><span class="num">03</span><h2>Explodido</h2></div>
+      <p>3 peças, sem cola e sem ferramenta.</p>
+    </div>
+    <div class="stage"><img id="expImg" src="explode/e000.webp" alt="Vista explodida animada do display"></div>
+    <div class="scrub">
+      <button class="chip" id="expPlay" aria-pressed="true" type="button">Pausar</button>
+      <input type="range" id="expRange" min="0" max="29" value="0" aria-label="Abrir e fechar a vista explodida">
+      <label for="expRange">Montado ↔ aberto</label>
+    </div>
+    <div class="parts">
+      <div class="card"><b>01 · Corpo</b><p>Base + 2 laterais, dobradas nos vincos.</p><span class="dim">planificado 602 × 163 mm</span></div>
+      <div class="card"><b>02 · Fundo-testeira</b><p>Faca especial no logo. Abas escondidas nas laterais.</p><span class="dim">210 × 292 mm</span></div>
+      <div class="card"><b>03 · Frente</b><p>Rodapé com 2 abas de trava.</p><span class="dim">234 × 65 mm</span></div>
+    </div>
+    <div class="steps" aria-label="Montagem passo a passo">
+      <figure><div class="stage"><img src="stills/montagem-M1.webp" alt="Peças planas" loading="lazy"></div><figcaption>Peças planas.</figcaption></figure>
+      <figure><div class="stage"><img src="stills/montagem-M2.webp" alt="Laterais dobradas" loading="lazy"></div><figcaption>Dobre as laterais.</figcaption></figure>
+      <figure><div class="stage"><img src="stills/montagem-M3.webp" alt="Frente encaixada" loading="lazy"></div><figcaption>Encaixe a frente.</figcaption></figure>
+      <figure><div class="stage"><img src="stills/montagem-M4.webp" alt="Fundo-testeira descendo" loading="lazy"></div><figcaption>Desça o fundo-testeira.</figcaption></figure>
+      <figure><div class="stage"><img src="stills/montagem-M5.webp" alt="Display abastecido" loading="lazy"></div><figcaption>Abasteça.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<footer class="end" id="fim">
+  <div class="wrap">
+    <img src="stills/logo.webp" alt="3 Mãos">
+    <p>De mãos dadas com a imaginação.</p>
+    <button class="btn primary" data-open-exec type="button">Abrir executivo</button>
+    <div class="credit" style="margin-top:28px">75 LAB · estratégia, design e projeto · nov/2026</div>
+  </div>
+</footer>
+
+<div class="modal" id="exec" hidden role="dialog" aria-modal="true" aria-labelledby="execTitle">
+  <div class="sheet">
+    <header>
+      <h3 id="execTitle">Executivo · 7 folhas A3</h3>
+      <a class="btn ghost small" id="pdfLink" href="#" target="_blank" rel="noopener">PDF no Drive</a>
+      <button class="btn primary small" id="execClose" type="button">Fechar</button>
+    </header>
+    <div class="view"><img id="execImg" src="" alt=""></div>
+    <div>
+      <div class="thumbs" id="thumbs"></div>
+      <footer>
+        <span class="pg" id="execPg">1 / 7</span>
+        <button class="chip" id="execPrev" type="button">Anterior</button>
+        <button class="chip" id="execNext" type="button">Próxima</button>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<script>
+const CFG = {GIRO: 90, EXP: 30, PDF: "https://drive.google.com/drive/folders/1qtUELSFquoXr5r1axPLgh-369RB8594d", SHEETS: ["Memorial e ficha técnica","Vistas gerais cotadas","Peça 01 · Corpo","Peça 02 · Fundo-testeira","Peça 03 · Frente e encaixes","Montagem","Aproveitamento e plano de corte"]};
+const pad = n => String(n).padStart(3, "0");
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* giro 360: lento, pausa ao arrastar */
+const giro = Array.from({length: CFG.GIRO}, (_, i) => { const im = new Image(); im.src = `giro/g${pad(i)}.webp`; return im; });
+const tImg = document.getElementById("turnImg"), turn = document.getElementById("turn");
+let gi = 0, drag = null, last = 0;
+const FPS = 9;
+function showG(i){ gi = (i % CFG.GIRO + CFG.GIRO) % CFG.GIRO; tImg.src = giro[gi].src; }
+function loop(t){ if(!drag && !reduce && t - last > 1000 / FPS){ last = t; showG(gi + 1); } requestAnimationFrame(loop); }
+requestAnimationFrame(loop);
+turn.addEventListener("pointerdown", e => { drag = {x: e.clientX, g: gi}; turn.setPointerCapture(e.pointerId); });
+turn.addEventListener("pointermove", e => { if(drag) showG(drag.g + Math.round((drag.x - e.clientX) / 6)); });
+["pointerup","pointercancel"].forEach(ev => turn.addEventListener(ev, () => { drag = null; }));
+
+/* abastecido */
+const BOOKS = {
+  "LIVROS-MAIORES": {t: "Livros maiores", l: [["#b1468a","O Pequeno Príncipe","atrás · 16 × 23"],["#f6e36a","O Menino Maluquinho","frente · pocket"],["#8a2f8f","O Patinho Feio","frente · pocket"]]},
+  "LIVROS-QUADRADOS": {t: "Livros quadrados", l: [["#e8228e","Tudo Bem Ser Diferente","atrás · 19,6 × 19,6"],["#7cbfe6","A Casa Sonolenta","frente · 9,9 × 11"],["#f2c74b","Flicts","frente · 8,3 × 11"]]}
+};
+let set = "LIVROS-MAIORES", cam = "01";
+const fillImg = document.getElementById("fillImg");
+function renderFill(){
+  fillImg.src = `stills/${set}-${cam}.webp`;
+  fillImg.alt = `Display abastecido, ${BOOKS[set].t.toLowerCase()}`;
+  document.getElementById("setTitle").textContent = BOOKS[set].t;
+  document.getElementById("bookList").innerHTML = BOOKS[set].l.map(([c,n,d]) => `<li><i style="background:${c}"></i>${n}<span>${d}</span></li>`).join("");
+  document.querySelectorAll("[data-set]").forEach(b => b.setAttribute("aria-pressed", b.dataset.set === set));
+  document.querySelectorAll("[data-cam]").forEach(b => b.setAttribute("aria-pressed", b.dataset.cam === cam));
+}
+document.querySelectorAll("[data-set]").forEach(b => b.onclick = () => { set = b.dataset.set; renderFill(); });
+document.querySelectorAll("[data-cam]").forEach(b => b.onclick = () => { cam = b.dataset.cam; renderFill(); });
+renderFill();
+
+/* explodida: vai e volta sozinha, ou pelo controle */
+const exp = Array.from({length: CFG.EXP}, (_, i) => { const im = new Image(); im.src = `explode/e${pad(i)}.webp`; return im; });
+const eImg = document.getElementById("expImg"), eR = document.getElementById("expRange"), eP = document.getElementById("expPlay");
+let ei = 0, dir = 1, playing = !reduce, hold = 0, lastE = 0;
+function showE(i){ ei = Math.max(0, Math.min(CFG.EXP - 1, i)); eImg.src = exp[ei].src; eR.value = ei; }
+function eloop(t){
+  if(playing && t - lastE > 70){
+    lastE = t;
+    if(hold > 0) hold--; else { showE(ei + dir); if(ei === CFG.EXP - 1 || ei === 0){ dir = -dir; hold = 18; } }
+  }
+  requestAnimationFrame(eloop);
+}
+requestAnimationFrame(eloop);
+function setPlay(p){ playing = p; eP.textContent = p ? "Pausar" : "Animar"; eP.setAttribute("aria-pressed", p); }
+setPlay(playing);
+eP.onclick = () => setPlay(!playing);
+eR.oninput = () => { setPlay(false); showE(+eR.value); };
+
+/* executivo */
+const modal = document.getElementById("exec"), eI = document.getElementById("execImg"), pg = document.getElementById("execPg");
+const pdf = document.getElementById("pdfLink");
+if(CFG.PDF.startsWith("http")) pdf.href = CFG.PDF; else pdf.hidden = true;
+let si = 0;
+const thumbs = document.getElementById("thumbs");
+thumbs.innerHTML = CFG.SHEETS.map((s, i) => `<button type="button" data-i="${i}" aria-label="Folha ${i+1}: ${s}"><img src="executivo/f${i+1}-t.webp" alt=""></button>`).join("");
+function showS(i){
+  si = (i + CFG.SHEETS.length) % CFG.SHEETS.length;
+  eI.src = `executivo/f${si+1}.webp`; eI.alt = `Folha ${si+1}: ${CFG.SHEETS[si]}`;
+  pg.textContent = `${si+1} / ${CFG.SHEETS.length} · ${CFG.SHEETS[si]}`;
+  thumbs.querySelectorAll("button").forEach((b, k) => b.setAttribute("aria-current", k === si));
+}
+thumbs.onclick = e => { const b = e.target.closest("button"); if(b) showS(+b.dataset.i); };
+document.querySelectorAll("[data-open-exec]").forEach(b => b.onclick = () => { modal.hidden = false; showS(si); document.getElementById("execClose").focus(); });
+document.getElementById("execClose").onclick = () => { modal.hidden = true; };
+document.getElementById("execPrev").onclick = () => showS(si - 1);
+document.getElementById("execNext").onclick = () => showS(si + 1);
+modal.addEventListener("click", e => { if(e.target === modal) modal.hidden = true; });
+addEventListener("keydown", e => {
+  if(modal.hidden) return;
+  if(e.key === "Escape") modal.hidden = true;
+  if(e.key === "ArrowRight") showS(si + 1);
+  if(e.key === "ArrowLeft") showS(si - 1);
+});
+
+/* capítulo ativo na barra */
+const links = [...document.querySelectorAll("nav.chap a")];
+const io = new IntersectionObserver(es => es.forEach(en => { if(en.isIntersecting){ links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + en.target.id)); } }), {rootMargin: "-45% 0px -50% 0px"});
+["capa","abastecido","vazio","explodido"].forEach(id => io.observe(document.getElementById(id)));
+</script>
+
+</body>
+</html>
