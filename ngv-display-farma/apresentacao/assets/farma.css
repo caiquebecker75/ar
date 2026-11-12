@@ -1,0 +1,33 @@
+/* Display Universal Farma (NGV) · complementos sobre deck.css + bombril.css + v2.css (palco 1600x900) */
+.s-capa .foto{background-image:url(farma/capa.webp)!important;background-size:contain!important;background-repeat:no-repeat;background-position:64% 60%!important}
+#fim .foto{background-image:url(farma/fim.webp)!important}
+.f-fotos{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+.f-fotos .v2-leg{grid-column:1/-1;margin-top:0}
+.f-fotos figure{margin:0;background:#ececec;aspect-ratio:3/4;overflow:hidden;cursor:zoom-in}
+.f-fotos img{width:100%;height:100%;object-fit:cover;display:block}
+.f-cmp{display:grid;grid-template-columns:1.25fr 1fr;gap:40px;align-items:center;flex:1;min-height:0}
+.f-cmp figure{margin:0;background:#ececec;height:100%;max-height:640px;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:zoom-in}
+.f-cmp figure img{max-width:100%;max-height:640px;object-fit:contain}
+.f-cmp-txt{display:flex;flex-direction:column;gap:16px}
+.f-cmp-txt>div{background:var(--ink-3);border:1px solid var(--linha-e);padding:22px 24px;display:flex;flex-direction:column;gap:4px}
+.f-cmp-txt>div.lime{background:var(--lime);color:var(--ink)}
+.f-cmp-txt b{font-family:var(--titulo);font-size:76px;line-height:.95;font-weight:900}
+.f-cmp-txt span{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+.f-cmp-txt i{font-style:normal;font-size:14px;opacity:.8}
+.f-peca figure{margin:0;background:#ececec;aspect-ratio:5/4;overflow:hidden;cursor:zoom-in}
+.f-peca img{width:100%;height:100%;object-fit:contain;display:block}
+.f-qr{display:flex;flex-direction:column;align-items:center;gap:14px}
+.f-qr #qrFarma{width:380px;height:380px;background:#fff;padding:18px}
+.f-qr #qrFarma svg{width:100%;height:100%;display:block}
+.f-qr p{font-family:var(--mono);font-size:13px;letter-spacing:.06em;opacity:.8}
+@media (max-width:900px){.f-cmp,.f-fotos{grid-template-columns:1fr}.f-qr #qrFarma{width:260px;height:260px}}
+.f-peca figure{aspect-ratio:auto;height:640px}
+/* capa v2: fundo branco, só o display girando 360 graus */
+#capa.s-capa{background:#fff;color:var(--ink)}
+#capa .giro{position:absolute;top:90px;bottom:70px;left:46%;right:40px}
+#capa .giro img{width:100%;height:100%;object-fit:contain;display:block}
+#capa h1 span{color:var(--teal)}
+#capa .lead{opacity:.75}
+#capa .rot{color:var(--ink)}
+#capa .botao:not(.cheio){color:var(--ink);border-color:var(--ink)}
+#capa .giro img{-webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 72%,transparent 100%);mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 72%,transparent 100%)}
