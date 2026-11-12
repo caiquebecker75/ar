@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Display Universal Farma · NGV</title>
+<meta name="description" content="75 LAB · Display Universal adaptado para o canal farma (NGV): menor, estratégico e do mesmo sistema modular.">
+<meta name="robots" content="noindex">
+<meta name="versao" id="versaoDeck" content="20261106110023">
+<script>
+/* A página fica 10 min no cache do navegador (GitHub Pages). Se já existe versão nova publicada, troca de endereço para pular o cache. */
+(function(){var v=document.getElementById('versaoDeck').content;
+fetch('versao.txt?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():''}).then(function(n){n=(n||'').trim();
+if(n&&n!==v&&new URLSearchParams(location.search).get('v')!==n){var q=new URLSearchParams(location.search);q.set('v',n);location.replace(location.pathname+'?'+q.toString()+location.hash);}}).catch(function(){});})();
+</script>
+<link rel="icon" href="assets/75lab-lime.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/deck.css?v=f1">
+<link rel="stylesheet" href="assets/bombril.css?v=f1">
+<link rel="stylesheet" href="assets/v2.css?v=f1">
+<link rel="stylesheet" href="assets/farma.css?v=f3">
+<script defer src="assets/qrcode.min.js"></script>
+</head>
+<body>
+
+<!-- ícones: traço reto, cantos vivos, como no site -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-pincel" viewBox="0 0 48 48"><path d="M30 6l12 12-20 20H10V26zM25 11l12 12M10 38l-4 4"/></symbol>
+  <symbol id="i-fabrica" viewBox="0 0 48 48"><path d="M6 42V20l10 6v-6l10 6v-6l10 6V8h6v34zM13 35h5M23 35h5M33 35h5"/></symbol>
+  <symbol id="i-caminhao" viewBox="0 0 48 48"><path d="M4 11h24v21H4zM28 18h9l7 8v6H28z"/><circle cx="12" cy="36" r="4"/><circle cx="36" cy="36" r="4"/></symbol>
+  <symbol id="i-rede" viewBox="0 0 48 48"><rect x="19" y="19" width="10" height="10"/><rect x="5" y="5" width="8" height="8"/><rect x="35" y="5" width="8" height="8"/><rect x="5" y="35" width="8" height="8"/><rect x="35" y="35" width="8" height="8"/><path d="M13 13l6 6M35 13l-6 6M13 35l6-6M35 35l-6-6"/></symbol>
+  <symbol id="i-relogio" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18"/><path d="M24 13v11l8 5"/></symbol>
+  <symbol id="i-escudo" viewBox="0 0 48 48"><path d="M24 4l16 6v12c0 10-7 18-16 22C15 40 8 32 8 22V10z"/><path d="M17 24l5 5 9-10"/></symbol>
+  <symbol id="i-olho" viewBox="0 0 48 48"><path d="M4 24s7-13 20-13 20 13 20 13-7 13-20 13S4 24 4 24z"/><circle cx="24" cy="24" r="6"/></symbol>
+  <symbol id="i-cadeado" viewBox="0 0 48 48"><rect x="10" y="22" width="28" height="20"/><path d="M16 22v-6a8 8 0 0 1 16 0v6M24 30v5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 48 48"><path d="M9 25l9 9 21-21"/></symbol>
+  <symbol id="i-x" viewBox="0 0 48 48"><path d="M12 12l24 24M36 12L12 36"/></symbol>
+  <symbol id="i-qr" viewBox="0 0 64 64"><rect x="8" y="8" width="18" height="18"/><rect x="38" y="8" width="18" height="18"/><rect x="8" y="38" width="18" height="18"/><path d="M14 14h6v6h-6zM44 14h6v6h-6zM14 44h6v6h-6zM38 38h6v6h-6zM50 50h6M50 38v6M38 50h6M44 44h6"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 48 48"><path d="M24 44s14-13 14-24a14 14 0 0 0-28 0c0 11 14 24 14 24z"/><circle cx="24" cy="20" r="5"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 48 48"><path d="M6 15h36v25H6zM17 15l3-6h8l3 6"/><circle cx="24" cy="27" r="7"/></symbol>
+  <symbol id="i-calendario" viewBox="0 0 48 48"><path d="M6 10h36v32H6zM6 19h36M16 5v9M32 5v9M13 27h5M22 27h5M31 27h5M13 34h5M22 34h5"/></symbol>
+  <symbol id="i-grafico" viewBox="0 0 48 48"><path d="M7 7v34h35M13 33l9-10 6 6 12-14"/></symbol>
+  <symbol id="i-alvo" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18"/><circle cx="24" cy="24" r="10"/><circle cx="24" cy="24" r="2"/></symbol>
+  <symbol id="i-pessoas" viewBox="0 0 48 48"><circle cx="17" cy="16" r="6"/><circle cx="33" cy="18" r="5"/><path d="M5 40c0-8 5-13 12-13s12 5 12 13M29 28c7 0 13 4 13 12"/></symbol>
+  <symbol id="i-raio" viewBox="0 0 48 48"><path d="M27 4L10 27h12l-3 17 19-25H26z"/></symbol>
+  <symbol id="i-loja" viewBox="0 0 48 48"><path d="M6 18l4-10h28l4 10zM8 18v24h32V18M20 42V30h8v12"/></symbol>
+  <symbol id="i-caixa" viewBox="0 0 48 48"><path d="M6 14l18-8 18 8v20l-18 8-18-8zM6 14l18 8 18-8M24 22v20"/></symbol>
+  <symbol id="i-arquivo" viewBox="0 0 48 48"><path d="M11 4h18l9 9v31H11zM28 4v10h10M17 25h14M17 32h14"/></symbol>
+  <symbol id="i-alerta" viewBox="0 0 48 48"><path d="M24 6l20 36H4zM24 19v11M24 35v2"/></symbol>
+  <symbol id="i-moeda" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18"/><path d="M29 17h-7a4 4 0 0 0 0 8h4a4 4 0 0 1 0 8h-8M24 13v4M24 33v3"/></symbol>
+  <symbol id="i-cubo" viewBox="0 0 48 48"><path d="M24 4l18 10v20L24 44 6 34V14zM6 14l18 10 18-10M24 24v20"/></symbol>
+  <symbol id="i-sinal" viewBox="0 0 48 48"><circle cx="24" cy="30" r="3"/><path d="M16 22a11 11 0 0 1 16 0M10 16a19 19 0 0 1 28 0M24 33v10"/></symbol>
+  <symbol id="i-lupa" viewBox="0 0 48 48"><circle cx="20" cy="20" r="13"/><path d="M30 30l13 13"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 48 48"><path d="M6 6h18l18 18-18 18L6 24z"/><circle cx="15" cy="15" r="3"/></symbol>
+  <symbol id="i-pasta" viewBox="0 0 48 48"><path d="M5 10h14l4 5h20v25H5z"/></symbol>
+  <symbol id="i-versao" viewBox="0 0 48 48"><circle cx="12" cy="10" r="5"/><circle cx="12" cy="38" r="5"/><circle cx="36" cy="18" r="5"/><path d="M12 15v18M36 23c0 9-12 6-21 13"/></symbol>
+  <symbol id="i-nota" viewBox="0 0 48 48"><path d="M10 4h28v40l-5-4-5 4-4-4-5 4-4-4-5 4zM17 16h14M17 24h14M17 32h8"/></symbol>
+  <symbol id="i-seta" viewBox="0 0 48 48"><path d="M7 24h32M29 14l10 10-10 10"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 48 48"><path d="M6 8h36v24H20l-9 8v-8H6z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 48 48"><path d="M5 10h38v28H5zM5 10l19 16 19-16"/></symbol>
+  <symbol id="i-fone" viewBox="0 0 48 48"><path d="M10 6h8l4 10-5 4c2 5 6 9 11 11l4-5 10 4v8c0 2-2 4-4 4C20 42 6 28 6 10c0-2 2-4 4-4z"/></symbol>
+  <symbol id="i-clique" viewBox="0 0 48 48"><path d="M19 26V9a4 4 0 0 1 8 0v13l9 2c3 .7 5 3.6 4.4 6.6L39 39c-.5 3-3 5-6 5H24c-2 0-3.8-1-5-2.6L11 31c-1.4-2 0-4.8 2.4-4.8 1 0 2 .4 2.7 1.2L19 30"/><path d="M8 12l4 2M10 4l3 4M18 1v4"/></symbol>
+  <symbol id="i-funil" viewBox="0 0 48 48"><path d="M5 7h38L28 25v15l-8 4V25z"/></symbol>
+</svg>
+
+<div id="wrap"><div id="stage" class="t-claro capa">
+
+  <!-- ===================================================== 01 · capa -->
+  <section id="capa" class="tela s-capa ativa" data-tema="claro" data-titulo="Capa" data-cap="">
+    <div class="giro sangra"><img id="giroImg" src="assets/farma/giro/g000.webp" alt="Display Universal Farma com Bellafio girando 360 graus"></div>
+    <div class="texto">
+      <span class="eyebrow anima"><b>(NGV)</b> Display Universal</span>
+      <h1 class="anima d1">Do Display<br>Universal ao<br><span>canal farma</span></h1>
+      <p class="lead anima d2">O mesmo sistema modular, mais baixo e mais raso, desenhado para caber na ponta de gôndola da farmácia</p>
+      <div class="acoes anima d3">
+        <button class="botao cheio seta" data-ir="antes-depois" data-cursor="Ir">Começar</button>
+        <button class="botao seta" data-ir="ar" data-cursor="Ver">Ver em AR</button>
+      </div>
+    </div>
+    <span class="rot sangra anima d4">75 LAB · NGV · Nov/26</span>
+  </section>
+<section id="antes-depois" class="tela v2-split n" data-tema="escuro" data-titulo="Antes e depois" data-cap="(01) O desafio">
+  <div class="caixa"><h2 class="anima">O mesmo sistema, <span class="t-lime">na medida da farmácia.</span></h2>
+    <div class="f-cmp anima d1"><figure class="amplia" data-amplia="assets/farma/cmp.webp" data-legenda="Display Universal (170 cm) e Display Universal Farma (118 cm), na mesma escala" data-cursor="Ampliar"><img src="assets/farma/cmp.webp" alt="Display Universal (170 cm) e Display Universal Farma (118 cm), na mesma escala" loading="lazy"></figure><div class="f-cmp-txt">
+      <div><b>170 cm</b><span>Display Universal</span><i>62 × 65 cm de base com bate-carrinho · testeira no topo</i></div>
+      <div class="lime"><b>118 cm</b><span>Display Universal Farma</span><i>60 × 30 cm de base · testeira recuada no fundo</i></div>
+      <p class="v2-leg">Os dois na mesma escala, com a mesma câmera e a comunicação Bellafio.</p></div></div>
+  </div></section>
+<section id="versoes" class="tela s-core n" data-tema="escuro" data-titulo="As versões" data-cap="(02) O display farma">
+    <div class="caixa"><div class="gr-core">
+      <div class="txt-core"><span class="eyebrow anima">Display Universal · Farma</span>
+        <h2 class="anima">Uma base, <span class="t-lime">duas versões.</span></h2>
+        <p class="lead anima d1">Gancheira para blister e acessórios, prateleira para caixas e frascos.</p>
+        <div class="abas-b vers anima d2"><button data-aba="0" class="on" data-cursor="Ver"><i>01</i><b>Bellafio · gancheiras</b></button><button data-aba="1" class="" data-cursor="Ver"><i>02</i><b>Bellafio · de frente</b></button><button data-aba="2" class="" data-cursor="Ver"><i>03</i><b>Bellafio · outro lado</b></button><button data-aba="3" class="" data-cursor="Ver"><i>04</i><b>Só gancheiras</b></button><button data-aba="4" class="" data-cursor="Ver"><i>05</i><b>Só prateleiras</b></button><button data-aba="5" class="" data-cursor="Ver"><i>06</i><b>Testeira recuada</b></button></div>
+        <dl class="ficha-core anima d3"><dt>Medida</dt><dd>600 × 300 × 1.180 mm</dd><dt>Gancheira</dt><dd>3 fileiras · 15 ganchos de 200 mm</dd><dt>Prateleira</dt><dd>3 níveis + o topo da base</dd></dl>
+      </div>
+      <div class="paineis foto-core anima dir d1"><div data-painel="0" class="on"><figure class="amplia" data-amplia="assets/farma/bel-1.webp" data-legenda="Bellafio · gancheiras" data-cursor="Ampliar"><img src="assets/farma/bel-1.webp" alt="Bellafio · gancheiras" loading="lazy"></figure><p>Comunicação Bellafio nas laterais e na testeira, com grampos, elásticos e laços nas três fileiras de gancheira.</p></div><div data-painel="1" class=""><figure class="amplia" data-amplia="assets/farma/bel-0.webp" data-legenda="Bellafio · de frente" data-cursor="Ampliar"><img src="assets/farma/bel-0.webp" alt="Bellafio · de frente" loading="lazy"></figure><p>Cinco ganchos por fileira, uma linha de produto por fileira: o shopper lê a marca e o produto de uma vez.</p></div><div data-painel="2" class=""><figure class="amplia" data-amplia="assets/farma/bel-2.webp" data-legenda="Bellafio · outro lado" data-cursor="Ampliar"><img src="assets/farma/bel-2.webp" alt="Bellafio · outro lado" loading="lazy"></figure><p>A lateral esquerda repete a arte: comunicação nos dois lados da ponta.</p></div><div data-painel="3" class=""><figure class="amplia" data-amplia="assets/farma/g-1.webp" data-legenda="Só gancheiras" data-cursor="Ampliar"><img src="assets/farma/g-1.webp" alt="Só gancheiras" loading="lazy"></figure><p>A estrutura pronta para qualquer marca, com as áreas de comunicação em cinza.</p></div><div data-painel="4" class=""><figure class="amplia" data-amplia="assets/farma/p-1.webp" data-legenda="Só prateleiras" data-cursor="Ampliar"><img src="assets/farma/p-1.webp" alt="Só prateleiras" loading="lazy"></figure><p>Três prateleiras com porta-preço, a de cima na frente da testeira, para caixas e frascos.</p></div><div data-painel="5" class=""><figure class="amplia" data-amplia="assets/farma/bel-topo.webp" data-legenda="Testeira recuada" data-cursor="Ampliar"><img src="assets/farma/bel-topo.webp" alt="Testeira recuada" loading="lazy"></figure><p>O PS da testeira corre em dois perfis U presos nas cremalheiras e sai por cima para trocar a campanha.</p></div></div>
+    </div></div></section>
+<section id="pecas" class="tela v2-split n" data-tema="claro" data-titulo="Peça por peça" data-cap="(02) O display farma">
+  <div class="caixa"><div class="v2-grid2">
+    <div class="f-peca anima d1"><figure class="amplia" data-amplia="assets/farma/g-1-crop.webp" data-legenda="Display Universal Farma, versão gancheira" data-cursor="Ampliar"><img src="assets/farma/g-1-crop.webp" alt="Display Universal Farma, versão gancheira" loading="lazy"></figure></div>
+    <div><span class="eyebrow anima">Peça por peça</span>
+      <h2 class="anima">Seis peças, <span class="onda t-teal">tudo encaixa.</span></h2>
+      <ul class="v2-lista anima d2"><li><b>Testeira recuada</b>PS 3 mm impresso, 552 × 290 mm, em perfis U de aço nas cremalheiras. Sai por cima.</li><li><b>Laterais curvas</b>Chapa com a curva do Display Universal, 960 mm de altura, comunicação cambiável dos dois lados.</li><li><b>Cremalheiras</b>As mesmas colunas traseiras com furação dupla, agora com 1.060 mm.</li><li><b>Gancheiras</b>Barra com 5 ganchos de 200 mm e porta-etiqueta na ponta. Encaixa na cremalheira, sem ferramenta.</li><li><b>Prateleiras</b>Requadro com anteparo de arame e porta-preço, 562 × 250 mm. Trocam de lugar com as gancheiras.</li><li><b>Base sólida</b>Chapa sobre metalon, 600 × 300 × 115 mm, com o módulo inteligente e os sensores no centro da frente.</li></ul></div>
+  </div></div></section>
+<section id="ar" class="tela v2-split n" data-tema="escuro" data-titulo="Veja no seu espaço" data-cap="(03) Em tamanho real">
+  <div class="caixa"><div class="v2-grid2">
+    <div><span class="eyebrow anima">Realidade aumentada</span>
+      <h2 class="anima">O display na <span class="t-lime">ponta da farmácia.</span></h2>
+      <p class="lead anima d1">Aponte a câmera do celular para o código e toque em <b>Ver no meu espaço</b>. O display aparece em tamanho real, abastecido com Bellafio.</p>
+      <ul class="v2-lista anima d2"><li><b>iPhone</b>Abre no Safari, com o AR Quick Look.</li><li><b>Android</b>Abre no Chrome, com o Scene Viewer.</li><li><b>Escala travada</b>60 × 30 × 118 cm, do jeito que vai para a loja.</li></ul>
+      <a class="botao cheio seta anima d3" href="https://projetos.75lab.com.br/ar/ngv-display-farma/" target="_blank" rel="noopener" data-cursor="Abrir">Abrir o AR</a></div>
+    <div class="f-qr anima dir d1"><div id="qrFarma" data-url="https://projetos.75lab.com.br/ar/ngv-display-farma/"></div><p>projetos.75lab.com.br/ar/ngv-display-farma/</p></div>
+  </div></div></section>
+<section id="fim" class="tela s-capa" data-tema="foto" data-titulo="Próximos passos" data-cap="">
+    <div class="foto sangra" role="img" aria-label="Display Universal Farma"></div><div class="veu sangra"></div>
+    <div class="texto"><span class="eyebrow anima"><b>(Próximos passos)</b> NGV · canal farma</span>
+      <h1 class="anima d1">Aprovar,<br>vestir,<br><span>prototipar</span></h1>
+      <p class="lead anima d2">1. Aprovação do formato farma · 2. Comunicação das outras marcas (Vitalitabs, De Llares, Savedent) · 3. Executivo e protótipo</p>
+      <div class="acoes anima d3"><a class="botao cheio" href="https://projetos.75lab.com.br/ar/ngv-display-farma/" target="_blank" rel="noopener" data-cursor="Abrir">Ver em AR</a><button class="botao" data-ir="capa" data-cursor="Voltar">Voltar ao início</button></div></div>
+  </section>
+  <header id="topo">
+    <div class="marcas">
+      <img class="lab m-escuro" src="assets/75lab-lime.png" alt="75 LAB"><img class="lab m-claro" src="assets/75lab-black.png" alt="75 LAB">
+    </div>
+    <div class="dir"><span class="cap" id="capTxt"></span><button id="btnSumario" data-sumario data-cursor="Abrir"><span><i></i><i></i><i></i></span>Sumário</button></div>
+  </header>
+  <footer id="rodape">
+    <span class="assin">75 LAB · NGV · Display Universal Farma</span>
+    <div class="nav"><button id="ant" aria-label="Tela anterior" data-cursor="Voltar">←</button><span id="cont">01 / 29</span><button id="prox" aria-label="Próxima tela" data-cursor="Seguir">→</button></div>
+  </footer>
+  <div id="prog"><i></i></div>
+  <div id="wipe"><img src="assets/75lab-black.png" alt="75 LAB"></div>
+  <nav id="sumario" aria-label="Sumário"><button class="botao mini fechar" data-cursor="Fechar">Fechar ✕</button><h2>Sumário · <span>Display Universal Farma</span></h2><ol id="sumLista"></ol></nav>
+  <div class="grao"></div>
+</div></div>
+
+<div id="caixa" role="dialog" aria-label="Imagem ampliada"><button class="fechar" data-cursor="Fechar">Fechar ✕</button><img id="cxImg" alt=""><p id="cxTxt"></p></div>
+<div id="cursor"></div><div id="anel"><span id="anelTxt"></span></div>
+<div id="gire"><img src="assets/75lab-lime.png" alt="75 LAB"><div class="tel"></div><h3>Gire o celular</h3><p>A apresentação foi desenhada na horizontal. Deitado, o celular mostra a tela inteira.</p><button class="botao mini" id="verAssim">Ver assim mesmo</button></div>
+
+<script src="assets/deck.js?v=f1"></script>
+<script>window.addEventListener('load',function(){var el=document.getElementById('qrFarma');if(!el||!window.qrcode)return;var q=qrcode(0,'M');q.addData(el.dataset.url);q.make();el.innerHTML=q.createSvgTag({cellSize:8,margin:2,scalable:true});});</script>
+<script>/* capa: giro 360 com os quadros renderizados no Modo */
+(function(){var N=72,FPS=14,img=document.getElementById('giroImg'),capa=document.getElementById('capa');if(!img)return;
+var fr=[],ok=0;for(var i=0;i<N;i++){var im=new Image();im.onload=function(){ok++};im.src='assets/farma/giro/g'+('00'+i).slice(-3)+'.webp';fr.push(im)}
+var f=0,t0=0;function passo(t){requestAnimationFrame(passo);if(!capa.classList.contains('ativa')||ok<N)return;if(t-t0<1000/FPS)return;t0=t;f=(f+1)%N;img.src=fr[f].src}
+requestAnimationFrame(passo)})();</script>
+</body>
+</html>
