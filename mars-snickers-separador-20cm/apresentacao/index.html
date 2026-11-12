@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <meta property="og:title" content="Separador de compras Snickers · 20 cm">
 <meta property="og:description" content="Veja o display abastecido, vazio, montando e desmontando, e coloque em tamanho real no caixa com o AR.">
-<meta property="og:image" content="https://projetos.75lab.com.br/ar/mars-snickers-separador-20cm/poster.webp?v=1">
+<meta property="og:image" content="https://projetos.75lab.com.br/ar/mars-snickers-separador-20cm/poster.webp?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Lexend:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -153,7 +153,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 <section class="page" id="ar" style="background:var(--cream-2)">
   <div class="wrap arpage">
-    <model-viewer id="mv" src="../display.glb?v=1" ios-src="../display.usdz?v=1" poster="../poster.webp?v=1"
+    <model-viewer id="mv" src="../display.glb?v=2" ios-src="../display.usdz?v=2" poster="../poster.webp?v=2"
       alt="Separador de compras Snickers de 19 cm em 3D"
       ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor"
       camera-controls auto-rotate auto-rotate-delay="2500" rotation-per-second="14deg"
@@ -212,7 +212,7 @@ scene.environment = new THREE.PMREMGenerator(r).fromScene(new RoomEnvironment(),
 scene.environmentIntensity = 0.85;
 const sol = new THREE.DirectionalLight(0xffffff, 1.4);
 sol.position.set(0.35, 0.9, 0.5); sol.castShadow = true;
-sol.shadow.mapSize.set(2048, 2048); sol.shadow.radius = 6;
+sol.shadow.mapSize.set(2048, 2048); sol.shadow.radius = 6; sol.shadow.bias = -0.0004; sol.shadow.normalBias = 0.0012;
 Object.assign(sol.shadow.camera, { left: -0.45, right: 0.45, top: 0.45, bottom: -0.45, near: 0.1, far: 3 });
 scene.add(sol);
 const chao = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), new THREE.ShadowMaterial({ opacity: 0.16 }));
@@ -234,7 +234,7 @@ function resize() {
 new ResizeObserver(resize).observe(stage); resize();
 
 // ---------- modelo ----------
-const gltf = await new GLTFLoader().loadAsync('../display.glb?v=1');
+const gltf = await new GLTFLoader().loadAsync('../display.glb?v=2');
 const model = gltf.scene; scene.add(model);
 model.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
 $('#load').remove();
@@ -288,19 +288,24 @@ document.querySelectorAll('[data-estado]').forEach((b) => b.addEventListener('cl
 slider.addEventListener('input', () => { anima = null; comBarras = true; T = +slider.value; marca(T >= 3.99 ? 'abastecido' : ''); });
 
 const alvo = new THREE.Vector3(), dir = new THREE.Vector3();
-let distAtual = cam.position.distanceTo(ctl.target);
+// a câmera só se reenquadra quando o estado muda (botão ou barra); fora disso, o zoom e o giro são do usuário
+let enquadra = true;
+document.querySelectorAll('[data-estado]').forEach((b) => b.addEventListener('click', () => { enquadra = true; }));
+slider.addEventListener('input', () => { enquadra = true; });
+ctl.addEventListener('start', () => { if (!anima) enquadra = false; });
 function loop(agora) {
   if (anima) anima(agora);
   const { alvoZ, dist } = aplica(); textoEtapa();
-  alvo.set(0, 0.055, alvoZ); ctl.target.lerp(alvo, 0.08);
-  distAtual += (dist - distAtual) * 0.06;
-  dir.subVectors(cam.position, ctl.target).normalize(); cam.position.copy(ctl.target).addScaledVector(dir, distAtual);
+  if (enquadra) {
+    alvo.set(0, 0.055, alvoZ); ctl.target.lerp(alvo, 0.08);
+    const d = cam.position.distanceTo(ctl.target), nd = d + (dist - d) * 0.06;
+    dir.subVectors(cam.position, ctl.target).normalize(); cam.position.copy(ctl.target).addScaledVector(dir, nd);
+    if (!anima && Math.abs(dist - nd) < 0.002 && ctl.target.distanceTo(alvo) < 0.001) enquadra = false;
+  }
   ctl.update(); r.render(scene, cam);
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
-// a distância muda pelo zoom do usuário também
-ctl.addEventListener('end', () => { distAtual = cam.position.distanceTo(ctl.target); });
 
 // ---------- página AR ----------
 const mv = $('#mv'), cta = $('#cta');
