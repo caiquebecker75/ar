@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <meta property="og:title" content="Separador de compras Snickers · 20 cm">
 <meta property="og:description" content="Veja o display abastecido, vazio, montando e desmontando, e coloque em tamanho real no caixa com o AR.">
-<meta property="og:image" content="https://projetos.75lab.com.br/ar/mars-snickers-separador-20cm/poster.webp?v=2">
+<meta property="og:image" content="https://projetos.75lab.com.br/ar/mars-snickers-separador-20cm/poster.webp?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Lexend:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -126,8 +126,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
       <p class="lead">A versão compacta pedida depois do protótipo: 5 barras lado a lado, sem espaço sobrando entre elas, e o logo do supermercado com a etiqueta de preço acima. Do outro lado, <b>Caixa fechado</b>.</p>
       <div class="specs" aria-label="Medidas">
         <div><b>19</b><small>cm largura</small></div>
-        <div><b>17,1</b><small>cm fundo</small></div>
-        <div><b>13</b><small>cm altura</small></div>
+        <div><b>17,7</b><small>cm fundo</small></div>
+        <div><b>13,3</b><small>cm altura</small></div>
         <div><b>5</b><small>barras</small></div>
       </div>
       <div class="states" role="group" aria-label="Mostrar o display">
@@ -153,7 +153,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 
 <section class="page" id="ar" style="background:var(--cream-2)">
   <div class="wrap arpage">
-    <model-viewer id="mv" src="../display.glb?v=2" ios-src="../display.usdz?v=2" poster="../poster.webp?v=2"
+    <model-viewer id="mv" src="../display.glb?v=3" ios-src="../display.usdz?v=3" poster="../poster.webp?v=3"
       alt="Separador de compras Snickers de 19 cm em 3D"
       ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor"
       camera-controls auto-rotate auto-rotate-delay="2500" rotation-per-second="14deg"
@@ -166,7 +166,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
       <div class="eyebrow">Página 02 · realidade aumentada</div>
       <h2>Veja no caixa, <b>em tamanho real</b></h2>
       <p class="lead">O separador aparece com as medidas de fabricação, travado em escala 1:1. Dá para chegar perto e conferir as barras, o logo e a etiqueta de preço.</p>
-      <div class="medidas"><span><b>19</b> cm de largura</span><span><b>17,1</b> cm de fundo</span><span><b>13</b> cm de altura</span><span>PS <b>2 mm</b></span></div>
+      <div class="medidas"><span><b>19</b> cm de largura</span><span><b>17,7</b> cm de fundo</span><span><b>13,3</b> cm de altura</span><span>PS <b>2 mm</b></span></div>
       <div class="mobile-only">
         <button class="btn" id="cta" type="button" disabled>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M12 6.6l4.6 2.7v5.4L12 17.4l-4.6-2.7V9.3z"/><path d="M7.4 9.3 12 12l4.6-2.7M12 12v5.4"/></svg>
@@ -234,7 +234,7 @@ function resize() {
 new ResizeObserver(resize).observe(stage); resize();
 
 // ---------- modelo ----------
-const gltf = await new GLTFLoader().loadAsync('../display.glb?v=2');
+const gltf = await new GLTFLoader().loadAsync('../display.glb?v=3');
 const model = gltf.scene; scene.add(model);
 model.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
 $('#load').remove();
