@@ -60,7 +60,7 @@ h3{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.01e
 .specs div{border-top:2px solid var(--ink);padding-top:6px}
 .specs b{display:block;font-family:var(--display);font-size:44px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
 .specs small{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
-.turn{position:relative;aspect-ratio:4/5;max-height:80vh;margin-inline:auto;background:var(--paper2);border:2px solid var(--ink);overflow:hidden;cursor:grab;touch-action:pan-y}
+.turn{position:relative;aspect-ratio:4/5;width:min(100%,calc(80vh * .8));margin-inline:auto;background:var(--paper2);border:2px solid var(--ink);overflow:hidden;cursor:grab;touch-action:pan-y}
 .turn:active{cursor:grabbing}
 .turn img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}
 .hint{position:absolute;left:0;bottom:0;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--lime);background:var(--ink);padding:6px 10px}
