@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="75 LAB · Display de balcão Café com Deus Pai: mesma faca do display atual, arte 100% institucional. Estudo, arte, faca, 3D e vídeo de montagem.">
+<meta name="robots" content="noindex">
+<title>Display Café com Deus Pai</title>
+<meta property="og:title" content="Display de balcão Café com Deus Pai">
+<meta property="og:image" content="stills/01.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@700&family=Lora:ital@1&family=Montserrat:wght@600;700&display=swap">
+<style>
+/* Identidade 75 LAB (75lab.com.br): papel, tinta, lime e teal; Big Shoulders + Space Grotesk + Space Mono; cantos retos, bordas de 2px.
+   A marca Café com Deus Pai aparece como cliente: logo, capas, renders e a paleta dela no estudo. */
+:root{
+  --ink:#050505; --ink2:#101013; --ink3:#17171c; --paper:#F2F1E9; --paper2:#E7E5DA; --lime:#C0EE4E; --lime2:#AFD637;
+  --teal:#01A290; --teal2:#06C6AE; --soft:#54594E; --line:rgba(5,5,5,.16); --line-d:rgba(242,241,233,.18);
+  --display:"Big Shoulders Display",Impact,sans-serif; --body:"Space Grotesk",system-ui,sans-serif; --mono:"Space Mono",ui-monospace,monospace;
+  --serif:"Lora",Georgia,serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;margin:0}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+img{max-width:100%}
+[hidden]{display:none!important}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+nav.chap{position:sticky;top:0;z-index:20;background:var(--ink);color:var(--paper);border-bottom:2px solid var(--ink)}
+nav.chap .wrap{display:flex;align-items:center;gap:18px;padding-block:10px;flex-wrap:wrap}
+nav.chap .brand{display:flex;align-items:center;gap:12px;margin-right:auto;text-decoration:none;color:var(--paper);font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
+nav.chap .brand img{height:30px;width:auto;display:block}
+nav.chap .brand .site{color:var(--lime)}
+nav.chap a.lk{color:rgba(242,241,233,.7);text-decoration:none;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:6px 0;border-bottom:2px solid transparent}
+nav.chap a.lk.on{color:var(--lime);border-color:var(--lime)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.btn{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase;border:2px solid var(--ink);border-radius:0;padding:12px 18px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;text-decoration:none;background:transparent;color:var(--ink);transition:transform .15s,background .15s}
+.btn::after{content:"→"}
+.btn:hover{background:var(--lime);transform:translate(-2px,-2px);box-shadow:2px 2px 0 var(--ink)}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn.primary:hover{background:var(--lime);color:var(--ink)}
+nav .btn{border-color:var(--lime);color:var(--ink);background:var(--lime);padding:8px 14px}
+.cover{padding-block:36px 48px}
+.cover .grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:32px;align-items:center}
+.clientes{display:flex;align-items:center;gap:16px;margin-bottom:22px}
+.clientes img{height:88px;width:auto;display:block}
+.clientes span{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}
+.eyebrow{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
+.eyebrow b,.num{color:var(--teal)}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(48px,7vw,96px);line-height:1.04;letter-spacing:-.02em;text-transform:uppercase;margin:.2em 0 .25em;text-wrap:balance}
+h1 em{font-style:normal;color:var(--teal);text-decoration:underline wavy var(--teal) 3px;text-underline-offset:10px}
+h1 .off{color:rgba(5,5,5,.38)}
+h2{font-family:var(--display);font-weight:900;font-size:clamp(40px,5vw,72px);line-height:1.04;letter-spacing:-.02em;text-transform:uppercase;margin:0 0 .2em;text-wrap:balance}
+h3{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.01em;text-transform:uppercase;margin:0 0 .3em;line-height:1.05}
+.lead{font-size:17px;max-width:34em;color:var(--soft)}
+.frase{font-family:var(--serif);font-style:italic;font-size:19px;color:#3b2416}
+.specs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:22px 0 26px;max-width:460px}
+.specs div{border-top:2px solid var(--ink);padding-top:6px}
+.specs b{display:block;font-family:var(--display);font-size:44px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+.specs small{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.turn{position:relative;aspect-ratio:4/5;max-height:80vh;margin-inline:auto;background:var(--paper2);border:2px solid var(--ink);overflow:hidden;cursor:grab;touch-action:pan-y}
+.turn:active{cursor:grabbing}
+.turn img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}
+.hint{position:absolute;left:0;bottom:0;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--lime);background:var(--ink);padding:6px 10px}
+section.ch{padding-block:64px;border-top:2px solid var(--ink)}
+section.ch.dark{background:var(--ink);color:var(--paper);border-top-color:var(--ink)}
+section.ch.dark h2{color:var(--paper)}
+section.ch.dark .ch-head p{color:rgba(242,241,233,.7)}
+.ch-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.ch-head p{margin:0;max-width:34em;color:var(--soft)}
+.num{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.14em;display:block;margin-bottom:6px;text-transform:uppercase}
+.stage{background:var(--paper2);border:2px solid var(--ink);overflow:hidden;position:relative}
+.stage img{display:block;width:100%;height:auto}
+video{display:block;width:100%;border:2px solid var(--lime);background:#000}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:0;padding:7px 12px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--lime)}
+.two{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:24px;align-items:start}
+.side{display:grid;gap:14px}
+.card{background:var(--paper);border:2px solid var(--ink);padding:16px 18px}
+.card p{margin:.3em 0}
+.card ul{margin:.3em 0 0;padding-left:1.1em}
+.card li{margin:.25em 0}
+.card.warn{background:var(--lime)}
+.dark .card{background:var(--ink2);border-color:var(--line-d);color:var(--paper)}
+.dark .card h3{color:var(--lime)}
+.books{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.books li{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:10px;align-items:center;font-size:14px}
+.books li i{width:12px;height:12px;display:block}
+.books li span{font-family:var(--mono);color:var(--soft);font-size:11px;font-variant-numeric:tabular-nums;text-align:right}
+.gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.gal figure{margin:0}
+.gal figcaption{font-size:14px;color:var(--soft);margin-top:8px}
+.gal .stage{aspect-ratio:4/5}
+.gal .stage img{height:100%;object-fit:contain}
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:22px;counter-reset:st}
+.steps figure{margin:0}
+.steps .stage{aspect-ratio:16/9}
+.steps .stage img{height:100%;object-fit:cover}
+.steps figcaption{font-size:13px;margin-top:6px;line-height:1.35}
+.steps figcaption::before{counter-increment:st;content:"(0" counter(st) ") ";font-family:var(--mono);font-weight:700;color:var(--teal)}
+input[type=range]{width:100%;accent-color:var(--teal)}
+.scrub{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;margin-top:12px}
+.scrub label{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}
+.prods{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.prods figure{margin:0}
+.prods img{width:100%;aspect-ratio:2/3;object-fit:contain;background:var(--paper2);border:2px solid var(--ink);padding:8px}
+.prods b{display:block;font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:18px;line-height:1.05;margin-top:8px}
+.prods small{display:block;font-size:12px;color:var(--soft);line-height:1.4}
+.pal{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:14px}
+.pal div{height:64px;display:flex;align-items:end;padding:6px 8px;font-family:var(--mono);font-size:10px;border:2px solid var(--ink)}
+.dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:2px solid var(--line-d);border-left:2px solid var(--line-d)}
+.dl a{display:grid;gap:2px;padding:16px 18px;color:var(--paper);text-decoration:none;border-right:2px solid var(--line-d);border-bottom:2px solid var(--line-d);transition:background .15s}
+.dl a:hover{background:var(--lime);color:var(--ink)}
+.dl a b{font-family:var(--display);font-weight:800;font-size:22px;text-transform:uppercase;line-height:1.05}
+.dl a small{font-size:13px;opacity:.75}
+.dl a span{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal2)}
+.dl a:hover span{color:var(--ink)}
+.tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:18px}
+.marquee{background:var(--ink);color:var(--lime);font-family:var(--display);font-weight:900;font-size:28px;text-transform:uppercase;white-space:nowrap;overflow:hidden;padding:10px 0;border-top:2px solid var(--ink)}
+.marquee div{display:inline-block;animation:mq 30s linear infinite;padding-left:100%}
+@keyframes mq{to{transform:translateX(-100%)}}
+.end{padding-block:72px 64px;background:var(--ink);color:var(--paper)}
+.end .grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:end}
+.end img.l75{width:min(220px,60%);height:auto;display:block;margin-bottom:18px}
+.end h2{color:var(--paper)}
+.end h2 em{font-style:normal;color:var(--lime)}
+.end .credit{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.8}
+@media (max-width:860px){
+  .cover .grid,.two,.end .grid{grid-template-columns:minmax(0,1fr)}
+  .gal,.dl,.tools{grid-template-columns:minmax(0,1fr)}
+  .prods{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pal{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+  nav.chap a.lk{display:none}
+  nav.chap .brand .site{display:none}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.marquee div{animation:none;padding-left:0}}
+</style>
+<script type="module" src="../vendor/model-viewer.min.js"></script>
+<script defer src="../vendor/qrcode.min.js"></script>
+</head>
+<body>
+
+<nav class="chap" aria-label="Capítulos">
+  <div class="wrap">
+    <a class="brand" href="https://75lab.com.br"><img src="arte/75lab-logo-lime.svg" alt="75 LAB"><span class="site">75lab.com.br</span></a>
+    <a href="#capa" class="lk on">Capa</a>
+    <a href="#video" class="lk">Vídeo</a>
+    <a href="#abastecido" class="lk">Abastecido</a>
+    <a href="#montagem" class="lk opt">Montagem</a>
+    <a href="#marca" class="lk opt">Marca</a>
+    <a href="#arte" class="lk opt">Arte e faca</a>
+    <a class="btn small" href="#arquivos">Arquivos</a>
+  </div>
+</nav>
+
+<header class="cover" id="capa">
+  <div class="wrap grid">
+    <div>
+      <div class="clientes"><img src="arte/logo.webp" alt="Café com Deus Pai"><span>Cliente<br>Café com Deus Pai<br>Editora Vélos</span></div>
+      <div class="eyebrow"><b>(PDV)</b> Display de balcão · livrarias e distribuidores</div>
+      <h1><span class="off">Display de balcão</span> <em>100% institucional</em></h1>
+      <p class="lead">Mesma faca do display atual, arte nova e institucional da marca. Sem marca parceira.</p>
+      <p class="frase">Sim, Deus deseja tomar café com você.</p>
+      <div class="specs" aria-label="Medidas do display montado">
+        <div><b>210</b><small>largura mm</small></div>
+        <div><b>200</b><small>profund. mm</small></div>
+        <div><b>205</b><small>altura mm</small></div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn primary" href="#video">Ver a montagem</a>
+        <a class="btn ghost" href="#arquivos">Arquivos</a>
+      </div>
+    </div>
+    <div class="turn" id="turn" role="img" aria-label="Display Café com Deus Pai abastecido girando 360 graus. Arraste para girar.">
+      <img id="turnImg" src="stills/01.webp" alt="" draggable="false">
+    </div>
+  </div>
+</header>
+
+<section class="ch dark" id="video">
+  <div class="wrap">
+    <div class="ch-head">
+      <div><span class="num">(01)</span><h2>Do desmontado ao montado</h2></div>
+      <p>A faca sai planificada com a arte, vira, dobra nos vincos e recebe os livros. Trilha original.</p>
+    </div>
+    <video controls playsinline preload="metadata" poster="stills/01.webp" src="video/CCDP_display_montagem_16x9.mp4"></video>
+  </div>
+</section>
+
+<section class="ch" id="abastecido">
+  <div class="wrap">
+    <div class="ch-head">
+      <div><span class="num">(02)</span><h2>Abastecido</h2></div>
+      <p>Quatro alturas: Vol. 7 no degrau do fundo, Teens, Kids e os Livros de Oração na frente.</p>
+    </div>
+    <div class="two">
+      <div>
+        <div class="stage"><img id="fillImg" src="stills/01.webp" alt="Display abastecido"></div>
+        <div class="toolbar" role="group" aria-label="Ângulo" style="margin-top:10px">
+          <button class="chip" aria-pressed="true" data-cam="01" type="button">3/4 esquerda</button>
+          <button class="chip" aria-pressed="false" data-cam="02" type="button">3/4 direita</button>
+          <button class="chip" aria-pressed="false" data-cam="03" type="button">Frente</button>
+          <button class="chip" aria-pressed="false" data-cam="04" type="button">Lateral</button>
+          <button class="chip" aria-pressed="false" data-cam="05" type="button">De cima</button>
+          <button class="chip" aria-pressed="false" data-cam="07" type="button">Detalhe</button>
+        </div>
+      </div>
+      <aside class="side">
+        <div class="card">
+          <h3>O que vai em cada altura</h3>
+          <ul class="books">
+            <li><i style="background:#4f8c74"></i>Vol. 7 brochura, no degrau<span>1 un · 15,5 × 22,7</span></li>
+            <li><i style="background:#155770"></i>Teens, atrás da parede<span>1 un · 16 × 23,3</span></li>
+            <li><i style="background:#8cc2a8"></i>Kids, na frente da parede<span>2 un · 16 × 23,3</span></li>
+            <li><i style="background:#3e6b55"></i>Livro de Oração verde<span>3 un · 8,9 × 12,3</span></li>
+            <li><i style="background:#8e5a2c"></i>Livro de Oração marrom<span>3 un · 8,9 × 12,3</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Material</h3>
+          <ul>
+            <li>Papelão microondulado onda E (1,5 mm), laminação fosca.</li>
+            <li>Impressão 4x0 no lado externo; interno branco.</li>
+            <li>Uma peça só, mesma faca do display com alfajor.</li>
+          </ul>
+        </div>
+        <div class="card warn">
+          <h3>Ponto de atenção da faca</h3>
+          <p>Kids e Teens têm a mesma altura (23,3 cm): o Teens fica quase todo atrás do Kids. Para a próxima tiragem: baixar a parede interna e calçar o Teens 3 cm, ou alternar Teens e Vol. 7 por campanha.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="vazio">
+  <div class="wrap">
+    <div class="ch-head">
+      <div><span class="num">(03)</span><h2>Sem produtos e verso</h2></div>
+      <p>Laterais com logo e "Porções diárias de restauração · 2027", frente com a frase, verso em verde-sálvia.</p>
+    </div>
+    <div class="gal">
+      <figure><div class="stage"><img src="stills/08.webp" alt="Display montado vazio" loading="lazy"></div><figcaption>Montado e vazio: degrau do fundo e parede interna.</figcaption></figure>
+      <figure><div class="stage"><img src="stills/03.webp" alt="Display abastecido de frente" loading="lazy"></div><figcaption>Frente: logo em 2 linhas e a frase na aba.</figcaption></figure>
+            <figure><div class="stage"><img src="stills/06.webp" alt="Verso do display" loading="lazy"></div><figcaption>Verso: logo dourado sobre o verde da capa.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="montagem">
+  <div class="wrap">
+    <div class="ch-head">
+      <div><span class="num">(04)</span><h2>Montagem passo a passo</h2></div>
+      <p>Arraste para ver a faca dobrando, quadro a quadro.</p>
+    </div>
+    <div class="stage"><img id="expImg" src="montagem/m000.webp" alt="Montagem animada do display"></div>
+    <div class="scrub">
+      <button class="chip" id="expPlay" aria-pressed="true" type="button">Pausar</button>
+      <input type="range" id="expRange" min="0" max="89" value="0" aria-label="Avançar a montagem">
+      <label for="expRange">Planificado → abastecido</label>
+    </div>
+    <div class="steps" aria-label="Montagem passo a passo">
+      <figure><div class="stage"><img src="montagem/p1.webp" alt="" loading="lazy"></div><figcaption>Planificado com a arte.</figcaption></figure>
+      <figure><div class="stage"><img src="montagem/p2.webp" alt="" loading="lazy"></div><figcaption>Vira com a impressão para fora.</figcaption></figure>
+      <figure><div class="stage"><img src="montagem/p3.webp" alt="" loading="lazy"></div><figcaption>Fundo sobe e o degrau sobe junto.</figcaption></figure>
+      <figure><div class="stage"><img src="montagem/p4.webp" alt="" loading="lazy"></div><figcaption>Laterais e frente fecham.</figcaption></figure>
+      <figure><div class="stage"><img src="montagem/p5.webp" alt="" loading="lazy"></div><figcaption>Aba dupla dobra para dentro.</figcaption></figure>
+      <figure><div class="stage"><img src="montagem/p6.webp" alt="" loading="lazy"></div><figcaption>Parede interna trava na lateral.</figcaption></figure>
+      <figure><div class="stage"><img src="montagem/p7.webp" alt="" loading="lazy"></div><figcaption>Vol. 7, Teens e Kids.</figcaption></figure>
+      <figure><div class="stage"><img src="montagem/p8.webp" alt="" loading="lazy"></div><figcaption>Livros de Oração na frente.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="marca">
+  <div class="wrap">
+    <div class="ch-head">
+      <div><span class="num">(05)</span><h2>Estudo de marca</h2></div>
+      <p>A linha 2027 que o display vende e o que a arte herda da capa. <a href="estudo/">Estudo completo, com fontes</a>.</p>
+    </div>
+    <div class="prods">
+      <figure><img src="capas/vol7.webp" alt="Capa do Vol. 7" loading="lazy"><b>Café com Deus Pai Vol. 7</b><small>Porções diárias de restauração · brochura 22,7 × 15,5 × 2,0 cm · 424 p.</small></figure>
+      <figure><img src="capas/kids.webp" alt="Capa do Kids" loading="lazy"><b>Kids · Tempo de crescer</b><small>0 a 8 anos · 23,3 × 16 × 3 cm · 416 p.</small></figure>
+      <figure><img src="capas/teens.webp" alt="Capa do Teens" loading="lazy"><b>Teens · Aventuras com Jesus</b><small>9 a 12 anos · 23,3 × 16 × 3 cm · 416 p.</small></figure>
+      <figure><img src="capas/oracao_verde.webp" alt="Livro de Oração verde" loading="lazy"><b>Livro de Oração verde</b><small>12,3 × 8,9 × 1,5 cm · chaveiro removível</small></figure>
+      <figure><img src="capas/oracao_marrom.webp" alt="Livro de Oração marrom" loading="lazy"><b>Livro de Oração marrom</b><small>12,3 × 8,9 × 1,5 cm · chaveiro removível</small></figure>
+    </div>
+    <div class="two" style="margin-top:24px">
+      <div class="card">
+        <h3>Paleta</h3>
+        <div class="pal">
+          <div style="background:#4f8c74;color:#fff">#4F8C74</div><div style="background:#2f4a37;color:#fff">#2F4A37</div>
+          <div style="background:#a9773a;color:#fff">#A9773A</div><div style="background:#e8c27a">#E8C27A</div>
+          <div style="background:#3b2416;color:#fff">#3B2416</div><div style="background:#f7f2e8;border:1px solid var(--line)">#F7F2E8</div>
+        </div>
+        <p style="font-size:13px;color:var(--soft);margin-top:10px">Medidas nas imagens oficiais. Pantone e CMYK finais vêm da Vélos.</p>
+      </div>
+      <div class="side">
+        <div class="card"><h3>Frases no PDV</h3><ul><li>Sim, Deus deseja tomar café com você.</li><li>Porções diárias de restauração · 2027</li><li>365 novas mensagens, uma para cada dia do ano</li></ul></div>
+        <div class="card"><h3>Ficam fora</h3><ul><li>Qualquer marca parceira (alfajor, chocolate)</li><li>"Porções diárias de paz" (edição de 2024)</li><li>"Um encontro diário com Deus" (outro devocional)</li></ul></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="arte">
+  <div class="wrap">
+    <div class="ch-head">
+      <div><span class="num">(06)</span><h2>Arte e faca</h2></div>
+      <p>Da referência ao conceito do ChatGPT, refinado e aplicado na faca.</p>
+    </div>
+    <div class="gal">
+      <figure><div class="stage"><img src="arte/hoje.webp" alt="Display atual com alfajor" loading="lazy"></div><figcaption>Hoje: display com alfajor.</figcaption></figure>
+      <figure><div class="stage"><img src="arte/referencia.webp" alt="Referência do cliente" loading="lazy"></div><figcaption>Referência do cliente.</figcaption></figure>
+      <figure><div class="stage"><img src="arte/conceito.webp" alt="Conceito gerado no ChatGPT" loading="lazy"></div><figcaption>Conceito no ChatGPT: fixou fundo creme, ramos em aquarela e logo nas laterais.</figcaption></figure>
+    </div>
+    <div class="stage" style="margin-top:18px"><img src="arte/faca_arte.webp" alt="Arte aplicada na faca, com linhas de corte e vinco" loading="lazy"></div>
+    <p style="color:var(--soft);font-size:14px">Vermelho: corte · azul tracejado: vinco. Planificado 850 × 431 mm.</p>
+    <div class="tools">
+      <div class="card"><h3>ChatGPT</h3><p>Conceito do display e o ramo de café em aquarela.</p></div>
+      <div class="card"><h3>PhotoCraft</h3><p>Tratamento do ramo e PSD da faca em camadas editáveis.</p></div>
+      <div class="card"><h3>VectorCraft</h3><p>Faca 1:1 em AI, PDF, SVG e DXF.</p></div>
+      <div class="card"><h3>DesignCraft</h3><p>PDF de gráfica (PDF/X-1a validado) e caderno.</p></div>
+      <div class="card"><h3>Blender</h3><p>A faca dobrando nos vincos, com os livros em medida real.</p></div>
+      <div class="card"><h3>LightCraft</h3><p>Tratamento de cor dos renders.</p></div>
+      <div class="card"><h3>SoundCraft</h3><p>Trilha original do vídeo.</p></div>
+      <div class="card"><h3>FilmCraft</h3><p>Edição, letreiros e exportação do vídeo.</p></div>
+    </div>
+  </div>
+</section>
+
+<!--AR-->
+<section class="ch dark" id="arquivos">
+  <div class="wrap">
+    <div class="ch-head">
+      <div><span class="num">(09)</span><h2>Arquivos</h2></div>
+      <p>Tudo o que foi produzido, para baixar.</p>
+    </div>
+    <div class="dl" id="dl"></div>
+    <p style="font-size:13px;opacity:.7;margin-top:14px">Para fechar o arquivo de gráfica: logo vetorial, Pantone/CMYK e capas em alta da Vélos, e prova de cor no papelão.</p>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true"><div>Ideia boa é a que acontece · estudo · arte · faca · 3D · vídeo · Café com Deus Pai · 75 LAB · Ideia boa é a que acontece · estudo · arte · faca · 3D · vídeo ·</div></div>
+<footer class="end">
+  <div class="wrap grid">
+    <div>
+      <img class="l75" src="arte/75lab-logo-lime.svg" alt="75 LAB">
+      <h2>Ideia boa é <em>a que acontece</em></h2>
+    </div>
+    <div>
+      <p class="frase" style="color:var(--lime)">Sim, Deus deseja tomar café com você.</p>
+      <div class="credit">75 LAB · estratégia, design e projeto · nov/2026 · <a href="https://75lab.com.br">75lab.com.br</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const CFG = {GIRO: 0, EXP: 90};
+const ARQ = [
+  ["Caderno de apresentação", "PDF · 12 páginas (DesignCraft)", "arquivos/CCDP_display_caderno.pdf"],
+  ["Vídeo da montagem", "MP4 1920 × 1080 (FilmCraft)", "video/CCDP_display_montagem_16x9.mp4"],
+  ["Arte para gráfica", "PDF/X-1a, faca 1:1 (DesignCraft)", "arquivos/CCDP_display_arte_grafica_PDFX1a.pdf"],
+  ["Arte da faca em camadas", "PSD editável (PhotoCraft)", "arquivos/CCDP_display_faca_arte.psd"],
+  ["Arte da faca", "PNG 254 dpi", "arquivos/CCDP_display_faca_arte.png"],
+  ["Faca vetorial", "AI (VectorCraft)", "arquivos/CCDP_faca_1x1.ai"],
+  ["Faca vetorial", "PDF com arte e cotas", "arquivos/CCDP_faca_1x1.pdf"],
+  ["Faca técnica", "PDF só linhas e cotas", "arquivos/CCDP_faca_1x1_tecnica.pdf"],
+  ["Faca para o fabricante", "DXF só corte e vinco", "arquivos/CCDP_faca_1x1_corte_vinco.dxf"],
+  ["Faca editável", "SVG e .vectorcraft", "arquivos/CCDP_faca_1x1.svg"],
+  ["Modelo 3D", "Blender .blend com texturas", "arquivos/CCDP_display.blend"],
+  ["Renders", "ZIP com os stills tratados", "arquivos/CCDP_display_renders.zip"],
+  ["Trilha original", "WAV 48 kHz (SoundCraft)", "arquivos/trilha_ccdp.wav"],
+  ["Estudo de marca", "Página com fontes", "estudo/"],
+  ["Conceito ChatGPT", "PNG", "arquivos/conceito_chatgpt.png"],
+];
+document.getElementById("dl").innerHTML = ARQ.map(([t, d, h]) => `<a href="${h}" ${h.endsWith("/") ? "" : "download"}><span>${h.split(".").pop().replace("/", "página")}</span><b>${t}</b><small>${d}</small></a>`).join("");
+
+const pad = n => String(n).padStart(3, "0");
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const giro = CFG.GIRO ? Array.from({length: CFG.GIRO}, (_, i) => { const im = new Image(); im.src = `giro/g${pad(i)}.webp`; return im; }) : [];
+const tImg = document.getElementById("turnImg"), turn = document.getElementById("turn");
+let gi = 0, drag = null, last = 0;
+function showG(i){ gi = (i % CFG.GIRO + CFG.GIRO) % CFG.GIRO; tImg.src = giro[gi].src; }
+function loop(t){ if(CFG.GIRO && !drag && !reduce && t - last > 1000 / 10){ last = t; showG(gi + 1); } requestAnimationFrame(loop); }
+requestAnimationFrame(loop);
+turn.addEventListener("pointerdown", e => { drag = {x: e.clientX, g: gi}; turn.setPointerCapture(e.pointerId); });
+turn.addEventListener("pointermove", e => { if(drag && CFG.GIRO) showG(drag.g + Math.round((drag.x - e.clientX) / 6)); });
+["pointerup","pointercancel"].forEach(ev => turn.addEventListener(ev, () => { drag = null; }));
+
+const fillImg = document.getElementById("fillImg");
+document.querySelectorAll("[data-cam]").forEach(b => b.onclick = () => {
+  fillImg.src = `stills/${b.dataset.cam}.webp`;
+  document.querySelectorAll("[data-cam]").forEach(x => x.setAttribute("aria-pressed", x === b));
+});
+
+const exp = [];
+const eImg = document.getElementById("expImg"), eR = document.getElementById("expRange"), eP = document.getElementById("expPlay");
+let ei = 0, playing = !reduce, hold = 0, lastE = 0, carregado = false;
+function carrega(){ if(carregado) return; carregado = true; for(let i = 0; i < CFG.EXP; i++){ const im = new Image(); im.src = `montagem/m${pad(i)}.webp`; exp.push(im); } }
+new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) carrega(); }), {rootMargin: "400px"}).observe(eImg);
+function showE(i){ ei = Math.max(0, Math.min(CFG.EXP - 1, i)); eImg.src = `montagem/m${pad(ei)}.webp`; eR.value = ei; }
+function eloop(t){
+  if(playing && carregado && t - lastE > 90){
+    lastE = t;
+    if(hold > 0) hold--; else { if(ei >= CFG.EXP - 1){ hold = 22; ei = -1; } showE(ei + 1); }
+  }
+  requestAnimationFrame(eloop);
+}
+requestAnimationFrame(eloop);
+function setPlay(p){ playing = p; eP.textContent = p ? "Pausar" : "Animar"; eP.setAttribute("aria-pressed", p); }
+setPlay(playing);
+eP.onclick = () => setPlay(!playing);
+eR.oninput = () => { carrega(); setPlay(false); showE(+eR.value); };
+
+const links = [...document.querySelectorAll("nav.chap a.lk")];
+const io = new IntersectionObserver(es => es.forEach(en => { if(en.isIntersecting) links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + en.target.id)); }), {rootMargin: "-45% 0px -50% 0px"});
+["capa","video","abastecido","montagem","marca","arte"].forEach(id => io.observe(document.getElementById(id)));
+addEventListener("load", () => {
+  const el = document.getElementById("qr");
+  if (window.qrcode && el) { const q = qrcode(0, "M"); q.addData(new URL("ar/", location.href).href); q.make(); el.innerHTML = q.createSvgTag({cellSize: 4, margin: 0, scalable: true, alt: "QR code da página de AR"}); }
+});
+</script>
+</body>
+</html>
