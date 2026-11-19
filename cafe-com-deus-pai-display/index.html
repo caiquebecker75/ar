@@ -90,7 +90,7 @@ video{display:block;width:100%;border:2px solid var(--lime);background:#000}
 .books li{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:10px;align-items:center;font-size:14px}
 .books li i{width:12px;height:12px;display:block}
 .books li span{font-family:var(--mono);color:var(--soft);font-size:11px;font-variant-numeric:tabular-nums;text-align:right}
-.gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.gal{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .gal figure{margin:0}
 .gal figcaption{font-size:14px;color:var(--soft);margin-top:8px}
 .gal .stage{aspect-ratio:4/5}
@@ -311,25 +311,14 @@ input[type=range]{width:100%;accent-color:var(--teal)}
   <div class="wrap">
     <div class="ch-head">
       <div><span class="num">(06)</span><h2>Arte e faca</h2></div>
-      <p>Da referência ao conceito do ChatGPT, refinado e aplicado na faca.</p>
+      <p>Do display de hoje à arte nova aplicada na faca.</p>
     </div>
     <div class="gal">
       <figure><div class="stage"><img src="arte/hoje.webp" alt="Display atual com alfajor" loading="lazy"></div><figcaption>Hoje: display com alfajor.</figcaption></figure>
       <figure><div class="stage"><img src="arte/referencia.webp" alt="Referência do cliente" loading="lazy"></div><figcaption>Referência do cliente.</figcaption></figure>
-      <figure><div class="stage"><img src="arte/conceito.webp" alt="Conceito gerado no ChatGPT" loading="lazy"></div><figcaption>Conceito no ChatGPT: fixou fundo creme, ramos em aquarela e logo nas laterais.</figcaption></figure>
     </div>
     <div class="stage" style="margin-top:18px"><img src="arte/faca_arte.webp" alt="Arte aplicada na faca, com linhas de corte e vinco" loading="lazy"></div>
     <p style="color:var(--soft);font-size:14px">Vermelho: corte · azul tracejado: vinco. Planificado 850 × 431 mm.</p>
-    <div class="tools">
-      <div class="card"><h3>ChatGPT</h3><p>Conceito do display e o ramo de café em aquarela.</p></div>
-      <div class="card"><h3>PhotoCraft</h3><p>Tratamento do ramo e PSD da faca em camadas editáveis.</p></div>
-      <div class="card"><h3>VectorCraft</h3><p>Faca 1:1 em AI, PDF, SVG e DXF.</p></div>
-      <div class="card"><h3>DesignCraft</h3><p>PDF de gráfica (PDF/X-1a validado) e caderno.</p></div>
-      <div class="card"><h3>Blender</h3><p>A faca dobrando nos vincos, com os livros em medida real.</p></div>
-      <div class="card"><h3>LightCraft</h3><p>Tratamento de cor dos renders.</p></div>
-      <div class="card"><h3>SoundCraft</h3><p>Trilha original do vídeo.</p></div>
-      <div class="card"><h3>FilmCraft</h3><p>Edição, letreiros e exportação do vídeo.</p></div>
-    </div>
   </div>
 </section>
 
@@ -362,21 +351,20 @@ input[type=range]{width:100%;accent-color:var(--teal)}
 <script>
 const CFG = {GIRO: 0, EXP: 90};
 const ARQ = [
-  ["Caderno de apresentação", "PDF · 12 páginas (DesignCraft)", "arquivos/CCDP_display_caderno.pdf"],
-  ["Vídeo da montagem", "MP4 1920 × 1080 (FilmCraft)", "video/CCDP_display_montagem_16x9.mp4"],
-  ["Arte para gráfica", "PDF/X-1a, faca 1:1 (DesignCraft)", "arquivos/CCDP_display_arte_grafica_PDFX1a.pdf"],
-  ["Arte da faca em camadas", "PSD editável (PhotoCraft)", "arquivos/CCDP_display_faca_arte.psd"],
+  ["Caderno de apresentação", "PDF · 11 páginas", "arquivos/CCDP_display_caderno.pdf"],
+  ["Vídeo da montagem", "MP4 1920 × 1080", "video/CCDP_display_montagem_16x9.mp4"],
+  ["Arte para gráfica", "PDF/X-1a, faca 1:1", "arquivos/CCDP_display_arte_grafica_PDFX1a.pdf"],
+  ["Arte da faca em camadas", "PSD editável", "arquivos/CCDP_display_faca_arte.psd"],
   ["Arte da faca", "PNG 254 dpi", "arquivos/CCDP_display_faca_arte.png"],
-  ["Faca vetorial", "AI (VectorCraft)", "arquivos/CCDP_faca_1x1.ai"],
+  ["Faca vetorial", "AI", "arquivos/CCDP_faca_1x1.ai"],
   ["Faca vetorial", "PDF com arte e cotas", "arquivos/CCDP_faca_1x1.pdf"],
   ["Faca técnica", "PDF só linhas e cotas", "arquivos/CCDP_faca_1x1_tecnica.pdf"],
   ["Faca para o fabricante", "DXF só corte e vinco", "arquivos/CCDP_faca_1x1_corte_vinco.dxf"],
-  ["Faca editável", "SVG e .vectorcraft", "arquivos/CCDP_faca_1x1.svg"],
-  ["Modelo 3D", "Blender .blend com texturas", "arquivos/CCDP_display.blend"],
+  ["Faca editável", "SVG", "arquivos/CCDP_faca_1x1.svg"],
+  ["Modelo 3D", "Arquivo .blend com texturas", "arquivos/CCDP_display.blend"],
   ["Renders", "ZIP com os stills tratados", "arquivos/CCDP_display_renders.zip"],
-  ["Trilha original", "WAV 48 kHz (SoundCraft)", "arquivos/trilha_ccdp.wav"],
+  ["Trilha original", "WAV 48 kHz", "arquivos/trilha_ccdp.wav"],
   ["Estudo de marca", "Página com fontes", "estudo/"],
-  ["Conceito ChatGPT", "PNG", "arquivos/conceito_chatgpt.png"],
 ];
 document.getElementById("dl").innerHTML = ARQ.map(([t, d, h]) => `<a href="${h}" ${h.endsWith("/") ? "" : "download"}><span>${h.split(".").pop().replace("/", "página")}</span><b>${t}</b><small>${d}</small></a>`).join("");
 
