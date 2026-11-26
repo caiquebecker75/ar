@@ -31,6 +31,7 @@ header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:spac
 h1{font-family:var(--f-disp);font-weight:800;font-size:clamp(40px,6vw,76px);line-height:.92;margin:6px 0 0;text-wrap:balance;letter-spacing:.01em}
 h1 em{font-style:normal;color:var(--verm)}
 .sub{color:var(--mut);max-width:62ch;margin:10px 0 0}
+.loja[hidden]{display:none!important}
 nav.abas{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:6px;overflow-x:auto;padding-block:10px;border-bottom:1px solid var(--linha)}
 .aba{font:600 15px/1 var(--f-txt);color:var(--mut);background:transparent;border:1px solid var(--linha);border-radius:999px;padding:10px 16px;white-space:nowrap;cursor:pointer;display:flex;gap:8px;align-items:center}
 .aba-n{font-family:var(--f-mono);font-size:11px;color:var(--mut)}
@@ -143,7 +144,9 @@ footer{color:var(--mut);font-family:var(--f-mono);font-size:12px;border-top:1px 
   function mostra(id){ if(!secs.some(s=>s.id==='loja-'+id)) id=abas[0].dataset.id;
     abas.forEach(a=>a.setAttribute('aria-selected', a.dataset.id===id?'true':'false'));
     secs.forEach(s=>{ s.hidden = s.id!=='loja-'+id; }); }
-  abas.forEach(a=>a.addEventListener('click',()=>{ mostra(a.dataset.id); try{history.replaceState(null,'','#'+a.dataset.id)}catch(e){location.hash=a.dataset.id} }));
+  abas.forEach(a=>a.addEventListener('click',()=>{ mostra(a.dataset.id); try{history.replaceState(null,'','#'+a.dataset.id)}catch(e){location.hash=a.dataset.id}
+    const nav=document.querySelector('nav.abas'), sec=document.getElementById('loja-'+a.dataset.id);
+    if(sec && nav){ const y=sec.getBoundingClientRect().top+scrollY-nav.offsetHeight-8; if(scrollY>y) window.scrollTo(0,y); } }));
   window.addEventListener('hashchange',()=>mostra(location.hash.slice(1)));
   mostra(location.hash.slice(1));
   document.querySelectorAll('.tour').forEach(t=>{
